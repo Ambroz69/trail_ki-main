@@ -107,8 +107,8 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
     if(!isOpen) return null;
 
     return (
-        <div className="modal p-4">
-            <div className="modal-content my-4 flex flex-col">
+        <div className="p-4">
+            <div className="my-4 flex flex-col">
                 <span className="close" onClick={onClose}>&times;</span>
                 <div className='my-4'>
                     <input type="text" placeholder="Point Title" value={title} onChange={e => setTitle(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
