@@ -7,9 +7,8 @@ const router = express.Router();
 // Route to Save a new Trail
 router.post('/', auth, async (request, response) => {
     try {
-        const { name, points } = request.body;
-        const newTrail = new Trail({name, points});
-        //console.log('points in route: ', points);
+        const { name, description, thumbnail, points } = request.body;
+        const newTrail = new Trail({name, description, thumbnail, points});
         await newTrail.save();
         return response.status(201).send(newTrail);
     } catch(error) {
@@ -79,6 +78,64 @@ router.put('/:id', auth, async (request, response) => {
         response.status(200).send({
             message: 'Trail updated.',
             trail: updatedTrail,
+        });
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+// Route for Publish a trail
+router.put('/publish/:id', auth, async (request, response) => {
+    try {
+        const { id } = request.params;
+        const updatedTrail = await Trail.findByIdAndUpdate(
+            id,
+            { published: true },
+            { new: true }
+        );
+
+        if (!updatedTrail) {
+            return response.status(404).send({
+                message: 'Trail not found',
+            });
+        }
+
+        response.status(200).send({
+            message: 'Trail published.',
+            trail: updatedTrail,
+        });
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+// Route for Clonning a trail
+router.post('/clone/:id', auth, async (request, response) => {
+    try {
+        const { id } = request.params;
+        const trail = await Trail.findById(id);
+
+        if (!trail) {
+            return response.status(404).send({
+                message: 'Trail not found',
+            });
+        }
+
+        const clonedTrail = new Trail({
+            name: `${trail.name} (Copy)`,
+            description: trail.description,
+            thumbnail: trail.thumbnail,
+            points: trail.points,
+            published: false // Set published to false for the cloned trail
+        });
+
+        await clonedTrail.save();
+
+        response.status(201).send({
+            message: 'Trail cloned successfully.',
+            trail: clonedTrail,
         });
     } catch (error) {
         console.log(error.message);
