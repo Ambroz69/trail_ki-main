@@ -1,5 +1,4 @@
 import {Link} from 'react-router-dom';
-import {BsArrowLeft} from 'react-icons/bs';
 
 const BackButton = ({destination = '/'}) => {
     return (
@@ -7,7 +6,11 @@ const BackButton = ({destination = '/'}) => {
             <Link 
             to = {destination}
             className='bg-sky-800 text-white px-4 py-1 rounded-lg w-fit'>
-                <BsArrowLeft className='text-2xl'></BsArrowLeft>
+                <img 
+                    src='https://i.ibb.co/j64G6h3/back-arrow.png' 
+                    alt='Back' 
+                    style={{ width: '32px', height: '32px' }}
+                />
             </Link>
         </div>
     )
