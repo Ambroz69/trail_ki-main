@@ -38,6 +38,24 @@ const trailSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        description: {
+            type: String,
+            required: true,
+        },
+        thumbnail: {
+            type: String, // path to picture
+            required: false, // for now
+        },
+        rating: {
+            type: Number,
+            min: 0,
+            max: 5, // 5 star rating for now
+            default: 0,
+        },
+        published: {
+            type: Boolean,
+            default: false,
+        },
         points: [poiSchema],
     }
 );

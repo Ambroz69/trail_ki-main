@@ -28,6 +28,8 @@ const token = cookies.get("SESSION_TOKEN");
 
 const CreateTrail = () => {
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -51,6 +53,8 @@ const CreateTrail = () => {
       },
       data: {
         name,
+        description,
+        thumbnail,
         points
       }
     };
@@ -103,13 +107,13 @@ const CreateTrail = () => {
       setTempPoint({ longitude: lonLat[0], latitude: lonLat[1], coordinates: coordinates, id: Date.now() });
       setModalKey(modalKey => modalKey + 1);
       setModalOpen(true);
-      console.log("long: " + lonLat[0]);
+      /*console.log("long: " + lonLat[0]);
       console.log("lat: " + lonLat[1]);
       console.log("coords: " + coordinates);
       console.log("id: " + Date.now());
       console.log("tmp point: " + tempPoint);
       console.log("modal open? " + modalOpen);
-      console.log("------------------------");
+      console.log("------------------------");*/
     });
   }, []);  // empty array to ensure the map initializes only once
 
@@ -237,6 +241,14 @@ const CreateTrail = () => {
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Name</label>
           <input type='text' value={name} onChange={(e) => setName(e.target.value)} className='border-2 border-gray-500 px-4'></input>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Description</label>
+          <textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
+          <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
