@@ -1,19 +1,42 @@
 import mongoose from 'mongoose';
 
+const feedbackSchema = new mongoose.Schema({
+    correct: {
+        type: String,
+        required: true,
+    },
+    incorrect: {
+        type: String,
+        required: true,
+    }
+});
+
 const quizSchema = new mongoose.Schema({
     question: {
         type: String,
         required: true,
     },
+    questionImage: {
+        type: String,
+        required: false,
+    },
     type: {
         type: String,
         required: true,
-        enum: ['single', 'multiple', 'short-answer']
+        enum: ['single', 'multiple', 'short-answer', 'slider', 'pairs', 'order', 'foto']
+    },
+    points: {
+        type: Number,
+        required: false, // change to true after implementation
     },
     answers: [{
-        text: { type: String, required: true},
-        isCorrect: { type: Boolean, required: true}
-    }]
+        text: { type: String, required: false},
+        isCorrect: { type: Boolean, required: false},
+    }],
+    feedback: {
+        type: feedbackSchema,
+        required: false,
+    }
 });
 
 const poiSchema = new mongoose.Schema({
@@ -29,7 +52,14 @@ const poiSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    quiz: quizSchema,
+    content: { // this will be Poznatok 
+        type: String,
+        required: false,
+    },
+    quiz: { // this will be Interaktivny
+        type: quizSchema,
+        required: false,
+    }
 });
 
 const trailSchema = new mongoose.Schema(
@@ -45,6 +75,25 @@ const trailSchema = new mongoose.Schema(
         thumbnail: {
             type: String, // path to picture
             required: false, // for now
+        },
+        difficulty: {
+            type: String,
+            required: true,
+            enum: ['Easy', 'Moderate', 'Challenging', 'Difficult'],
+        },
+        locality: {
+            type: String,
+            required: true,
+            enum: ['Slovakia', 'Czech Republic', 'Spain', 'Other'],
+        },
+        season: {
+            type: String,
+            required: true,
+            enum: ['All Seasons', 'Spring', 'Summer', 'Autumn', 'Winter'],
+        },
+        length: { // lets try to count the length of the trail
+            type: Number,
+            default: 0,
         },
         rating: {
             type: Number,

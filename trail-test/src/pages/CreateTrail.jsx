@@ -29,6 +29,9 @@ const token = cookies.get("SESSION_TOKEN");
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [difficulty, setDifficulty] = useState('');
+  const [locality, setLocality] = useState('');
+  const [season, setSeason] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +57,9 @@ const CreateTrail = () => {
       data: {
         name,
         description,
+        difficulty,
+        locality,
+        season,
         thumbnail,
         points
       }
@@ -228,8 +234,7 @@ const CreateTrail = () => {
   return (
     <div className='p-4'>
       <BackButton></BackButton>
-      <h1 className='text-3xl my-4'>Create Trail</h1>
-      <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
+      <h1 className='text-3xl my-4'>Create Trail</h1>      
       {loading ? <Spinner /> : ''}
       <div className='flex flex-col'>
         {/* Display success message */}
@@ -247,9 +252,38 @@ const CreateTrail = () => {
           <textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>
         </div>
         <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
+          <select value={difficulty} onChange={e => setDifficulty(e.target.value)} >
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Challenging">Challenging</option>
+            <option value="Difficult">Difficult</option>
+          </select>  
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Season</label>
+          <select value={season} onChange={e => setSeason(e.target.value)} >
+            <option value="All Seasons">All Seasons</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+            <option value="Autumn">Autumn</option>
+            <option value="Winter">Winter</option>
+          </select>  
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Locality</label>
+          <select value={locality} onChange={e => setLocality(e.target.value)} >
+            <option value="Slovakia">Slovakia</option>
+            <option value="Czech Republic">Czech Republic</option>
+            <option value="Spain">Spain</option>
+            <option value="Other">Other</option>
+          </select>  
+        </div>
+        <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
           <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
         </div>
+        <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
           {/* Map container */}
