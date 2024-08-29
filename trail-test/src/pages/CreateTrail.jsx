@@ -29,9 +29,9 @@ const token = cookies.get("SESSION_TOKEN");
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [difficulty, setDifficulty] = useState('');
-  const [locality, setLocality] = useState('');
-  const [season, setSeason] = useState('');
+  const [difficulty, setDifficulty] = useState('Easy');
+  const [locality, setLocality] = useState('Slovakia');
+  const [season, setSeason] = useState('All Seasons');
   const [thumbnail, setThumbnail] = useState('');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -283,13 +283,8 @@ const CreateTrail = () => {
           <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
           <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
         </div>
-        <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
         <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
-          {/* Map container */}
-          <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
-        </div>
-        <div className='my-4'>
+        <label className='text-l mr-4 text-gray-500'>Map points:</label>
           <ul>
             {points.map(point => (
               <li key={point.id}>
@@ -300,6 +295,13 @@ const CreateTrail = () => {
             ))}
           </ul>
         </div>
+        <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
+          {/* Map container */}
+          <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
+        </div>
+        
         <button className='p-2 bg-sky-300 m-8' onClick={handleSaveTrail}>
           Save
         </button>

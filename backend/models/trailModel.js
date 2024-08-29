@@ -1,16 +1,5 @@
 import mongoose from 'mongoose';
 
-const feedbackSchema = new mongoose.Schema({
-    correct: {
-        type: String,
-        required: true,
-    },
-    incorrect: {
-        type: String,
-        required: true,
-    }
-});
-
 const quizSchema = new mongoose.Schema({
     question: {
         type: String,
@@ -31,11 +20,18 @@ const quizSchema = new mongoose.Schema({
     },
     answers: [{
         text: { type: String, required: false},
+        pairText: { type: String, required: false},
         isCorrect: { type: Boolean, required: false},
     }],
     feedback: {
-        type: feedbackSchema,
-        required: false,
+        correct: {
+            type: String,
+            required: true,
+        },
+        incorrect: {
+            type: String,
+            required: true,
+        }
     }
 });
 
