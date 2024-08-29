@@ -7,7 +7,7 @@ const PhotoComponent = ({ value, onChange }) => {
             <textarea
                 placeholder="Instructions"
                 value={value}
-                onChange={e => onChange(0, 'text', e.target.value)}
+                onChange={e => onChange(e.target.value)}
                 className='border-2 border-gray-500 px-4 mr-4'
             />
         </div>
