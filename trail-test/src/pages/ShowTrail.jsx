@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
 import PointModal from '../../components/PointModal';
@@ -27,43 +27,44 @@ const token = cookies.get("SESSION_TOKEN");
 const ShowTrail = () => {
     const [trail, setTrail] = useState(null);
     const [loading, setLoading] = useState(false);
-    const {id} = useParams();
+    const { id } = useParams();
     const mapRef = useRef(null); // reference map container
     const popupRef = useRef(null); // reference for popup overlay to show info on POI
     const [modalOpen, setModalOpen] = useState(false);
+    const [modalKey, setModalKey] = useState(0); // re-rendering the modal
     const [currentPoint, setCurrentPoint] = useState(null);
 
     useEffect(() => {
-      setLoading(true);
-      // set configurations for the API call here
-      const configuration = {
-        method: "get",
-        url: `http://localhost:5555/trails/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-  
-      // make the API call
-      axios(configuration)
-        .then((response) => {
-          setTrail(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-        });
+        setLoading(true);
+        // set configurations for the API call here
+        const configuration = {
+            method: "get",
+            url: `http://localhost:5555/trails/${id}`,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        };
+
+        // make the API call
+        axios(configuration)
+            .then((response) => {
+                setTrail(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+                setLoading(false);
+            });
     }, [id]);
 
     // map initializacion
     useEffect(() => {
-        if(trail && trail.points && trail.points.length>0) {
+        if (trail && trail.points && trail.points.length > 0) {
             // style of POI
             const defaultPointStyle = new Style({
                 image: new CircleStyle({
                     radius: 6,
-                    fill: new Fill({color: 'blue'}),
+                    fill: new Fill({ color: 'blue' }),
                     stroke: new Stroke({
                         color: 'white',
                         width: 2,
@@ -94,7 +95,7 @@ const ShowTrail = () => {
 
             // creater vector source and layer
             const vectorSource = new VectorSource({
-                features: [...pointFeatures, lineFeature],  
+                features: [...pointFeatures, lineFeature],
             });
 
             const vectorLayer = new VectorLayer({
@@ -103,7 +104,7 @@ const ShowTrail = () => {
 
             // mapping
             const map = new Map({
-                target: mapRef.current, 
+                target: mapRef.current,
                 layers: [
                     new TileLayer({
                         source: new OSM(), // openstreetmap base
@@ -112,7 +113,7 @@ const ShowTrail = () => {
                 ],
                 view: new View({
                     center: fromLonLat([trail.points[0].longitude, trail.points[0].latitude]),  // centers map on the first point
-                    zoom: 14, 
+                    zoom: 14,
                 }),
             });
 
@@ -125,21 +126,21 @@ const ShowTrail = () => {
             map.addOverlay(popupOverlay);*/
 
             // click event to highlight POI
-            map.on('click', function(evt){
-                const feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            map.on('click', function (evt) {
+                const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
                     return feature;
                 });
-                if(feature && feature.getGeometry() instanceof Point) {
+                if (feature && feature.getGeometry() instanceof Point) {
                     const pointData = feature.get('point');
                     if (pointData) {
                         setCurrentPoint(pointData); // Set the point data first
                         setModalOpen(true); // Then open the modal
-                     }
+                    }
                     feature.setStyle(new Style({
                         image: new CircleStyle({
                             radius: 8,
-                            fill: new Fill({color: 'red'}),
-                            stroke: new Stroke({color: 'white', width: 2}),
+                            fill: new Fill({ color: 'red' }),
+                            stroke: new Stroke({ color: 'white', width: 2 }),
                         }),
                     }));
                     //const coordinates = feature.getGeometry().getCoordinates();
@@ -155,25 +156,33 @@ const ShowTrail = () => {
         <div className='p-4'>
             <BackButton></BackButton>
             <h1 className='text-3xl my-4'>Show trail</h1>
-            <PointModal isOpen={modalOpen} onClose={() => setModalOpen(false)} editMode={false} pointData={currentPoint} quizMode={true}></PointModal>
             {loading ? (<Spinner></Spinner>) : trail ? (
-                <div className='flex flex-col border-2 border-sky-400 rounder-xl p-4'>
+                <div className='flex flex-col p-4'>
                     <div className='my-4'>
-                        <span className='text-xl mr-4 text-gray-500'>Id</span>
-                        <span>{trail._id}</span>
+                        <img src={trail.thumbnail} alt='Picture' style={{ width: '300px', height: 'auto' }}></img>
+                        <span className='text-xl mr-4 text-gray-500'>{trail.name}</span>
                     </div>
                     <div className='my-4'>
-                        <span className='text-xl mr-4 text-gray-500'>Name</span>
-                        <span>{trail.name}</span>
+                        <div dangerouslySetInnerHTML={{ __html: trail.description }} />
+                        {trail.length > 0 ? (
+                            <>
+                                Length: {trail.length.toFixed(2)} km
+                            </>
+                        ) : (<></>)}
                     </div>
                     <div className='my-4'>
-                        <span className='text-xl mr-4 text-gray-500'>Points</span>
+                        <span className='text-l text-gray-500 mr-4'>Difficulty: </span><span>{trail.difficulty}</span><br />
+                        <span className='text-l text-gray-500 mr-4'>Season: </span><span>{trail.season}</span><br />
+                        <span className='text-l text-gray-500 mr-4'>Locality: </span><span>{trail.locality}</span>
+                    </div>
+                    <div className='my-4'>
+                        <span className='text-xl mr-4 text-gray-500'>Points of Interest</span>
                         <span>
-                            {trail.points && trail.points.length>0 ? (
+                            {trail.points && trail.points.length > 0 ? (
                                 <ul>
                                     {trail.points.map((point, idx) => (
                                         <li key={point._id}>
-                                            {`Point ${idx + 1}: ${point.title} (${point.longitude}, ${point.latitude})`}
+                                            {`Point ${idx + 1}: ${point.title} (${point.longitude.toFixed(4)}, ${point.latitude.toFixed(4)})`}
                                         </li>
                                     ))}
                                 </ul>
@@ -182,12 +191,13 @@ const ShowTrail = () => {
                             )}
                         </span>
                     </div>
+                    <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} editMode={false} pointData={currentPoint} quizMode={true} quizEnabled={false}></PointModal>
                     {/* Map container */}
                     <div ref={mapRef} className='w-full h-96 mt-6 border-2 border-gray-300' />
                     {/* Popup container for point titles */}
                     <div ref={popupRef} className='ol-popup'></div>
                 </div>
-            ): (
+            ) : (
                 <div>No Trail Data Available</div>
             )}
         </div>

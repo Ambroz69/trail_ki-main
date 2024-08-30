@@ -23,13 +23,15 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
     useEffect(() => { // if in quiz mode you need the point information and populate the modal
         if (pointData && quizMode) {
             setTitle(pointData.title);
-            setQuestion(pointData.quiz.question);
-            setQuizType(pointData.quiz.type);
-            setAnswers(pointData.quiz.answers);
-            setPpoints(pointData.quiz.points);
             setContent(pointData.content);
-            setCorrectFeedback(pointData.quiz.feedback.correct || null);
-            setIncorrectFeedback(pointData.quiz.feedback.incorrect || null);
+            if (pointData.quiz) {
+                setQuestion(pointData.quiz.question);
+                setQuizType(pointData.quiz.type);
+                setAnswers(pointData.quiz.answers);
+                setPpoints(pointData.quiz.points);
+                setCorrectFeedback(pointData.quiz.feedback.correct || null);
+                setIncorrectFeedback(pointData.quiz.feedback.incorrect || null);
+            }
         }
     }, [pointData]);
 
@@ -152,39 +154,68 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
             <div className="my-4 flex flex-col">
                 <span className="close" onClick={onClose}>&times;</span>
                 <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Interaction title</label>
-                    <input type="text" placeholder="Point Title" value={title} onChange={e => setTitle(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
+                    {!quizMode ? (
+                        <>
+                            <label className='text-l mr-4 text-gray-500'>Interaction title</label>
+                            <input type="text" placeholder="Point Title" value={title} onChange={e => setTitle(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
+                        </>
+                    ) : (
+                        <>
+                            <span className='text-xl mr-4 text-gray-500'>{title}</span>
+                        </>
+                    )}
                 </div>
                 <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Content</label>
-                    <textarea placeholder="Content for this point" value={content} onChange={e => setContent(e.target.value)} className='border-2 border-gray-500 px-4' rows="4" readOnly={quizMode} />
+                    {!quizMode ? (
+                        <>
+                            <label className='text-l mr-4 text-gray-500'>Content</label>
+                            <textarea placeholder="Content for this point" value={content} onChange={e => setContent(e.target.value)} className='border-2 border-gray-500 px-4' rows="4" readOnly={quizMode} />
+                        </>
+                    ) : (
+                        <div dangerouslySetInnerHTML={{ __html: content }} />
+                    )}
                 </div>
                 <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Include Quiz?</label>
-                    <input type="checkbox" checked={quizEnabled} onChange={e => setQuizEnabled(e.target.checked)} disabled={quizMode} />
+                    {!quizMode ? (
+                        <>
+                            <label className='text-l mr-4 text-gray-500'>Include Quiz/Task?</label>
+                            <input type="checkbox" checked={quizEnabled} onChange={e => setQuizEnabled(e.target.checked)} disabled={quizMode} />
+                        </>
+                    ) : (
+                        <>
+                            {pointData.quiz ? (
+                                <>
+                                    <span className='text-xl mr-4 text-gray-500'>Task ({ppoints} points)</span><br />
+                                    <div className="my-2">
+                                        <span className='text-l mr-4'><strong>{question}</strong></span>
+                                    </div>
+                                </>
+                            ) : (<></>)}
+                        </>
+                    )}
                 </div>
                 {quizEnabled && !quizMode && ( // edit-mode by creation or editing
                     <>
-                <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Question/Task </label>
-                    <input type="text" placeholder="Question" value={question} onChange={e => setQuestion(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
-                </div>
-                <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Points per Question/Task </label>
-                    <input type="number" placeholder="Points for question" value={ppoints} min="0" max="100" onChange={e => setPpoints(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
-                </div>
-                <div className='my-4'>
-                    <label className='text-l mr-4 text-gray-500'>Type of Question/Task </label>
-                    <select value={quizType} onChange={e => setQuizType(e.target.value)} disabled={quizMode}>
-                        <option value="single">Single Correct Answer</option>
-                        <option value="multiple">Multiple Correct Answers</option>
-                        <option value="short-answer">Short Answer</option>
-                        <option value="slider">Slider</option>
-                        <option value="pairs">Pairs</option>
-                        <option value="order">Ordering</option>
-                        <option value="foto">Make a photo</option>
-                    </select>
-                </div>
+                        <div className='my-4'>
+                            <label className='text-l mr-4 text-gray-500'>Question/Task </label>
+                            <input type="text" placeholder="Question" value={question} onChange={e => setQuestion(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
+                        </div>
+                        <div className='my-4'>
+                            <label className='text-l mr-4 text-gray-500'>Points per Question/Task </label>
+                            <input type="number" placeholder="Points for question" value={ppoints} min="0" max="100" onChange={e => setPpoints(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
+                        </div>
+                        <div className='my-4'>
+                            <label className='text-l mr-4 text-gray-500'>Type of Question/Task </label>
+                            <select value={quizType} onChange={e => setQuizType(e.target.value)} disabled={quizMode}>
+                                <option value="single">Single Correct Answer</option>
+                                <option value="multiple">Multiple Correct Answers</option>
+                                <option value="short-answer">Short Answer</option>
+                                <option value="slider">Slider</option>
+                                <option value="pairs">Pairs</option>
+                                <option value="order">Ordering</option>
+                                <option value="foto">Make a photo</option>
+                            </select>
+                        </div>
                         {(() => {
                             switch (quizType) {
                                 case 'short-answer':
@@ -257,28 +288,72 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                         </div>
                     </>
                 )}
-                {quizMode && quizEnabled && ( // quiz mode
-                    quizType === 'short-answer' ? ( 
-                        answers.map((answer, index) => (
-                            <div className='my-4' key={answer._id || index}>
-                                <input type="text" checked={userSelections[answer._id] || ''} onChange={(e) => handleInputChange(answer._id, e.target.value)} placeholder="Type your answer" className='border-2 border-gray-500 px-4' />
-                            </div>
-                        ))
-                    ) : (
-                        shuffledAnswers.map((answer, index) => (
-                            <div className='my-4' key={answer._id || index}>
-                                {quizType === 'multiple' ?
-                                    <label>
-                                        <input type="checkbox" checked={!!userSelections[answer._id]} onChange={() => handleSelectionChange(answer._id)} /> {answer.text}
-                                    </label>
-                                    :
-                                    <label>
-                                        <input type="radio" name='singleChoice' checked={userSelections[answer._id] === true} onChange={() => handleSelectionChange(answer._id)} /> {answer.text}
-                                    </label>
-                                }
-                            </div>
-                        ))
-                    )
+                {quizMode && pointData.quiz && ( // quiz mode
+                    (() => {
+                        switch (quizType) {
+                            case 'short-anwser':
+                                return (
+                                    answers.map((answer, index) => (
+                                        <div className='my-4' key={answer._id || index}>
+                                            <input type="text" checked={userSelections[answer._id] || ''} onChange={(e) => handleInputChange(answer._id, e.target.value)} placeholder="Type your answer" className='border-2 border-gray-500 px-4' />
+                                        </div>
+                                    ))
+                                );
+                            case 'single':
+                            case 'multiple':
+                                return (
+                                    shuffledAnswers.map((answer, index) => (
+                                        <div className='my-4' key={answer._id || index}>
+                                            {quizType === 'multiple' ?
+                                                <label>
+                                                    <input type="checkbox" checked={!!userSelections[answer._id]} onChange={() => handleSelectionChange(answer._id)} /> {answer.text}
+                                                </label>
+                                                :
+                                                <label>
+                                                    <input type="radio" name='singleChoice' checked={userSelections[answer._id] === true} onChange={() => handleSelectionChange(answer._id)} /> {answer.text}
+                                                </label>
+                                            }
+                                        </div>
+                                    ))
+                                );
+                            case 'slider':
+                                return (
+                                    <SliderComponent
+                                        value={sliderValue}
+                                        onChange={value => setSliderValue(value)}
+                                    />
+                                );
+                            case 'pairs':
+                                return (
+                                    <>
+                                        <PairsComponent
+                                            answers={answers}
+                                            handleChangeAnswer={handleChangeAnswer}
+                                            handleRemoveAnswer={handleRemoveAnswer}
+                                        />
+                                    </>
+                                );
+                            case 'order':
+                                return (
+                                    <>
+                                        <OrderComponent
+                                            answers={answers}
+                                            handleChangeAnswer={handleChangeAnswer}
+                                            handleRemoveAnswer={handleRemoveAnswer}
+                                        />
+                                    </>
+                                );
+                            case 'foto':
+                                return (
+                                    <PhotoComponent
+                                        value={answers[0].text}
+                                        onChange={value => handleChangeAnswer(0, 'text', value)}
+                                    />
+                                );
+                            default:
+                                return null;
+                        }
+                    })()
                 )}
                 {quizMode ? (
                     <button className='p-2 bg-sky-300 m-4' onClick={evaluateAnswers}>Check Answers</button>
