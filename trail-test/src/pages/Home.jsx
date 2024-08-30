@@ -138,12 +138,11 @@ const Home = () => {
                 <td>{trail.name}</td>
                 <td>
                   <div dangerouslySetInnerHTML={{ __html: trail.description }} />
-                  <br />
-                  {trail.length>0 ? ( 
-                  <>
-                  Length: {trail.length.toFixed(2)} km
-                  </>
-                  ):(<></>)}
+                  {trail.length > 0 ? (
+                    <div className='my-2'>
+                      Length: {trail.length.toFixed(2)} km
+                    </div>
+                  ) : (<></>)}
                 </td>
                 <td>
                   {trail.points && trail.points.length > 0 ? (
