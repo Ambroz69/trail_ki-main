@@ -48,8 +48,36 @@ const CreateTrail = () => {
   const [currentPoint, setCurrentPoint] = useState(null);
   const { quill, quillRef } = useQuill();
 
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const toRadians = (degrees) => degrees * Math.PI / 180;
+
+    const R = 6371; // Radius of Earth in kilometers
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  }
+
+  function calculateTrailLength(points) {
+    let totalLength = 0;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const point1 = points[i];
+      const point2 = points[i + 1];
+      const distance = haversineDistance(point1.latitude, point1.longitude, point2.latitude, point2.longitude);
+      totalLength += distance;
+    }
+
+    return totalLength; // Length in kilometers
+  }
+
   const handleSaveTrail = () => {
     setLoading(true);
+    let trailLength = calculateTrailLength(points);
     // set configurations for the API call here
     const configuration = {
       method: "post",
@@ -64,6 +92,7 @@ const CreateTrail = () => {
         locality,
         season,
         thumbnail,
+        length: trailLength,
         points
       }
     };
@@ -215,7 +244,7 @@ const CreateTrail = () => {
   return (
     <div className='p-4'>
       <BackButton></BackButton>
-      <h1 className='text-3xl my-4'>Create Trail</h1>      
+      <h1 className='text-3xl my-4'>Create Trail</h1>
       {loading ? <Spinner /> : ''}
       <div className='flex flex-col'>
         {/* Display success message */}
@@ -240,7 +269,7 @@ const CreateTrail = () => {
             <option value="Moderate">Moderate</option>
             <option value="Challenging">Challenging</option>
             <option value="Difficult">Difficult</option>
-          </select>  
+          </select>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Season</label>
@@ -250,7 +279,7 @@ const CreateTrail = () => {
             <option value="Summer">Summer</option>
             <option value="Autumn">Autumn</option>
             <option value="Winter">Winter</option>
-          </select>  
+          </select>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Locality</label>
@@ -259,14 +288,14 @@ const CreateTrail = () => {
             <option value="Czech Republic">Czech Republic</option>
             <option value="Spain">Spain</option>
             <option value="Other">Other</option>
-          </select>  
+          </select>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
           <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
         </div>
         <div className='my-4'>
-        <label className='text-l mr-4 text-gray-500'>Map points:</label>
+          <label className='text-l mr-4 text-gray-500'>Map points:</label>
           <ul>
             {points.map(point => (
               <li key={point.id}>
@@ -283,7 +312,7 @@ const CreateTrail = () => {
           {/* Map container */}
           <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
         </div>
-        
+
         <button className='p-2 bg-sky-300 m-8' onClick={handleSaveTrail}>
           Save
         </button>

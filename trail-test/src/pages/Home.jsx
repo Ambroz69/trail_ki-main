@@ -81,16 +81,16 @@ const Home = () => {
     axios.put(`http://localhost:5555/trails/publish/${trailToPublish}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    .then(response => {
-      setTrail(trails.map(trail => trail._id === trailToPublish ? { ...trail, published: true } : trail));
-      setLoading(false);
-      handleCloseModal();
-    })
-    .catch(error => {
-      console.log(error);
-      setLoading(false);
-      handleCloseModal();
-    });
+      .then(response => {
+        setTrail(trails.map(trail => trail._id === trailToPublish ? { ...trail, published: true } : trail));
+        setLoading(false);
+        handleCloseModal();
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+        handleCloseModal();
+      });
   };
 
   const handleConfirmClone = () => {
@@ -98,16 +98,16 @@ const Home = () => {
     axios.post(`http://localhost:5555/trails/clone/${trailToClone}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    .then(response => {
-      setTrail([...trails, response.data.trail]);
-      setLoading(false);
-      handleCloseCloneModal();
-    })
-    .catch(error => {
-      console.log(error);
-      setLoading(false);
-      handleCloseCloneModal();
-    });
+      .then(response => {
+        setTrail([...trails, response.data.trail]);
+        setLoading(false);
+        handleCloseCloneModal();
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+        handleCloseCloneModal();
+      });
   };
 
   return (
@@ -134,9 +134,17 @@ const Home = () => {
             {trails.map((trail, index) => (
               <tr key={trail._id} className='h-8'>
                 <td>{index + 1}</td>
-                <td><img src={trail.thumbnail} alt='Picture' style={{ width: '100px', height: 'auto' }}></img></td>                              
+                <td><img src={trail.thumbnail} alt='Picture' style={{ width: '100px', height: 'auto' }}></img></td>
                 <td>{trail.name}</td>
-                <td><div dangerouslySetInnerHTML={{ __html: trail.description }} /></td>
+                <td>
+                  <div dangerouslySetInnerHTML={{ __html: trail.description }} />
+                  <br />
+                  {trail.length>0 ? ( 
+                  <>
+                  Length: {trail.length.toFixed(2)} km
+                  </>
+                  ):(<></>)}
+                </td>
                 <td>
                   {trail.points && trail.points.length > 0 ? (
                     <ul>
@@ -156,8 +164,8 @@ const Home = () => {
                     {trail.published ? (
                       <AiFillCheckCircle className='text-2xl text-green-800' />
                     ) : (
-                      <AiOutlineCheckCircle className='text-2xl text-green-800' onClick={() => handleOpenModal(trail._id)}  />
-                    )}                    
+                      <AiOutlineCheckCircle className='text-2xl text-green-800' onClick={() => handleOpenModal(trail._id)} />
+                    )}
                     <Link to={`/trails/details/${trail._id}`}><BsInfoCircle className='text-2xl text-blue-800' /></Link>
                     <Link to={`/trails/edit/${trail._id}`}><AiOutlineEdit className='text-2xl text-yellow-600' /></Link>
                     <Link to={`/trails/remove/${trail._id}`}><MdOutlineDelete className='text-2xl text-red-600' /></Link>
@@ -168,17 +176,17 @@ const Home = () => {
           </tbody>
         </table>
       )}
-      <ConfirmationModal 
-        isOpen={modalOpen} 
-        onClose={handleCloseModal} 
-        onConfirm={handleConfirmPublish} 
-        message="Are you sure you want to publish this trail?" 
+      <ConfirmationModal
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmPublish}
+        message="Are you sure you want to publish this trail?"
       />
-      <ConfirmationModal 
-        isOpen={cloneModalOpen} 
-        onClose={handleCloseCloneModal} 
-        onConfirm={handleConfirmClone} 
-        message="Are you sure you want to clone this trail?" 
+      <ConfirmationModal
+        isOpen={cloneModalOpen}
+        onClose={handleCloseCloneModal}
+        onConfirm={handleConfirmClone}
+        message="Are you sure you want to clone this trail?"
       />
     </div>
   )

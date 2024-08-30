@@ -7,8 +7,8 @@ const router = express.Router();
 // Route to Save a new Trail
 router.post('/', auth, async (request, response) => {
     try {
-        const { name, description, thumbnail, difficulty, locality, season, points } = request.body;
-        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season, points});
+        const { name, description, thumbnail, difficulty, locality, season, length, points } = request.body;
+        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season,  length, points});
         await newTrail.save();
         return response.status(201).send(newTrail);
     } catch(error) {
