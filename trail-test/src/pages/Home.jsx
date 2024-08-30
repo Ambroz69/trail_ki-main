@@ -136,7 +136,7 @@ const Home = () => {
                 <td>{index + 1}</td>
                 <td><img src={trail.thumbnail} alt='Picture' style={{ width: '100px', height: 'auto' }}></img></td>                              
                 <td>{trail.name}</td>
-                <td>{trail.description}</td>
+                <td><div dangerouslySetInnerHTML={{ __html: trail.description }} /></td>
                 <td>
                   {trail.points && trail.points.length > 0 ? (
                     <ul>

@@ -6,6 +6,8 @@ import PointModal from '../../components/PointModal';
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineDelete } from 'react-icons/md';
 import { AiOutlineEdit } from 'react-icons/ai';
+import { useQuill } from 'react-quilljs';
+import 'quill/dist/quill.snow.css';
 
 // openlayers components
 import 'ol/ol.css';
@@ -44,6 +46,7 @@ const CreateTrail = () => {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
+  const { quill, quillRef } = useQuill();
 
   const handleSaveTrail = () => {
     setLoading(true);
@@ -80,6 +83,20 @@ const CreateTrail = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (quill) {
+      quill.clipboard.dangerouslyPasteHTML(description);
+      quill.on('text-change', (delta, oldDelta, source) => {
+        //console.log('Text change!');
+        //console.log(quill.getText()); // Get text only
+        //console.log(quill.getContents()); // Get delta contents
+        //console.log(quill.root.innerHTML); // Get innerHTML using quill
+        //console.log(quillRef.current.firstChild.innerHTML); // Get innerHTML using quillRef
+        setDescription(quill.root.innerHTML);
+      });
+    }
+  }, [quill]);
 
   useEffect(() => {
     // Initialize the map once (not every time the points state changes)
@@ -190,42 +207,6 @@ const CreateTrail = () => {
       updateMapPoints([...points, point]);
     }
 
-    // create a point feature and add to the map
-    /*const pointFeature = new Feature({
-        geometry: new Point(tempPoint.coordinates),
-    });
-
-    pointFeature.setStyle(
-        new Style({
-            image: new CircleStyle({
-                radius: 6,
-                fill: new Fill({ color: 'blue' }),
-                stroke: new Stroke({
-                    color: 'white',
-                    width: 2,
-                }),
-            }),
-        })
-    );
-    vectorSourceRef.current.addFeature(pointFeature);
-
-    // draw a line connecting points
-    if (points.length > 0) {
-        const lineCoordinates = [...points.map(p => fromLonLat([p.longitude, p.latitude])), tempPoint.coordinates];
-        const lineFeature = new Feature({
-            geometry: new LineString(lineCoordinates),
-        });
-
-        lineFeature.setStyle(
-            new Style({
-                stroke: new Stroke({
-                    color: 'green',
-                    width: 2,
-                }),
-            })
-        );
-        vectorSourceRef.current.addFeature(lineFeature);
-    }*/
     setModalOpen(false);
     setEditMode(false);
     setCurrentPoint(null);
@@ -249,7 +230,8 @@ const CreateTrail = () => {
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Description</label>
-          <textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>
+          {/*<textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>*/}
+          <div style={{ width: 500 }}><div ref={quillRef} /></div>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
