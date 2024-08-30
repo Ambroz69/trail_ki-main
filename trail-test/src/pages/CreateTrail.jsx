@@ -246,7 +246,7 @@ const CreateTrail = () => {
       <BackButton></BackButton>
       <h1 className='text-3xl my-4'>Create Trail</h1>
       {loading ? <Spinner /> : ''}
-      <div className='flex flex-col'>
+      <div className='flex flex-col p-4'>
         {/* Display success message */}
         {successMessage && (
           <div className='bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3'>
