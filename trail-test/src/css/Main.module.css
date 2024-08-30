@@ -1,0 +1,27 @@
+.form_width {
+  width: 60% !important;
+}
+
+h2.login_header {
+  margin-top: 3rem;
+  font-size: 1.5rem;
+}
+
+button.login_button {
+  background-color: #1976D3;
+  color: #fff;
+  font-weight: 400;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+a.forgot_pass_link {
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: #1976D3;
+}
+
+img.footer_img {
+  object-fit: contain;
+
+}

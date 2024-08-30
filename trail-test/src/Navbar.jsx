@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
+//const token = cookies.get("SESSION_TOKEN");
 
 function Navbar() {
   // adding the states 
@@ -24,8 +25,10 @@ function Navbar() {
     window.location.href = "/";
   }
 
+  const [token, setToken] = useState(cookies.get("SESSION_TOKEN"));
+
   return (
-    <div className="App">
+    <div className="App" style={{display: (token ? 'block' : 'none')}}>
       <header className="App-header">
         <nav className={`${styles.navbar}`}>
           {/* logo */}
