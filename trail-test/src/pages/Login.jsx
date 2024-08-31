@@ -59,6 +59,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="E-mail"
+                  required
                 />
               </Form.Group>
 
@@ -71,6 +72,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Heslo"
+                  required
                 />
               </Form.Group>
               <div className="d-flex flex-row justify-content-between mt-3">

@@ -25,3 +25,7 @@ img.footer_img {
   object-fit: contain;
 
 }
+
+.fix_align {
+  margin-bottom: -0.1rem;
+}
