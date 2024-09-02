@@ -33,21 +33,27 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                 setIncorrectFeedback(pointData.quiz.feedback.incorrect || null);
             }
         }
-    }, [pointData]);
+    }, [pointData, quizMode]);
 
-    useEffect(() => { // Reset answers when quizType changes
-        resetAnswers();
+    useEffect(() => {
+        if (quizType !== 'pairs' && quizType !== 'order') {
+            resetAnswers();  // Only rset if it's not pairs to prevent overwriting when switching modes
+        }
     }, [quizType]);
 
     useEffect(() => { // shuffle the answers only once
-        if (answers.length > 0) {
+        if (answers.length > 0 && quizMode) {
+            console.log('zmena');
             setShuffledAnswers(shuffleAnswers([...answers]));
         }
-    }, [answers]);
+    }, [quizMode, answers]);
 
     const resetAnswers = () => {
         setAnswers([{ text: '', isCorrect: false }]);
         setSliderValue(50); // Reset slider value for slider type
+        if (quizType === 'pairs') {
+            setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
+        }
     };
 
     const handleAddAnswer = () => {
@@ -66,6 +72,18 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
             return answer;
         });
         setAnswers(updatedAnswers);
+    };
+
+    const handleDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const reorderedAnswers = Array.from(answers);
+        const [movedAnswer] = reorderedAnswers.splice(result.source.index, 1);
+        reorderedAnswers.splice(result.destination.index, 0, movedAnswer);
+
+        setAnswers(reorderedAnswers);
+        
+        console.log('drag');
     };
 
     const handleSave = () => {
@@ -327,21 +345,23 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                                 return (
                                     <>
                                         <PairsComponent
-                                            answers={answers}
+                                            answers={quizMode ? shuffledAnswers : answers}
                                             handleChangeAnswer={handleChangeAnswer}
                                             handleRemoveAnswer={handleRemoveAnswer}
+                                            onDragEnd={handleDragEnd}
+                                            quizMode={quizMode}
                                         />
                                     </>
                                 );
                             case 'order':
                                 return (
-                                    <>
                                         <OrderComponent
-                                            answers={answers}
+                                            answers={quizMode ? shuffledAnswers : answers}
                                             handleChangeAnswer={handleChangeAnswer}
                                             handleRemoveAnswer={handleRemoveAnswer}
+                                            onDragEnd={handleDragEnd}
+                                            quizMode={quizMode}
                                         />
-                                    </>
                                 );
                             case 'foto':
                                 return (
