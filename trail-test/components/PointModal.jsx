@@ -16,6 +16,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
     const [correctFeedback, setCorrectFeedback] = useState('');
     const [incorrectFeedback, setIncorrectFeedback] = useState('');
     const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
+    const [previousAnswers, setPreviousAnswers] = useState({}); // Store previous answers for each quiz type
     const [shuffledAnswers, setShuffledAnswers] = useState([]); // to have the answers shuffled for quiz mode
     const [userSelections, setUserSelections] = useState([]); // what answers the user selected in quiz mode
     const [quizEnabled, setQuizEnabled] = useState(false); // create quiz?
@@ -37,22 +38,29 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
 
     useEffect(() => {
         if (quizType !== 'pairs' && quizType !== 'order') {
-            resetAnswers();  // Only rset if it's not pairs to prevent overwriting when switching modes
+            // Only reset if it's not pairs to prevent overwriting when switching modes
+            if (quizType in previousAnswers) {
+                setAnswers(previousAnswers[quizType]);
+            } else {
+                resetAnswers();
+            }
         }
     }, [quizType]);
 
     useEffect(() => { // shuffle the answers only once
         if (answers.length > 0 && quizMode) {
-            console.log('zmena');
+            //console.log('zmena');
             setShuffledAnswers(shuffleAnswers([...answers]));
         }
     }, [quizMode, answers]);
 
     const resetAnswers = () => {
-        setAnswers([{ text: '', isCorrect: false }]);
-        setSliderValue(50); // Reset slider value for slider type
-        if (quizType === 'pairs') {
-            setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
+        if (!previousAnswers[quizType]) {
+            setAnswers([{ text: '', isCorrect: true }]);
+            if (quizType === 'pairs') {
+                setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
+            }
+            setSliderValue(50); // Reset slider value for slider type
         }
     };
 
@@ -72,6 +80,8 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
             return answer;
         });
         setAnswers(updatedAnswers);
+        // Store the updated answers to preserve them when switching types
+        setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
     };
 
     const handleDragEnd = (result) => {
@@ -83,7 +93,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
 
         setAnswers(reorderedAnswers);
         
-        console.log('drag');
+        //console.log('drag');
     };
 
     const handleSave = () => {
@@ -319,6 +329,8 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                                 );
                             case 'single':
                             case 'multiple':
+                                
+                                {console.log(shuffledAnswers)}
                                 return (
                                     shuffledAnswers.map((answer, index) => (
                                         <div className='my-4' key={answer._id || index}>
@@ -334,6 +346,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                                         </div>
                                     ))
                                 );
+                                
                             case 'slider':
                                 return (
                                     <SliderComponent

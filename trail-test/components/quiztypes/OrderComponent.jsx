@@ -33,7 +33,11 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                                 }}
                             >
                                 {answers.map((answer, index) => (
-                                    <Draggable key={answer._id} draggableId={answer._id} index={index}>
+                                    <Draggable
+                                        key={answer._id}
+                                        draggableId={answer._id}
+                                        index={index}
+                                    >
                                         {(provided, snapshot) => (
                                             <div
                                                 ref={provided.innerRef}
