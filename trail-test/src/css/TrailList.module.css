@@ -1,0 +1,25 @@
+tr.table_header th {
+  background-color: #F3F3F3 !important;
+  color: #B5B5B7 !important;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+tr.table_data td {
+  font-weight: 500;
+}
+
+button.status_published {
+  color: #7FCD8D !important;
+  background-color: #F3FAF7 !important;
+  border: 1px solid #7FCD8D !important;
+  border-radius: 0.5rem;
+}
+
+button.status_draft {
+  color: #E3C586 !important;
+  background-color: #FFFAEB !important;
+  border: 1px solid #E3C586 !important;
+  border-radius: 0.5rem;
+}

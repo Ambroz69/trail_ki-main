@@ -7,6 +7,9 @@ import { AiOutlineCopy, AiFillCheckCircle, AiOutlineCheckCircle, AiOutlineEdit }
 import { BsInfoCircle } from 'react-icons/bs';
 import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
 import Cookies from "universal-cookie";
+import Navbar from '../Navbar';
+import styles from '../css/TrailList.module.css';
+import backup_trail_image from '../assets/backup_trail_image.png';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -48,7 +51,6 @@ const Home = () => {
       .then((response) => {
         setTrail(response.data.data);
         setLoading(false);
-        //setMessage(response.data.message);
       })
       .catch((error) => {
         console.log(error);
@@ -110,84 +112,97 @@ const Home = () => {
       });
   };
 
+  const addDefaultImg = event => {
+    event.target.src = backup_trail_image;
+  }
+
   return (
-    <div className='p-4'>
-      <div className='flex justify-between items-center'>
-        <h1 className='text-3xl my-8'>Trails list</h1>
-        <Link to='/trails/create'><MdOutlineAddBox className='text-sky-800 text-4xl' /></Link>
+    <div className='d-flex container container-fluid mx-0 px-0'>
+      <div className='col-3'>
+        <Navbar />
       </div>
-      {loading ? (
-        <Spinner></Spinner>
-      ) : (
-        <table className='w-full border-separate border-spacing-2'>
-          <thead>
-            <tr>
-              <th className='border border-slate-600 rounded-md'>No</th>
-              <th className='border border-slate-600 rounded-md'>Image</th>
-              <th className='border border-slate-600 rounded-md'>Trail</th>
-              <th className='border border-slate-600 rounded-md'>Description</th>
-              <th className='border border-slate-600 rounded-md max-md:hidden'>Points</th>
-              <th className='border border-slate-600 rounded-md'>Operations</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trails.map((trail, index) => (
-              <tr key={trail._id} className='h-8'>
-                <td>{index + 1}</td>
-                <td><img src={trail.thumbnail} alt='Picture' style={{ width: '100px', height: 'auto' }}></img></td>
-                <td>{trail.name}</td>
-                <td>
-                  <div dangerouslySetInnerHTML={{ __html: trail.description }} />
-                  {trail.length > 0 ? (
-                    <div className='my-2'>
-                      Length: {trail.length.toFixed(2)} km
-                    </div>
-                  ) : (<></>)}
-                </td>
-                <td>
-                  {trail.points && trail.points.length > 0 ? (
-                    <ul>
-                      {trail.points.map((point, idx) => (
-                        <li key={point._id}>
-                          {`Point ${idx + 1}: ${point.title} (${point.longitude}, ${point.latitude})`}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span>No Points</span>
-                  )}
-                </td>
-                <td>
-                  <div className='flex justify-center gap-x-4'>
-                    <AiOutlineCopy className='text-2xl text-gray-600' onClick={() => handleOpenCloneModal(trail._id)} />
-                    {trail.published ? (
-                      <AiFillCheckCircle className='text-2xl text-green-800' />
-                    ) : (
-                      <AiOutlineCheckCircle className='text-2xl text-green-800' onClick={() => handleOpenModal(trail._id)} />
-                    )}
-                    <Link to={`/trails/details/${trail._id}`}><BsInfoCircle className='text-2xl text-blue-800' /></Link>
-                    <Link to={`/trails/edit/${trail._id}`}><AiOutlineEdit className='text-2xl text-yellow-600' /></Link>
-                    <Link to={`/trails/remove/${trail._id}`}><MdOutlineDelete className='text-2xl text-red-600' /></Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      <ConfirmationModal
-        isOpen={modalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmPublish}
-        message="Are you sure you want to publish this trail?"
-      />
-      <ConfirmationModal
-        isOpen={cloneModalOpen}
-        onClose={handleCloseCloneModal}
-        onConfirm={handleConfirmClone}
-        message="Are you sure you want to clone this trail?"
-      />
+      <div className='col-9 w-100'>
+        <div className='py-4 ps-4'>
+          <div className='flex justify-between items-center'>
+            <h1 className='text-3xl my-8'>Trail Management</h1>
+            <Link to='/trails/create'><MdOutlineAddBox className='text-sky-800 text-4xl' /></Link>
+          </div>
+          {loading ? (
+            <Spinner></Spinner>
+          ) : (
+            <table className='table table-striped table-hover align-middle'>
+              <thead>
+                <tr className={`${styles.table_header}`}>
+                  <th className='ps-5'>No.</th>
+                  <th className=''>Trail</th>
+                  <th className=''>Length</th>
+                  <th className=''>Difficulty</th>
+                  <th className=''>Location</th>
+                  <th className=''>Status</th>
+                  <th className=''>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {trails.map((trail, index) => (
+                  <tr key={trail._id} className={`${styles.table_data}`}>
+                    <td className='ps-5'>{index + 1}</td>
+                    <td>
+                      <div className='d-flex align-items-center'>
+                        {/* <img src={trail.thumbnail} alt='trail_thumbnail' style={{ width: '4rem', height: '4rem' }} className='me-2' onerror="this.src=${};"></img> */}
+                        <img src={trail.thumbnail} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg}/>
+                        {trail.name}
+                      </div>
+                    </td>
+                    <td>
+                      {trail.length.toFixed(2)} km
+                    </td>
+                    <td>
+                      {trail.difficulty}
+                    </td>
+                    <td>
+                      {trail.locality}
+                    </td>
+                    <td>
+                      {trail.published ? (
+                        <button className={`${styles.status_published} btn disabled`}>Published</button>
+                      ) : (
+                        <button className={`${styles.status_draft} btn disabled`}>Draft</button>
+                      )}
+                    </td>
+                    <td>
+                      <div className='flex justify-start gap-x-2'>
+                        <AiOutlineCopy className='text-2xl text-gray-600' onClick={() => handleOpenCloneModal(trail._id)} />
+                        {trail.published ? (
+                          <AiFillCheckCircle className='text-2xl text-green-800' />
+                        ) : (
+                          <AiOutlineCheckCircle className='text-2xl text-green-800' onClick={() => handleOpenModal(trail._id)} />
+                        )}
+                        <Link to={`/trails/details/${trail._id}`}><BsInfoCircle className='text-2xl text-blue-800' /></Link>
+                        <Link to={`/trails/edit/${trail._id}`}><AiOutlineEdit className='text-2xl text-yellow-600' /></Link>
+                        <Link to={`/trails/remove/${trail._id}`}><MdOutlineDelete className='text-2xl text-red-600' /></Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <ConfirmationModal
+            isOpen={modalOpen}
+            onClose={handleCloseModal}
+            onConfirm={handleConfirmPublish}
+            message="Are you sure you want to publish this trail?"
+          />
+          <ConfirmationModal
+            isOpen={cloneModalOpen}
+            onClose={handleCloseCloneModal}
+            onConfirm={handleConfirmClone}
+            message="Are you sure you want to clone this trail?"
+          />
+        </div>
+      </div>
     </div>
+
   )
 };
 

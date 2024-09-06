@@ -34,7 +34,7 @@ const CreateTrail = () => {
   const [difficulty, setDifficulty] = useState('Easy');
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
-  const [thumbnail, setThumbnail] = useState('');
+  const [thumbnail, setThumbnail] = useState('-');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
