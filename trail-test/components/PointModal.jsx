@@ -21,8 +21,8 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
     const [userSelections, setUserSelections] = useState([]); // what answers the user selected in quiz mode
     const [quizEnabled, setQuizEnabled] = useState(false); // create quiz?
 
-    useEffect(() => { // if in quiz mode you need the point information and populate the modal
-        if (pointData && quizMode) {
+    useEffect(() => { // if in quiz mode you need the point information and populate the modal        
+        if (pointData) {
             setTitle(pointData.title);
             setContent(pointData.content);
             if (pointData.quiz) {
@@ -32,6 +32,9 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                 setPpoints(pointData.quiz.points);
                 setCorrectFeedback(pointData.quiz.feedback.correct || null);
                 setIncorrectFeedback(pointData.quiz.feedback.incorrect || null);
+            }
+            if(!quizMode) {
+                setQuizEnabled(true);
             }
         }
     }, [pointData, quizMode]);
@@ -183,7 +186,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                 <span className="close" onClick={onClose}>&times;</span>
                 <div className='my-4'>
                     {!quizMode ? (
-                        <>
+                        <>                    
                             <label className='text-l mr-4 text-gray-500'>Interaction title</label>
                             <input type="text" placeholder="Point Title" value={title} onChange={e => setTitle(e.target.value)} className='border-2 border-gray-500 px-4' readOnly={quizMode} />
                         </>

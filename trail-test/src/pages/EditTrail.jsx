@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import BackButton from '../../components/BackButton';
+import PointModal from '../../components/PointModal';
 import Spinner from '../../components/Spinner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MdOutlineDelete } from 'react-icons/md';
+import { AiOutlineEdit } from 'react-icons/ai';
+import { useQuill } from 'react-quilljs';
+import 'quill/dist/quill.snow.css';
 
 // openlayers components
 import 'ol/ol.css';
@@ -27,13 +31,26 @@ const token = cookies.get("SESSION_TOKEN");
 const EditTrail = () => {
   const [name, setName] = useState('');
   const [points, setPoints] = useState([]);
+  const [description, setDescription] = useState('');
+  const descriptionRef = useRef(description); // useRef to prevent rerenders
+  const [difficulty, setDifficulty] = useState('Easy');
+  const [locality, setLocality] = useState('Slovakia');
+  const [season, setSeason] = useState('All Seasons');
+  const [thumbnail, setThumbnail] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalKey, setModalKey] = useState(0); // re-rendering the modal
+  const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
+  const [currentPoint, setCurrentPoint] = useState(null);
+  const [tempPoint, setTempPoint] = useState(null);
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // reference for the vector source (points & lines)
   const navigate = useNavigate();
   const { id } = useParams();
+  const { quill, quillRef } = useQuill();
   const mapInstanceRef = useRef(null); // storage of mapinstance
+  const hasLoadedInitialContent = useRef(false); // initial loading of description
 
   useEffect(() => {
     if (!id) return;
@@ -46,11 +63,15 @@ const EditTrail = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-
     // make the API call
     axios(configuration)
       .then((response) => {
         setName(response.data.name);
+        setDescription(response.data.description);
+        setLocality(response.data.locality);
+        setDifficulty(response.data.difficulty);
+        setSeason(response.data.season);
+        setThumbnail(response.data.thumbnail);
         setPoints(response.data.points || []);
         loadExistingPoints(response.data.points || []);
         setLoading(false);
@@ -98,6 +119,24 @@ const EditTrail = () => {
   };
 
   useEffect(() => {
+    if (quill) {
+      if (!hasLoadedInitialContent.current && description) {
+        quill.clipboard.dangerouslyPasteHTML(description); // Set the initial description
+        hasLoadedInitialContent.current = true; 
+      } 
+      quill.on('text-change', (delta, oldDelta, source) => {
+        const currentContent = quill.root.innerHTML;
+
+        // Only update state if the content has actually changed
+        if (descriptionRef.current !== currentContent) {
+          descriptionRef.current = currentContent;
+          setDescription(currentContent);
+        }        
+      });
+    }
+  }, [quill, description]);
+
+  useEffect(() => {
     // Initialize the map once (not every time the points state changes)
     if (mapInstanceRef.current || !mapRef.current) return;
 
@@ -125,19 +164,10 @@ const EditTrail = () => {
     map.on('click', function (evt) {
       const coordinates = evt.coordinate;  // Get clicked coordinates
       const lonLat = toLonLat(coordinates);
-      const title = prompt('Enter the title for this point:');
-      if (title) {
-        const point = {
-          title: title,
-          longitude: lonLat[0],
-          latitude: lonLat[1]
-        };
-
-        // Update the points state
-        setPoints(prevPoints => [...prevPoints, point]);
-        addPointToMap(point);
-        drawTrail([...points, point]);
-      }
+      console.log("click " + lonLat);
+      setTempPoint({ longitude: lonLat[0], latitude: lonLat[1], coordinates: coordinates, id: Date.now() });
+      setModalKey(modalKey => modalKey + 1);
+      setModalOpen(true);
     });
 
     // point movement if you want to edit the placement
@@ -147,7 +177,6 @@ const EditTrail = () => {
       evt.features.forEach(feature => {
         const newCoords = toLonLat(feature.getGeometry().getCoordinates());
         const featureId = feature.getId();
-        console.log('featureID', featureId);
 
         setPoints(currentPoints => currentPoints.map(point => {
           if (String(point._id) === featureId) {
@@ -157,45 +186,29 @@ const EditTrail = () => {
         }));
       });
     });
-
-    // remove points on right-click - does not work yet
-    /*map.on('contextmenu', function(evt) {
-        evt.preventDefault();
-        const feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-            // it took also lines so lets try to get only a point
-            if (feature.getGeometry() instanceof Point) {
-                return feature;
-            }
-        });
-        
-        console.log("Feature ID on right-click:", feature);
-        if(feature) {
-            const featureId = feature.getId();
-            console.log('feature delete', featureId);
-            if (featureId && window.confirm('Do you want to delete this point?')) {
-                vectorSourceRef.current.removeFeature(feature); // Remove from map
-                setPoints(currentPoints => currentPoints.filter(p => String(p._id) !== featureId));
-            }
-            // not working either
-            /*if(window.confirm('Do you want to delete this point?')) {
-                console.log('feature delete', featureId);
-
-                /*
-                const updatedPoints = points.filter(p => String(p._id) !== feature.getId());
-                if (updatedPoints.length === 0) {
-                    // Handle potential issues when all points are removed
-                    alert('No points left on the trail.');
-                }
-                setPoints(updatedPoints);
-                const featureId = feature.getId();
-                vectorSourceRef.current.removeFeature(feature);
-                const updatedPoints = points.filter((p) => String(p._id) !== featureId);
-                setPoints(updatedPoints);
-                drawTrail(updatedPoints);
-            //}
-        }
-    });*/
   }, []);
+
+  const handleEditPoint = (point) => {
+    setCurrentPoint(point);
+    setEditMode(true);
+    setModalOpen(true);
+  }
+
+
+  const handleSavePoint = (data) => {
+    if (editMode) {
+      setPoints(points => points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
+      updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
+    } else {
+      const point = { ...data, longitude: tempPoint.longitude, latitude: tempPoint.latitude, id: tempPoint.id };
+      setPoints(prevPoints => [...prevPoints, point]);
+      updateMapPoints([...points, point]);
+    }
+
+    setModalOpen(false);
+    setEditMode(false);
+    setCurrentPoint(null);
+  }
 
   // function to delete the point
   const deletePoint = async (trailId, pointId) => {
@@ -304,12 +317,50 @@ const EditTrail = () => {
           <input type='text' value={name} onChange={(e) => setName(e.target.value)} className='border-2 border-gray-500 px-4'></input>
         </div>
         <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Points</label>
+          <label className='text-xl mr-4 text-gray-500'>Description</label>
+          {/*<textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>*/}
+          <div style={{ width: 500 }}><div ref={quillRef} /></div>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
+          <select value={difficulty} onChange={e => setDifficulty(e.target.value)} >
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Challenging">Challenging</option>
+            <option value="Difficult">Difficult</option>
+          </select>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Season</label>
+          <select value={season} onChange={e => setSeason(e.target.value)} >
+            <option value="All Seasons">All Seasons</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+            <option value="Autumn">Autumn</option>
+            <option value="Winter">Winter</option>
+          </select>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Locality</label>
+          <select value={locality} onChange={e => setLocality(e.target.value)} >
+            <option value="Slovakia">Slovakia</option>
+            <option value="Czech Republic">Czech Republic</option>
+            <option value="Spain">Spain</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
+          <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Map points:</label>
           {points && points.length > 0 ? (
             <ul>
               {points.map((point, idx) => (
                 <li key={point._id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                   <span>{`Point ${idx + 1}: ${point.title} (${point.longitude.toFixed(2)}, ${point.latitude.toFixed(2)})`}</span>
+                  <button onClick={() => handleEditPoint(point)}><AiOutlineEdit className='text-yellow-600' /></button>
                   <button onClick={() => deletePoint(id, point._id)} style={{ marginLeft: '10px' }}>
                     <MdOutlineDelete className='text-2xl text-red-600' />
                   </button>
@@ -320,6 +371,7 @@ const EditTrail = () => {
             <span>No Points</span>
           )}
         </div>
+        <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} quizMode={false} pointData={editMode ? currentPoint : null}></PointModal>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
           {/* Map container */}
