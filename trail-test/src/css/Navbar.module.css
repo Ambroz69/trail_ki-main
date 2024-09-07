@@ -7,6 +7,8 @@
 .sidebar {
   background-color: #191C21;
   height: 100vh;
+  max-width: 27rem;
+  min-width: 17rem;
   position: sticky;
   top: 0;
 }

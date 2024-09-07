@@ -23,3 +23,62 @@ button.status_draft {
   border: 1px solid #E3C586 !important;
   border-radius: 0.5rem;
 }
+
+a.new_trail_button {
+  background-color: #1976D3;
+  border-radius: 0.5rem;
+}
+
+input.search_input {
+  flex: 0 0 auto !important;
+  width: 17em !important;
+  background-color: #F3F3F3;
+  color: #B5B5B7;
+  border-left: none;
+}
+
+input.search_input::placeholder, input.search_input:focus {
+  color: #B5B5B7;
+}
+
+span.search_icon {
+  background-color: #F3F3F3;
+  color: #B5B5B7;
+  border-right: none;
+}
+
+.table_div {
+  border: 2px solid #F3F3F3;
+  border-radius: 1rem;
+}
+
+button.dropdown_toggle, button.dropdown_toggle:not(:disabled):not(:disabled):active {
+  background-color: #e3e1e1;
+  border: none;
+}
+
+button.dropdown_toggle:hover, button.dropdown_toggle:focus {
+  background-color: #d9d7d7;
+  border: none;
+}
+
+button.dropdown_toggle::after {
+  display: none; 
+}
+
+a.table_action_dropdown_item {
+  color: #535353;
+  font-size: 0.8rem;
+}
+
+a.filter_button {
+  background-color: #F3F3F3;
+  color: #99A0A6;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+div.table_bottom {
+  color: #707070;
+}

@@ -1,0 +1,70 @@
+.new_trail_text {
+  color: #6C7885;
+}
+
+.new_trail_bg {
+  background-color: #FAFBFF;
+}
+
+.tabs_bg {
+  background-color: #FFF;
+  border: 1px solid #F5F5F5;
+  border-radius: 1rem;
+}
+
+.file_upload {
+  border: 1px dashed #DDDDDD;
+  border-radius: 0.5rem;
+  min-height: 15rem;
+}
+
+.upload_text_black {
+  color: #000;
+  font-weight: 900;
+}
+
+.upload_text_blue {
+  color: #007AF7;
+  font-weight: 900;
+}
+
+.form_label {
+  color: #787D84;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+input.form_input, select.form_input {
+  background-color: #FFF;
+  font-weight: 500;
+  color: #535353;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  border-radius: 0.5rem;
+}
+
+.form_input::placeholder, .form_input:focus {
+  color: #787D84;
+}
+
+button.save_button {
+  color: #000;
+  background-color: #F2F2F2;
+  border: none;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: 0.7rem;
+}
+
+.description_input {
+  
+}
+
+.description_input_2 {
+  min-height: 10rem;
+  border: 1px solid #DDDDDD;
+  border-radius: 0 0 0.5rem 0.5rem;
+}

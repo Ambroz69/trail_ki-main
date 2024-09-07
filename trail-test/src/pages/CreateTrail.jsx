@@ -8,6 +8,10 @@ import { MdOutlineDelete } from 'react-icons/md';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.snow.css';
+import Navbar from '../Navbar';
+import styles from '../css/TrailCreate.module.css';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
 // openlayers components
 import 'ol/ol.css';
@@ -24,6 +28,9 @@ import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
 import { fromLonLat, toLonLat } from 'ol/proj';
 
 import Cookies from "universal-cookie";
+
+//svg import
+import file_upload from '../assets/file_upload.png';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -242,83 +249,169 @@ const CreateTrail = () => {
   }
 
   return (
-    <div className='p-4'>
-      <BackButton></BackButton>
-      <h1 className='text-3xl my-4'>Create Trail</h1>
-      {loading ? <Spinner /> : ''}
-      <div className='flex flex-col p-4'>
-        {/* Display success message */}
-        {successMessage && (
-          <div className='bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3'>
-            <p>{successMessage}</p>
+    <div className={`${styles.new_trail_container} d-flex container-fluid mx-0 px-0`}>
+      <div className='col-3'>
+        <Navbar />
+      </div>
+      <div className={`${styles.new_trail_bg} col-9 px-5`}>
+        <div className='py-5 ps-0'>
+          <div className='d-flex justify-content-between'>
+            <div>
+              <h1 className='text-3xl'>Add a New Trail</h1>
+              <p className={`${styles.new_trail_text}`}>Please fill in all the details of your trail.</p>
+            </div>
+            <div className='d-flex align-items-center pb-4'>
+              <button className={`${styles.save_button} btn btn-secondary`}>Save as Draft</button>
+            </div>
           </div>
-        )}
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Name</label>
-          <input type='text' value={name} onChange={(e) => setName(e.target.value)} className='border-2 border-gray-500 px-4'></input>
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Description</label>
-          {/*<textarea type='text' value={description} onChange={(e) => setDescription(e.target.value)} className='border-2 border-gray-500 px-4' rows="4"></textarea>*/}
-          <div style={{ width: 500 }}><div ref={quillRef} /></div>
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
-          <select value={difficulty} onChange={e => setDifficulty(e.target.value)} >
-            <option value="Easy">Easy</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Challenging">Challenging</option>
-            <option value="Difficult">Difficult</option>
-          </select>
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Season</label>
-          <select value={season} onChange={e => setSeason(e.target.value)} >
-            <option value="All Seasons">All Seasons</option>
-            <option value="Spring">Spring</option>
-            <option value="Summer">Summer</option>
-            <option value="Autumn">Autumn</option>
-            <option value="Winter">Winter</option>
-          </select>
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Locality</label>
-          <select value={locality} onChange={e => setLocality(e.target.value)} >
-            <option value="Slovakia">Slovakia</option>
-            <option value="Czech Republic">Czech Republic</option>
-            <option value="Spain">Spain</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
-          <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
-        </div>
-        <div className='my-4'>
-          <label className='text-l mr-4 text-gray-500'>Map points:</label>
-          <ul>
-            {points.map(point => (
-              <li key={point.id}>
-                {point.title || 'New Point'} - {point.latitude}, {point.longitude}
-                <button onClick={() => handleEditPoint(point)}><AiOutlineEdit className='text-yellow-600' /></button>
-                <button onClick={() => removePoint(point.id)}><MdOutlineDelete className='text-red-600' /></button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
-          {/* Map container */}
-          <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
-        </div>
+          <div>
+            <Tabs
+              defaultActiveKey="general"
+              id="create-trail-tab"
+              className="mb-3"
+              justify
+            >
+              <Tab eventKey="general" title="General Information">
+                <div className={`${styles.tabs_bg} p-4`}>
+                  <div className={`${styles.file_upload} d-flex flex-column align-items-center mb-3 w-100`}>
+                    <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
+                    <div className='d-flex'>
+                      <div className={`${styles.upload_text_black} pe-1`}>Drag and drop or</div>
+                      <div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>
+                      <div className={`${styles.upload_text_black}`}>to upload</div>
+                    </div>
 
-        <button className='p-2 bg-sky-300 m-8' onClick={handleSaveTrail}>
-          Save
-        </button>
+                  </div>
+                  <div className='mb-3'>
+                    <label className={`${styles.form_label} form-label mb-1`}>Trail Name</label>
+                    <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                  </div>
+                  <div className='mb-3 col-6 pe-3'>
+                    <label className={`${styles.form_label} form-label mb-1`}>Location</label>
+                    <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`}>
+                      <option value="Slovakia">Slovakia</option>
+                      <option value="Czech Republic">Czech Republic</option>
+                      <option value="Spain">Spain</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className='mb-3 d-flex'>
+                    <div className='col-6 pe-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Season</label>
+                      <select value={season} onChange={e => setSeason(e.target.value)} className={`${styles.form_input} form-select`} >
+                        <option value="All Seasons">All Seasons</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Autumn">Autumn</option>
+                        <option value="Winter">Winter</option>
+                      </select>
+                    </div>
+                    <div className='col-6 ps-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Difficulty</label>
+                      <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className={`${styles.form_input} form-select`}>
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Challenging">Challenging</option>
+                        <option value="Difficult">Difficult</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className='mb-3'>
+                    <label className={`${styles.form_label} form-label mb-1`}>Description</label>
+                    <div /* style={{ width: 500 }} */ className={`${styles.description_input}`}>
+                      <div ref={quillRef} className={`${styles.description_input_2}`}/>
+                    </div>
+                  </div>
+                </div>
+
+              </Tab>
+              <Tab eventKey="points" title="Trail Content">
+                Tab content for Trail Content
+              </Tab>
+              <Tab eventKey="overview" title="Overview">
+                Tab content for Overview
+              </Tab>
+            </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   )
 };
+
+
+/* <div className='p-4'>
+  <BackButton></BackButton>
+  <h1 className='text-3xl my-4'>Create Trail</h1>
+  {loading ? <Spinner /> : ''}
+  <div className='flex flex-col p-4'>
+    {successMessage && (
+      <div className='bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3'>
+        <p>{successMessage}</p>
+      </div>
+    )}
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Name</label>
+      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className='border-2 border-gray-500 px-4'></input>
+    </div>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Description</label>
+      <div style={{ width: 500 }}><div ref={quillRef} /></div>
+    </div>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
+      <select value={difficulty} onChange={e => setDifficulty(e.target.value)} >
+        <option value="Easy">Easy</option>
+        <option value="Moderate">Moderate</option>
+        <option value="Challenging">Challenging</option>
+        <option value="Difficult">Difficult</option>
+      </select>
+    </div>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Season</label>
+      <select value={season} onChange={e => setSeason(e.target.value)} >
+        <option value="All Seasons">All Seasons</option>
+        <option value="Spring">Spring</option>
+        <option value="Summer">Summer</option>
+        <option value="Autumn">Autumn</option>
+        <option value="Winter">Winter</option>
+      </select>
+    </div>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Locality</label>
+      <select value={locality} onChange={e => setLocality(e.target.value)} >
+        <option value="Slovakia">Slovakia</option>
+        <option value="Czech Republic">Czech Republic</option>
+        <option value="Spain">Spain</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
+      <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
+    </div>
+    <div className='my-4'>
+      <label className='text-l mr-4 text-gray-500'>Map points:</label>
+      <ul>
+        {points.map(point => (
+          <li key={point.id}>
+            {point.title || 'New Point'} - {point.latitude}, {point.longitude}
+            <button onClick={() => handleEditPoint(point)}><AiOutlineEdit className='text-yellow-600'/></button>
+            <button onClick={() => removePoint(point.id)}><MdOutlineDelete className='text-red-600'/></button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
+    <div className='my-4'>
+      <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
+      <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
+    </div>
+
+    <button className='p-2 bg-sky-300 m-8' onClick={handleSaveTrail}>
+      Save
+    </button>
+  </div>
+</div> */
 
 export default CreateTrail;

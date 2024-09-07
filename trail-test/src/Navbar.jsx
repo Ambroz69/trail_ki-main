@@ -43,7 +43,7 @@ function Navbar() {
       </a>
       <ul className="nav nav-pills flex-column mb-auto mx-4">
         <li className="nav-item pb-2">
-          <a href="#" className={`${styles.sidebar_link} nav-link d-flex`} aria-current="page">
+          <a href="/" className={`${styles.sidebar_link} nav-link d-flex`} aria-current="page">
             <img src={sidebar_home} alt='sidebar_home' className='pe-2' />
             Home
           </a>
@@ -61,7 +61,7 @@ function Navbar() {
           <div >
             <ul className='px-0 pt-2'>
               <li className=''>
-                <a href="#" className={`${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`}>
+                <a href="/" className={`${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`}>
                   Trail Management
                 </a>
               </li>

@@ -48,7 +48,7 @@ const Login = () => {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <img src={logo} alt="logo" />
-            <h2 className={`${styles.login_header}`}>Prihlásenie</h2>
+            <h2 className={`${styles.login_header}`}>Log in</h2>
             <Form onSubmit={(e) => handleSubmit(e)} className={`${styles.form_width}`}>
               {/* email */}
               <Form.Group controlId="formBasicEmail" className='mt-1'>
@@ -71,7 +71,7 @@ const Login = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Heslo"
+                  placeholder="Password"
                   required
                 />
               </Form.Group>
@@ -79,12 +79,12 @@ const Login = () => {
                 <div className=" form-check col-6">
                   <input className="form-check-input" type="checkbox" value="" id="checkbox1" />
                   <label className='form-check-label' htmlFor="flexCheckDefault">
-                    Zapamätať
+                    Stay logged in
                   </label>
                 </div>
                 <div className="col-6 text-end">
                   <a href='#' className={`${styles.forgot_pass_link}`}>
-                    Zabudli ste heslo?
+                    Forgot password?
                   </a>
                 </div>
               </div>
@@ -96,17 +96,17 @@ const Login = () => {
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                   onClick={(e) => handleSubmit(e)}
                 >
-                  Prihlásiť
+                  Log in
                 </Button>
               </div>
 
               <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
                 <div>
-                  Nemáte účet?
+                  Don't have an account?
                 </div>
                 <div>
                   <a href='/users/register' className={`${styles.forgot_pass_link} ms-1`}>
-                    Vytvoriť
+                    Sign up
                   </a>
                 </div>
               </div>

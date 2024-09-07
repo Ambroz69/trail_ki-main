@@ -43,7 +43,7 @@ const Register = () => {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <img src={logo} alt="logo" />
-            <h2 className={`${styles.login_header}`}>Vytvorenie účtu</h2>
+            <h2 className={`${styles.login_header}`}>Sign up</h2>
             <Form onSubmit={(e) => handleSubmit(e)} className={`${styles.form_width}`}>
               {/* name */}
               <Form.Group controlId="formBasicName" className='mt-1'>
@@ -53,7 +53,7 @@ const Register = () => {
                   name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Meno"
+                  placeholder="Display name"
                   required
                 />
               </Form.Group>
@@ -79,7 +79,7 @@ const Register = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Heslo"
+                  placeholder="Password"
                   required
                 />
               </Form.Group>
@@ -87,10 +87,10 @@ const Register = () => {
                 <div className="form-check d-flex flex-row align-items-center justify-content-center">
                   <input className="form-check-input" type="checkbox" value="" id="checkbox1" required />
                   <label className='form-check-label ms-2 me-1' htmlFor="flexCheckDefault">
-                    Súhlasím s
+                    I agree with
                   </label>
                   <a href='#' className={`${styles.forgot_pass_link} ${styles.fix_align}`}>
-                    obchodnými podmienkami.
+                    terms and conditions.
                   </a>
                 </div>
               </div>
@@ -102,17 +102,17 @@ const Register = () => {
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                   onClick={(e) => handleSubmit(e)}
                 >
-                  Zaregistrovať
+                  Create account
                 </Button>
               </div>
 
               <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
                 <div>
-                  Už máte účet?
+                  Already have an account?
                 </div>
                 <div>
                   <a href='/users/login' className={`${styles.forgot_pass_link} ms-1`}>
-                    Prihláste sa
+                    Log in
                   </a>
                 </div>
               </div>
