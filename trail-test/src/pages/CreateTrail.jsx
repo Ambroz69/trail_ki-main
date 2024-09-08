@@ -249,11 +249,11 @@ const CreateTrail = () => {
   }
 
   return (
-    <div className={`${styles.new_trail_container} d-flex container-fluid mx-0 px-0`}>
-      <div className='col-3'>
+    <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
+      <div className='col-3 pe-4'>
         <Navbar />
       </div>
-      <div className={`${styles.new_trail_bg} col-9 px-5`}>
+      <div className={`col-9 px-5`}>
         <div className='py-5 ps-0'>
           <div className='d-flex justify-content-between'>
             <div>

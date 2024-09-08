@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
-import ConfirmationModal from '../../components/ConfirmationModal';
-import { Link } from 'react-router-dom';
-import { AiOutlineCopy, AiFillCheckCircle, AiOutlineCheckCircle, AiOutlineEdit } from 'react-icons/ai';
-import { BsInfoCircle } from 'react-icons/bs';
-import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
 import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
 import styles from '../css/TrailList.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 //svg import
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -23,6 +20,9 @@ import table_action_duplicate from '../assets/table_action_duplicate.svg';
 import table_action_edit from '../assets/table_action_edit.svg';
 import table_action_publish from '../assets/table_action_publish.svg';
 import table_action_show from '../assets/table_action_show.svg';
+import modal_clone from '../assets/modal_clone.svg';
+import modal_delete from '../assets/modal_delete.svg';
+import modal_publish from '../assets/modal_publish.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -30,23 +30,10 @@ const token = cookies.get("SESSION_TOKEN");
 const Home = () => {
   const [trails, setTrail] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [cloneModalOpen, setCloneModalOpen] = useState(false);
-  const [trailToPublish, setTrailToPublish] = useState(null);
-  const [trailToClone, setTrailToClone] = useState(null);
-  //const [message, setMessage] = useState("");
-
-  /*useEffect(()=> {
-      setLoading(true);
-      axios.get('http://localhost:5555/trails').then((response) => {
-          setTrail(response.data.data);
-          setLoading(false);
-      })
-      .catch((error) => {
-          console.log(error);
-          setLoading(false);
-      });
-  }, []);*/
+  const [trailToProcess, setTrailToProcess] = useState(null);
+  const [cloneModalShow, setCloneModalShow] = useState(false);
+  const [publishModalShow, setPublishModalShow] = useState(false);
+  const [deleteModalShow, setDeleteModalShow] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -71,67 +58,101 @@ const Home = () => {
       });
   }, []);
 
-  const handleOpenCloneModal = (id) => {
-    setTrailToClone(id);
-    setCloneModalOpen(true);
-  };
-
-  const handleCloseCloneModal = () => {
-    setTrailToClone(null);
-    setCloneModalOpen(false);
-  };
-
-  const handleOpenModal = (id) => {
-    setTrailToPublish(id);
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setTrailToPublish(null);
-    setModalOpen(false);
-  };
-
   const handleConfirmPublish = () => {
     setLoading(true);
-    axios.put(`http://localhost:5555/trails/publish/${trailToPublish}`, null, {
+    axios.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
-        setTrail(trails.map(trail => trail._id === trailToPublish ? { ...trail, published: true } : trail));
+        setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: true } : trail));
         setLoading(false);
-        handleCloseModal();
+        handlePublishModalClose();
       })
       .catch(error => {
         console.log(error);
         setLoading(false);
-        handleCloseModal();
+        handlePublishModalClose();
       });
   };
 
   const handleConfirmClone = () => {
     setLoading(true);
-    axios.post(`http://localhost:5555/trails/clone/${trailToClone}`, null, {
+    axios.post(`http://localhost:5555/trails/clone/${trailToProcess}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
         setTrail([...trails, response.data.trail]);
         setLoading(false);
-        handleCloseCloneModal();
+        handleCloneModalClose();
       })
       .catch(error => {
         console.log(error);
         setLoading(false);
-        handleCloseCloneModal();
+        handleCloneModalClose();
+      });
+  };
+
+  const handleConfirmDelete = () => {
+    setLoading(true);
+    const configuration = {
+      method: "delete",
+      url: `http://localhost:5555/trails/${trailToProcess}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+
+    // make the API call
+    axios(configuration)
+      .then((response) => {
+        setTrail(trails.filter(trail => trail._id !== trailToProcess));
+        setLoading(false);
+        handleDeleteModalClose();
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        handleDeleteModalClose();
       });
   };
 
   const addDefaultImg = event => {
     event.target.src = backup_trail_image;
-  }
+  };
+
+  const handleCloneModalShow = (trail_id) => {
+    setTrailToProcess(trail_id);
+    setCloneModalShow(true);
+  };
+
+  const handleCloneModalClose = () => {
+    setTrailToProcess(null);
+    setCloneModalShow(false);
+  };
+
+  const handlePublishModalShow = (trail_id) => {
+    setTrailToProcess(trail_id);
+    setPublishModalShow(true);
+  };
+
+  const handlePublishModalClose = () => {
+    setTrailToProcess(null);
+    setPublishModalShow(false);
+  };
+
+  const handleDeleteModalShow = (trail_id) => {
+    setTrailToProcess(trail_id);
+    setDeleteModalShow(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setTrailToProcess(null);
+    setDeleteModalShow(false);
+  };
 
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
-      <div className='col-3'>
+      <div className='col-3 pe-3'>
         <Navbar />
       </div>
       <div className='col-9 col-9 px-5'>
@@ -161,7 +182,7 @@ const Home = () => {
                 <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-3`} href='#'>
                   <div className='d-flex'>
                     Sort
-                    <img src={filter_button} alt="sort_button" className='px-2' />
+                    <img src={sort_button} alt="sort_button" className='px-2' />
                   </div>
                 </a>
               </div>
@@ -185,7 +206,6 @@ const Home = () => {
                       <td className='ps-4'>{index + 1}</td>
                       <td>
                         <div className='d-flex align-items-center'>
-                          {/* <img src={trail.thumbnail} alt='trail_thumbnail' style={{ width: '4rem', height: '4rem' }} className='me-2' onerror="this.src=${};"></img> */}
                           <img src={trail.thumbnail} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
                           {trail.name}
                         </div>
@@ -211,12 +231,11 @@ const Home = () => {
                           <Dropdown.Toggle variant="secondary" id="dropdown-basic" className={`${styles.dropdown_toggle} rounded-circle p-1`}>
                             <img src={table_actions} alt="search_button" className='' />
                           </Dropdown.Toggle>
-
                           <Dropdown.Menu className=''>
-                            <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                            <Dropdown.Item href="#" onClick={() => handleCloneModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_duplicate} alt="duplicate" className='pe-2' />Duplicate
                             </Dropdown.Item>
-                            <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                            <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_publish} alt="publish" className='pe-2' />Publish
                             </Dropdown.Item>
                             <Dropdown.Item href={`/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
@@ -225,22 +244,11 @@ const Home = () => {
                             <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
                             </Dropdown.Item>
-                            <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                            <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_delete} alt="delete" className='pe-2' />Delete
                             </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
-                        {/* <div className='flex justify-start gap-x-2'>
-                          <AiOutlineCopy className='text-2xl text-gray-600' onClick={() => handleOpenCloneModal(trail._id)} />
-                          {trail.published ? (
-                            <AiFillCheckCircle className='text-2xl text-green-800' />
-                          ) : (
-                            <AiOutlineCheckCircle className='text-2xl text-green-800' onClick={() => handleOpenModal(trail._id)} />
-                          )}
-                          <Link to={`/trails/details/${trail._id}`}><BsInfoCircle className='text-2xl text-blue-800' /></Link>
-                          <Link to={`/trails/edit/${trail._id}`}><AiOutlineEdit className='text-2xl text-yellow-600' /></Link>
-                          <Link to={`/trails/remove/${trail._id}`}><MdOutlineDelete className='text-2xl text-red-600' /></Link>
-                        </div> */}
                       </td>
                     </tr>
                   ))}
@@ -248,22 +256,73 @@ const Home = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              Showing 1 to 9 of 9 entries
+              Showing 1 to {Object.keys(trails).length} of {Object.keys(trails).length} entries
             </div>
           </div>
 
-          <ConfirmationModal
-            isOpen={modalOpen}
-            onClose={handleCloseModal}
-            onConfirm={handleConfirmPublish}
-            message="Are you sure you want to publish this trail?"
-          />
-          <ConfirmationModal
-            isOpen={cloneModalOpen}
-            onClose={handleCloseCloneModal}
-            onConfirm={handleConfirmClone}
-            message="Are you sure you want to clone this trail?"
-          />
+          <Modal
+            show={cloneModalShow}
+            onHide={handleCloneModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_clone} alt="sort_button" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Duplicate Trail</h1>
+              <p className={`${styles.modal_text}`}>Are you sure you want to create a duplicate of this trail?</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleCloneModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmClone()} className={`${styles.modal_clone_button} flex-fill ms-2 me-5`}>
+                Duplicate
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={publishModalShow}
+            onHide={handlePublishModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_publish} alt="sort_button" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Publish Trail</h1>
+              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to publish this trail?</p>
+              <p className={`${styles.modal_text} `}>Once published, it will be available to the public.</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handlePublishModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmPublish()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
+                Publish
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={deleteModalShow}
+            onHide={handleDeleteModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_delete} alt="sort_button" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Delete Trail</h1>
+              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this trail?</p>
+              <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
         </div>
       </div>
     </div>
