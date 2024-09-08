@@ -12,6 +12,12 @@ import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import SliderComponent from '../../components/quiztypes/SliderComponent'
+import ShortAnswerComponent from '../../components/quiztypes/ShortAnswerComponent';
+import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
+import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
+import PairsComponent from '../../components/quiztypes/PairsComponent';
+import OrderComponent from '../../components/quiztypes/OrderComponent';
 
 // openlayers components
 import 'ol/ol.css';
@@ -44,9 +50,6 @@ const CreateTrail = () => {
   const [thumbnail, setThumbnail] = useState('-');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalKey, setModalKey] = useState(0); // re-rendering the modal
   const [tempPoint, setTempPoint] = useState(null);
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Reference for the vector source (points & lines)
@@ -54,10 +57,21 @@ const CreateTrail = () => {
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
   const { quill, quillRef } = useQuill();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [question, setQuestion] = useState('');
+  const [ppoints, setPpoints] = useState('');
+  const [quizType, setQuizType] = useState('single');
+  const [correctFeedback, setCorrectFeedback] = useState('');
+  const [incorrectFeedback, setIncorrectFeedback] = useState('');
+  const [quizChecked, setQuizChecked] = useState(false);
+  const [pointCreated, setPointCreated] = useState(false);
+  const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
+  const [previousAnswers, setPreviousAnswers] = useState({}); // Store previous answers for each quiz type
+  const [sliderValue, setSliderValue] = useState(50);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
-
     const R = 6371; // Radius of Earth in kilometers
     const dLat = toRadians(lat2 - lat1);
     const dLon = toRadians(lon2 - lon1);
@@ -124,11 +138,6 @@ const CreateTrail = () => {
     if (quill) {
       quill.clipboard.dangerouslyPasteHTML(description);
       quill.on('text-change', (delta, oldDelta, source) => {
-        //console.log('Text change!');
-        //console.log(quill.getText()); // Get text only
-        //console.log(quill.getContents()); // Get delta contents
-        //console.log(quill.root.innerHTML); // Get innerHTML using quill
-        //console.log(quillRef.current.firstChild.innerHTML); // Get innerHTML using quillRef
         setDescription(quill.root.innerHTML);
       });
     }
@@ -156,6 +165,26 @@ const CreateTrail = () => {
       }),
     });
 
+    /* useEffect(() => {
+      if (quizType !== 'pairs' && quizType !== 'order') {
+        // Only reset if it's not pairs to prevent overwriting when switching modes
+        if (quizType in previousAnswers) {
+          setAnswers(previousAnswers[quizType]);
+        } else {
+          resetAnswers();
+        }
+      }
+    }, [quizType]); */
+
+    const resetAnswers = () => {
+      if (!previousAnswers[quizType]) {
+        setAnswers([{ text: '', isCorrect: true }]);
+        if (quizType === 'pairs') {
+          setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
+        }
+        setSliderValue(50); // Reset slider value for slider type
+      }
+    };
 
     // click event listener to the map
     map.on('click', function (evt) {
@@ -164,15 +193,9 @@ const CreateTrail = () => {
       const lonLat = toLonLat(coordinates);
       console.log("click " + lonLat);
       setTempPoint({ longitude: lonLat[0], latitude: lonLat[1], coordinates: coordinates, id: Date.now() });
-      setModalKey(modalKey => modalKey + 1);
-      setModalOpen(true);
-      /*console.log("long: " + lonLat[0]);
-      console.log("lat: " + lonLat[1]);
-      console.log("coords: " + coordinates);
-      console.log("id: " + Date.now());
-      console.log("tmp point: " + tempPoint);
-      console.log("modal open? " + modalOpen);
-      console.log("------------------------");*/
+      //setModalKey(modalKey => modalKey + 1);
+      //setModalOpen(true);
+      setPointCreated(true);
     });
   }, []);  // empty array to ensure the map initializes only once
 
@@ -248,6 +271,30 @@ const CreateTrail = () => {
     setCurrentPoint(null);
   }
 
+  const handleSave = () => {
+
+  }
+
+  const handleChangeAnswer = (index, field, value) => {
+    const updatedAnswers = answers.map((answer, i) => {
+      if (i === index) {
+        return { ...answer, [field]: value };
+      }
+      return answer;
+    });
+    setAnswers(updatedAnswers);
+    // Store the updated answers to preserve them when switching types
+    setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
+  };
+
+  const handleAddAnswer = () => {
+    setAnswers([...answers, { text: '', isCorrect: false }]);
+  };
+
+  const handleRemoveAnswer = (index) => {
+    setAnswers(answers.filter((_, i) => i !== index));
+  };
+
   return (
     <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
       <div className='col-3 pe-4'>
@@ -280,20 +327,31 @@ const CreateTrail = () => {
                       <div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>
                       <div className={`${styles.upload_text_black}`}>to upload</div>
                     </div>
-
                   </div>
-                  <div className='mb-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>Trail Name</label>
-                    <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                  <div className='mb-3 d-flex'>
+                    <div className='col-9 pe-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Trail Name</label>
+                      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                    </div>
+                    <div className='col-3 ps-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Estimated Time (min.)</label>
+                      <input type='number' /* value={estimated_time} onChange={(e) => setName(e.target.value)} */ min="0" className={`${styles.form_input} form-control`}></input>
+                    </div>
                   </div>
-                  <div className='mb-3 col-6 pe-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>Location</label>
-                    <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`}>
-                      <option value="Slovakia">Slovakia</option>
-                      <option value="Czech Republic">Czech Republic</option>
-                      <option value="Spain">Spain</option>
-                      <option value="Other">Other</option>
-                    </select>
+                  <div className='mb-3 d-flex'>
+                    <div className='col-6 pe-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Location</label>
+                      <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`}>
+                        <option value="Slovakia">Slovakia</option>
+                        <option value="Czech Republic">Czech Republic</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div className='col-6 ps-3'>
+                      <label className={`${styles.form_label} form-label mb-1`}>Language</label>
+                      <input type='text' /* value={language} onChange={(e) => setName(e.target.value)} */ className={`${styles.form_input} form-control`}></input>
+                    </div>
                   </div>
                   <div className='mb-3 d-flex'>
                     <div className='col-6 pe-3'>
@@ -318,15 +376,150 @@ const CreateTrail = () => {
                   </div>
                   <div className='mb-3'>
                     <label className={`${styles.form_label} form-label mb-1`}>Description</label>
-                    <div /* style={{ width: 500 }} */ className={`${styles.description_input}`}>
-                      <div ref={quillRef} className={`${styles.description_input_2}`}/>
+                    <div>
+                      <div ref={quillRef} className={`${styles.description_input}`} />
                     </div>
                   </div>
                 </div>
-
               </Tab>
               <Tab eventKey="points" title="Trail Content">
-                Tab content for Trail Content
+                <div className={`${styles.tabs_bg} p-0 d-flex`}>
+                  <div className='col-6 p-4'>
+                    {pointCreated ? (
+                      <>
+                        <div className='mb-3'>
+                          <label className={`${styles.form_label} form-label mb-1`}>Interaction Title</label>
+                          <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                        </div>
+                        <div className='mb-3'>
+                          <label className={`${styles.form_label} form-label mb-1`}>Content</label>
+                          <textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>
+                        </div>
+                        <div className="d-flex flex-row justify-content-between mt-3">
+                          <div className=" form-check col-8">
+                            <input className="form-check-input" type="checkbox" value="" id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
+                            <label className='form-check-label' htmlFor="quiz_included" >
+                              Do you want to include quiz?
+                            </label>
+                          </div>
+                          <div className="col-4 text-end">
+                            <button className='btn btn-primary' onClick={handleSave}>
+                              Save Point
+                            </button>
+                          </div>
+                        </div>
+                        {quizChecked ? (
+                          <>
+                            <div className='mb-3'>
+                              <label className={`${styles.form_label} form-label mb-1`}>Question</label>
+                              <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            </div>
+                            <div className='mb-3 d-flex'>
+                              <div className='col-4 pe-3'>
+                                <label className={`${styles.form_label} form-label mb-1`}>Points</label>
+                                <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                              </div>
+                              <div className='col-8 ps-3'>
+                                <label className={`${styles.form_label} form-label mb-1`}>Question Type</label>
+                                <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`}>
+                                  <option value="single">Single Correct Answer</option>
+                                  <option value="multiple">Multiple Correct Answers</option>
+                                  <option value="short-answer">Short Answer</option>
+                                  <option value="slider">Slider</option>
+                                  <option value="pairs">Pairs</option>
+                                  <option value="order">Ordering</option>
+                                  <option value="true-false">True/False</option>
+                                </select>
+                              </div>
+                            </div>
+                            {(() => {
+                              switch (quizType) {
+                                case 'short-answer':
+                                  return (
+                                    <ShortAnswerComponent
+                                      value={answers[0].text}
+                                      onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
+                                    />
+                                  );
+                                case 'single':
+                                case 'multiple':
+                                  return (
+                                    <>
+                                      <ChoiceComponent
+                                        quizType={quizType}
+                                        answers={answers}
+                                        handleChangeAnswer={handleChangeAnswer}
+                                        handleRemoveAnswer={handleRemoveAnswer}
+                                      />
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
+                                    </>
+                                  );
+                                case 'slider':
+                                  return (
+                                    <SliderComponent
+                                      value={sliderValue}
+                                      onChange={value => setSliderValue(value)}
+                                    />
+                                  );
+                                case 'pairs':
+                                  return (
+                                    <>
+                                      <PairsComponent
+                                        answers={answers}
+                                        handleChangeAnswer={handleChangeAnswer}
+                                        handleRemoveAnswer={handleRemoveAnswer}
+                                      />
+                                      <button onClick={handleAddAnswer} className='p-2 border-2 border-gray-500 m-4'>Add Another Pair</button>
+                                    </>
+                                  );
+                                case 'order':
+                                  return (
+                                    <>
+                                      <OrderComponent
+                                        answers={answers}
+                                        handleChangeAnswer={handleChangeAnswer}
+                                        handleRemoveAnswer={handleRemoveAnswer}
+                                      />
+                                      <button onClick={handleAddAnswer} className='p-2 border-2 border-gray-500 m-4'>Add Another Answer</button>
+                                    </>
+                                  );
+                                case 'true-false':
+                                  return (
+                                    <TrueFalseComponent
+                                      value={answers[0].text}
+                                      onChange={value => handleChangeAnswer(0, 'text', value)}
+                                    />
+                                  );
+                                default:
+                                  return null;
+                              }
+                            })()}
+                            <div className='mb-3'>
+                              <label className={`${styles.form_label} form-label mb-1`}>Correct Answer Feedback</label>
+                              <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            </div>
+                            <div className='mb-3'>
+                              <label className={`${styles.form_label} form-label mb-1`}>Incorrect Answer Feedback</label>
+                              <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            </div>
+                          </>
+                        )
+                          : <></>
+                        }
+                      </>
+                    ) : (
+                      <>
+                        <div className={`${styles.map_container}  d-flex justify-content-center align-items-center`}>
+                          <p className={`${styles.map_left_text} text-center`}>Create new Interactive Point by clicking on the map.</p>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                  <div className='col-6'>
+                    <div ref={mapRef} className={`${styles.map_container}`}></div>
+                  </div>
+                </div>
               </Tab>
               <Tab eventKey="overview" title="Overview">
                 Tab content for Overview

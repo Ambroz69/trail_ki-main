@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SliderComponent from './quiztypes/SliderComponent';
 import ShortAnswerComponent from './quiztypes/ShortAnswerComponent';
-import PhotoComponent from './quiztypes/PhotoComponent';
+import TrueFalseComponent from './quiztypes/TrueFalseComponent';
 import ChoiceComponent from './quiztypes/ChoiceComponent';
 import PairsComponent from './quiztypes/PairsComponent';
 import OrderComponent from './quiztypes/OrderComponent';
@@ -300,7 +300,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                                     );
                                 case 'foto':
                                     return (
-                                        <PhotoComponent
+                                        <TrueFalseComponent
                                             value={answers[0].text}
                                             onChange={value => handleChangeAnswer(0, 'text', value)}
                                         />
@@ -379,9 +379,9 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                                             quizMode={quizMode}
                                         />
                                 );
-                            case 'foto':
+                            case 'true-false':
                                 return (
-                                    <PhotoComponent
+                                    <TrueFalseComponent
                                         value={answers[0].text}
                                         onChange={value => handleChangeAnswer(0, 'text', value)}
                                     />

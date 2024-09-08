@@ -34,7 +34,7 @@
   font-weight: 800;
 }
 
-input.form_input, select.form_input {
+input.form_input, select.form_input, textarea.form_input {
   background-color: #FFF;
   font-weight: 500;
   color: #535353;
@@ -60,11 +60,54 @@ button.save_button {
 }
 
 .description_input {
-  
-}
-
-.description_input_2 {
   min-height: 10rem;
   border: 1px solid #DDDDDD;
   border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.map_container {
+  width: 100% !important;
+  height: 38rem !important;
+  border-radius: 1rem;
+}
+
+.map_left_text {
+  color: #6C7885;
+  font-size: 1.8rem;
+}
+
+button.point_save_button,
+button.point_save_button:visited {
+  color: #FFF;
+  background-color: #1976D3;
+  border: none;
+  border-radius: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+button.point_save_button:hover, 
+button.point_save_button:focus,
+button.point_save_button:not(:disabled):not(:disabled):active {
+  color: #FFF;
+  background-color: #145ca3;
+  border: none;
+}
+
+button.point_delete_button,
+button.point_delete_button:visited {
+  color: #FFF;
+  background-color: #c05454;
+  border: none;
+  border-radius: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+button.point_delete_button:hover, 
+button.point_delete_button:focus,
+button.point_delete_button:not(:disabled):not(:disabled):active {
+  color: #FFF;
+  background-color: #8c2929;
+  border: none;
 }

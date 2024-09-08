@@ -1,15 +1,15 @@
 import React from 'react';
+import styles from '../../src/css/TrailCreate.module.css';
 
 const ShortAnswerComponent = ({ value, onChange }) => {
     return (
-        <div>
-            <label className='mr-4 text-gray-500'>Insert the correct answer</label>
+        <div className='mb-3'>
+            <label className={`${styles.form_label} form-label mb-1`}>Insert the correct answer</label>
             <input
                 type="text"
                 value={value}
                 onChange={e => onChange(e.target.value)}
-                placeholder="Correct Answer"
-                className='border-2 border-gray-500 px-4 mr-4'
+                className={`${styles.form_input} form-control`}
             />
         </div>
     );
