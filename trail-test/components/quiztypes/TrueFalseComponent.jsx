@@ -1,17 +1,21 @@
 import React from 'react';
+import styles from '../../src/css/TrailCreate.module.css';
 
-const PhotoComponent = ({ value, onChange }) => {
-    return (
-        <div>
-            <label className='mr-4 text-gray-500'>Provide Instructions for the Photo</label>
-            <textarea
-                placeholder="Instructions"
-                value={value}
-                onChange={e => onChange(e.target.value)}
-                className='border-2 border-gray-500 px-4 mr-4'
-            />
-        </div>
-    );
+const TrueFalseComponent = ({ value, answer, handleChangeAnswer }) => {
+  return (
+    <div className='mb-3'>
+      <label className={`${styles.form_label} form-label mb-1`}>Correct answer</label>
+      <div className="form-check form-switch">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={answer.isCorrect}
+          onChange={e => handleChangeAnswer(0, "isCorrect", e.target.checked)}
+          id="flexSwitchCheckDefault" />
+        <label className={`${styles.form_label} form-check-label`} htmlFor="flexSwitchCheckDefault">{value ? "True" : "False"}</label>
+      </div>
+    </div>
+  );
 }
 
-export default PhotoComponent;
+export default TrueFalseComponent;

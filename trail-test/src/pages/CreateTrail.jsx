@@ -12,6 +12,7 @@ import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import Accordion from 'react-bootstrap/Accordion';
 import SliderComponent from '../../components/quiztypes/SliderComponent'
 import ShortAnswerComponent from '../../components/quiztypes/ShortAnswerComponent';
 import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
@@ -68,7 +69,9 @@ const CreateTrail = () => {
   const [pointCreated, setPointCreated] = useState(false);
   const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
   const [previousAnswers, setPreviousAnswers] = useState({}); // Store previous answers for each quiz type
-  const [sliderValue, setSliderValue] = useState(50);
+  const [sliderCorrectValue, setSliderCorrectValue] = useState(50);
+  const [sliderMinValue, setSliderMinValue] = useState(0);
+  const [sliderMaxValue, setSliderMaxValue] = useState(100);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -182,7 +185,7 @@ const CreateTrail = () => {
         if (quizType === 'pairs') {
           setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
         }
-        setSliderValue(50); // Reset slider value for slider type
+        setSliderCorrectValue(50); // Reset slider value for slider type
       }
     };
 
@@ -266,20 +269,69 @@ const CreateTrail = () => {
       updateMapPoints([...points, point]);
     }
 
-    setModalOpen(false);
+    //setModalOpen(false);
     setEditMode(false);
     setCurrentPoint(null);
   }
 
   const handleSave = () => {
+    if (title) {
+      const pointData = {
+        title,
+        content
+      };
 
+      if (quizChecked) {
+        if (!question || (!answers[0].text && quizType !== 'slider')) {
+          alert('Please fill all quiz fields.');
+          return;
+        }
+
+        pointData.quiz = {
+          question,
+          type: quizType,
+          points: ppoints,
+          answers: quizType === 'slider' ? [{ text: sliderCorrectValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
+          feedback: {
+            correct: correctFeedback,
+            incorrect: incorrectFeedback,
+          },
+        };
+      }
+
+      handleSavePoint(pointData);
+      resetContent();
+      //onClose();
+    } else {
+      alert('Please fill the title.');
+    }
   }
+
+  const resetContent = () => {
+    setPointCreated(false);
+    setTitle('');
+    setContent('');
+    setQuizChecked(false);
+    setQuestion('');
+    setPpoints('');
+    setQuizType('single');
+    setAnswers([{ text: '', isCorrect: true }]);
+    setSliderCorrectValue(50);
+    setSliderMinValue(0);
+    setSliderMaxValue(100);
+    setCorrectFeedback('');
+    setIncorrectFeedback('');
+    setTempPoint(null);
+    setPreviousAnswers({});
+  };
 
   const handleChangeAnswer = (index, field, value) => {
     const updatedAnswers = answers.map((answer, i) => {
       if (i === index) {
+        console.log("isCorrect? <" + answers[0].isCorrect + ">");
         return { ...answer, [field]: value };
       }
+      console.log("i !== index..." + answer);
       return answer;
     });
     setAnswers(updatedAnswers);
@@ -397,7 +449,7 @@ const CreateTrail = () => {
                         </div>
                         <div className="d-flex flex-row justify-content-between mt-3">
                           <div className=" form-check col-8">
-                            <input className="form-check-input" type="checkbox" value="" id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
+                            <input className="form-check-input" type="checkbox" value={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
                             <label className='form-check-label' htmlFor="quiz_included" >
                               Do you want to include quiz?
                             </label>
@@ -457,8 +509,12 @@ const CreateTrail = () => {
                                 case 'slider':
                                   return (
                                     <SliderComponent
-                                      value={sliderValue}
-                                      onChange={value => setSliderValue(value)}
+                                      correctValue={sliderCorrectValue}
+                                      minValue={sliderMinValue}
+                                      maxValue={sliderMaxValue}
+                                      setCorrectValue={correctValue => setSliderCorrectValue(correctValue)}
+                                      setMinValue={minValue => setSliderMinValue(minValue)}
+                                      setMaxValue={maxValue => setSliderMaxValue(maxValue)}
                                     />
                                   );
                                 case 'pairs':
@@ -486,8 +542,9 @@ const CreateTrail = () => {
                                 case 'true-false':
                                   return (
                                     <TrueFalseComponent
-                                      value={answers[0].text}
-                                      onChange={value => handleChangeAnswer(0, 'text', value)}
+                                      value={answers[0].isCorrect}
+                                      answer={answers[0]}
+                                      handleChangeAnswer={handleChangeAnswer}
                                     />
                                   );
                                 default:
@@ -522,7 +579,31 @@ const CreateTrail = () => {
                 </div>
               </Tab>
               <Tab eventKey="overview" title="Overview">
-                Tab content for Overview
+
+                <div className={`${styles.tabs_bg} p-0`}>
+                  <p>Points of interest</p>
+                  <div className='d-flex'>
+                    <div className='col-6 p-4'>
+                      <Accordion defaultActiveKey={['0']} alwaysOpen>
+                        {points.map(point => (
+                          <Accordion.Item eventKey={point.id}>
+                            <Accordion.Header className={`${styles.accordion_header}`}>
+                              {point.title}
+                              </Accordion.Header>
+                            <Accordion.Body>
+                              LAT: {point.latitude}, LON: {point.longitude} <br/>
+                              {point.content}
+                            </Accordion.Body>
+                          </Accordion.Item>
+                        ))}
+                      </Accordion>
+                    </div>
+                    <div className='col-6'>
+                      mapa s bodmi, pospajanymi sipkou a pri kazdom bode aj title
+                    </div>
+                  </div>
+                </div>
+
               </Tab>
             </Tabs>
           </div>
