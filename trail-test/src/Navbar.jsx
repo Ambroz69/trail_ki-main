@@ -89,7 +89,7 @@ function Navbar() {
       <div className='ms-4 me-5 d-flex align-items-center justify-content-between'>
         <a href="#" className="text-decoration-none ">
           <div className={` d-flex align-items-center justify-content-start`}>
-            <img src="https://liquipedia.net/commons/images/1/1a/Brawl_Hank.png" alt="" width="50" height="50" className="rounded-circle me-3" />
+            <img src="https://liquipedia.net/commons/images/1/1a/Brawl_Hank.png" referrerPolicy="no-referrer" alt="" width="50" height="50" className="rounded-circle me-3" />
             <div className='d-flex flex-column'>
               <div className={`${styles.sidebar_link_profile_name}`}>
                 Janka Pecuchová
