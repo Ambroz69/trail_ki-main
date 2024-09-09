@@ -130,6 +130,7 @@ router.post('/clone/:id', auth, async (request, response) => {
             points: trail.points,
             season: trail.season,
             locality: trail.locality,
+            length: trail.length || 0,
             difficulty: trail.difficulty,
             published: false // Set published to false for the cloned trail
         });
