@@ -21,6 +21,8 @@ const quizSchema = new mongoose.Schema({
     answers: [{
         text: { type: String, required: false},
         pairText: { type: String, required: false},
+        minValue: { type: Number, required: false},
+        maxValue: { type: Number, required: false},
         isCorrect: { type: Boolean, required: false},
     }],
     feedback: {

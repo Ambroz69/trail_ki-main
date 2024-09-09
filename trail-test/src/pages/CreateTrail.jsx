@@ -125,7 +125,7 @@ const CreateTrail = () => {
     axios(configuration)
       .then((response) => {
         setLoading(false);
-        setSuccessMessage('Trail saved.');
+        //setSuccessMessage('Trail saved.');
         setTimeout(() => {
           navigate('/');
         }, 2000);
@@ -291,7 +291,7 @@ const CreateTrail = () => {
           question,
           type: quizType,
           points: ppoints,
-          answers: quizType === 'slider' ? [{ text: sliderCorrectValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
+          answers: quizType === 'slider' ? [{ text: sliderCorrectValue, minValue: sliderMinValue, maxValue: sliderMaxValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
           feedback: {
             correct: correctFeedback,
             incorrect: incorrectFeedback,
@@ -360,7 +360,7 @@ const CreateTrail = () => {
               <p className={`${styles.new_trail_text}`}>Please fill in all the details of your trail.</p>
             </div>
             <div className='d-flex align-items-center pb-4'>
-              <button className={`${styles.save_button} btn btn-secondary`}>Save as Draft</button>
+              <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>Save as Draft</button>
             </div>
           </div>
           <div>

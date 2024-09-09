@@ -13,6 +13,8 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
   const [content, setContent] = useState('');
   const [ppoints, setPpoints] = useState('');
   const [sliderValue, setSliderValue] = useState(50);
+  const [sliderMinValue, setSliderMinValue] = useState(0);
+  const [sliderMaxValue, setSliderMaxValue] = useState(100);
   const [correctFeedback, setCorrectFeedback] = useState('');
   const [incorrectFeedback, setIncorrectFeedback] = useState('');
   const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
@@ -32,6 +34,12 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
         setPpoints(pointData.quiz.points);
         setCorrectFeedback(pointData.quiz.feedback.correct || null);
         setIncorrectFeedback(pointData.quiz.feedback.incorrect || null);
+        if(pointData.quiz.type==='slider') {
+          const answer = pointData.quiz.answers[0]; 
+          setSliderMaxValue(answer.maxValue);
+          setSliderMinValue(answer.minValue);
+          setSliderValue(Number(answer.text));
+        }
       }
       if (!quizMode) {
         setQuizEnabled(true);
@@ -116,7 +124,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
           question,
           type: quizType,
           points: ppoints,
-          answers: quizType === 'slider' ? [{ text: sliderValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
+          answers: quizType === 'slider' ? [{ text: sliderValue, minValue: sliderMinValue, maxValue: sliderMaxValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
           feedback: {
             correct: correctFeedback,
             incorrect: incorrectFeedback,
@@ -149,7 +157,7 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
     }));
   };
 
-  const evaluateAnswers = () => { // toto uprav to musi byt inak
+  const evaluateAnswers = () => { // this will be reworked totally
     if (quizType === 'short-answer') {
       let correctCount = 0;
       answers.forEach(answer => {
@@ -272,8 +280,12 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                 case 'slider':
                   return (
                     <SliderComponent
-                      value={sliderValue}
+                      correctValue={sliderValue}
+                      minValue={sliderMinValue}
+                      maxValue={sliderMaxValue}
                       setCorrectValue={value => setSliderValue(value)}
+                      setMinValue={value => setSliderMinValue(value)}
+                      setMaxValue={value => setSliderMaxValue(value)}
                     />
                   );
                 case 'pairs':
@@ -354,7 +366,11 @@ function PointModal({ isOpen, onClose, onSave, pointData, quizMode }) {
                 return (
                   <SliderComponent
                     value={sliderValue}
+                    minValue={sliderMinValue}
+                    maxValue={sliderMaxValue}
                     setCorrectValue={value => setSliderValue(value)}
+                    setMinValue={value => setSliderMinValue(value)}
+                    setMaxValue={value => setSliderMaxValue(value)}
                   />
                 );
               case 'pairs':
