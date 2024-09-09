@@ -3,7 +3,7 @@ import axios from 'axios';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
 import PointModal from '../../components/PointModal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MdOutlineDelete } from 'react-icons/md';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { useQuill } from 'react-quilljs';
@@ -33,6 +33,7 @@ import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
 import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
 import { fromLonLat, toLonLat } from 'ol/proj';
+import { Modify } from 'ol/interaction';
 
 import Cookies from "universal-cookie";
 
@@ -45,6 +46,7 @@ const token = cookies.get("SESSION_TOKEN");
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const descriptionRef = useRef(description); // useRef to prevent rerenders
   const [difficulty, setDifficulty] = useState('Easy');
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
@@ -72,6 +74,9 @@ const CreateTrail = () => {
   const [sliderCorrectValue, setSliderCorrectValue] = useState(50);
   const [sliderMinValue, setSliderMinValue] = useState(0);
   const [sliderMaxValue, setSliderMaxValue] = useState(100);
+  const { id } = useParams(); // Extract id for edit mode
+  const mapInstanceRef = useRef(null); // storage of mapinstance
+  const hasLoadedInitialContent = useRef(false); // initial loading of description
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -104,8 +109,8 @@ const CreateTrail = () => {
     let trailLength = calculateTrailLength(points);
     // set configurations for the API call here
     const configuration = {
-      method: "post",
-      url: "http://localhost:5555/trails",
+      method: id ? "put" : "post",
+      url: id ? `http://localhost:5555/trails/${id}` : "http://localhost:5555/trails",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -125,10 +130,10 @@ const CreateTrail = () => {
     axios(configuration)
       .then((response) => {
         setLoading(false);
-        //setSuccessMessage('Trail saved.');
+        console.log(id ? 'Trail updated.' : 'Trail created.');
         setTimeout(() => {
           navigate('/');
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         console.log(error);
@@ -138,17 +143,50 @@ const CreateTrail = () => {
   };
 
   useEffect(() => {
-    if (quill) {
-      quill.clipboard.dangerouslyPasteHTML(description);
-      quill.on('text-change', (delta, oldDelta, source) => {
-        setDescription(quill.root.innerHTML);
+    if (id) {
+      axios({
+        method: "get",
+        url: `http://localhost:5555/trails/${id}`,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(response => {
+        // Load data into state for editing
+        setName(response.data.name);
+        setDescription(response.data.description);
+        setLocality(response.data.locality);
+        setDifficulty(response.data.difficulty);
+        setSeason(response.data.season);
+        setThumbnail(response.data.thumbnail);
+        setPoints(response.data.points || []);
+        loadExistingPoints(response.data.points || []);
+        setLoading(false);
+      }).catch(error => {
+        console.error(error);
       });
     }
-  }, [quill]);
+  }, [id]);
+  
+
+  useEffect(() => {
+    if (quill) {
+      if (!hasLoadedInitialContent.current && description) {
+        quill.clipboard.dangerouslyPasteHTML(description); // Set the initial description
+        hasLoadedInitialContent.current = true; 
+      } 
+      quill.on('text-change', (delta, oldDelta, source) => {
+        const currentContent = quill.root.innerHTML;
+
+        // Only update state if the content has actually changed
+        if (descriptionRef.current !== currentContent) {
+          descriptionRef.current = currentContent;
+          setDescription(currentContent);
+        }        
+      });
+    }
+  }, [quill, description]);
 
   useEffect(() => {
     // Initialize the map once (not every time the points state changes)
-    if (!mapRef.current) return;
+    if (mapInstanceRef.current || !mapRef.current) return;
 
     const vectorLayer = new VectorLayer({
       source: vectorSourceRef.current,
@@ -168,6 +206,8 @@ const CreateTrail = () => {
       }),
     });
 
+    mapInstanceRef.current = map; // store map for later usage
+
     /* useEffect(() => {
       if (quizType !== 'pairs' && quizType !== 'order') {
         // Only reset if it's not pairs to prevent overwriting when switching modes
@@ -179,6 +219,7 @@ const CreateTrail = () => {
       }
     }, [quizType]); */
 
+    // BENKO toto co je???
     const resetAnswers = () => {
       if (!previousAnswers[quizType]) {
         setAnswers([{ text: '', isCorrect: true }]);
@@ -195,10 +236,29 @@ const CreateTrail = () => {
       const coordinates = evt.coordinate;
       const lonLat = toLonLat(coordinates);
       console.log("click " + lonLat);
+      //if (!editMode) { - neviem
       setTempPoint({ longitude: lonLat[0], latitude: lonLat[1], coordinates: coordinates, id: Date.now() });
       //setModalKey(modalKey => modalKey + 1);
       //setModalOpen(true);
       setPointCreated(true);
+      //}
+    });
+
+    // point movement if you want to edit the placement
+    const modify = new Modify({ source: vectorSourceRef.current });
+    map.addInteraction(modify);
+    modify.on('modifyend', (evt) => {
+      evt.features.forEach(feature => {
+        const newCoords = toLonLat(feature.getGeometry().getCoordinates());
+        const featureId = feature.getId();
+
+        setPoints(currentPoints => currentPoints.map(point => {
+          if (String(point._id) === featureId) {
+            return { ...point, longitude: newCoords[0], latitude: newCoords[1] };
+          }
+          return point;
+        }));
+      });
     });
   }, []);  // empty array to ensure the map initializes only once
 
@@ -216,6 +276,37 @@ const CreateTrail = () => {
     });
   }
 
+  // function to load existing points to the map
+  const loadExistingPoints = (trailPoints) => {
+    vectorSourceRef.current.clear();
+    trailPoints.forEach(p => { addPointToMap(p); });
+    drawLine(trailPoints); //drawTrail(trailPoints);
+    // zoom to the first point on trail
+    if (trailPoints.length > 0) {
+      const firstPoint = trailPoints[0];
+      const firstPointCoords = fromLonLat([firstPoint.longitude, firstPoint.latitude]);
+      mapInstanceRef.current.getView().setCenter(firstPointCoords);
+      mapInstanceRef.current.getView().setZoom(14);
+    }
+  };
+
+  // function to add point to the map - BENKO ček it if not duplicate niekde dole
+  const addPointToMap = (point) => {
+    const pointFeature = new Feature({
+      geometry: new Point(fromLonLat([point.longitude, point.latitude])),
+    });
+    pointFeature.setId(String(point._id));
+    pointFeature.setStyle(new Style({
+      image: new CircleStyle({
+        radius: 6,
+        fill: new Fill({ color: 'blue' }),
+        stroke: new Stroke({ color: 'white', width: 2 }),
+      }),
+    }));
+    vectorSourceRef.current.addFeature(pointFeature);
+  };
+
+
   const updateMapPoints = (points) => {
     vectorSourceRef.current.clear();
     points.forEach(point => {
@@ -223,6 +314,7 @@ const CreateTrail = () => {
         geometry: new Point(fromLonLat([point.longitude, point.latitude])),
         id: point.id
       });
+      console.log(point.id);
       pointFeature.setStyle(
         new Style({
           image: new CircleStyle({
@@ -356,7 +448,7 @@ const CreateTrail = () => {
         <div className='py-5 ps-0'>
           <div className='d-flex justify-content-between'>
             <div>
-              <h1 className='text-3xl'>Add a New Trail</h1>
+              <h1 className='text-3xl'>{id ? 'Edit the Trail' : 'Add a New Trail'}</h1>
               <p className={`${styles.new_trail_text}`}>Please fill in all the details of your trail.</p>
             </div>
             <div className='d-flex align-items-center pb-4'>

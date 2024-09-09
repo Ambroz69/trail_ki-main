@@ -15,7 +15,7 @@ const App = () => {
       <Route path='/' element={<ProtectedRoute />}>
         <Route path='/' element={<Home />} />
         <Route path='/trails/details/:id' element={<ShowTrail />} />
-        <Route path='/trails/edit/:id' element={<EditTrail />} />
+        <Route path='/trails/edit/:id' element={<CreateTrail />} />
         <Route path='/trails/remove/:id' element={<DeleteTrail />} />
         <Route path='/trails/create' element={<CreateTrail />} />
       </Route>
