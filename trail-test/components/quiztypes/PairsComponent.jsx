@@ -14,6 +14,31 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
   const [shuffledLeft, setShuffledLeft] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
 
+  const handleDragDrop = (result) => {
+    const {source, destination, type} = result;
+    
+    if (!destination) return;
+
+    if(source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+    if(type === 'leftGroup') {
+        const reorderedAnswers = [...shuffledLeft];
+        const sourceIndex = source.index;
+        const destinationIndex = destination.index;
+        const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
+        reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+        return setShuffledLeft(reorderedAnswers);
+    }
+    if(type === 'rightGroup') {
+        const reorderedAnswers = [...shuffledRight];
+        const sourceIndex = source.index;
+        const destinationIndex = destination.index;
+        const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
+        reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+        return setShuffledRight(reorderedAnswers);
+    }
+};
+
   useEffect(() => {
     if (quizMode) {
       // Shuffle the left (text) and right (pairText) sides independently
@@ -46,9 +71,9 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
           </div>
         ))
       ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={handleDragDrop}>
           <div className="flex">
-            <Droppable droppableId="leftColumn">
+            <Droppable droppableId="leftColumn" type="leftGroup">
               {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}
@@ -91,7 +116,7 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                 </div>
               )}
             </Droppable>
-            <Droppable droppableId="rightColumn">
+            <Droppable droppableId="rightColumn" type="rightGroup">
               {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}

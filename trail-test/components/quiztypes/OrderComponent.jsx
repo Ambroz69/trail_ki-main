@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDragEnd, quizMode }) => {
+
+  const [dragAnswers, setDragAnswers] = useState([{ text: '', isCorrect: true }]);
+
+  useEffect(() => {
+    if (answers) {
+      setDragAnswers(answers);
+    }
+  }, [answers]);
+
+  const handleDragDrop = (result) => {
+    const { source, destination, type } = result;
+
+    if (!destination) return;
+
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+    if (type === 'group') {
+      const reorderedAnswers = [...dragAnswers];
+      const sourceIndex = source.index;
+      const destinationIndex = destination.index;
+      const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
+      reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      return setDragAnswers(reorderedAnswers);
+    }
+  };
+
+  // evaluation of quiz will have to be here
+
+
   return (
     <div>
       <label className='mr-4 text-gray-500'>Insert Correct Order</label>
@@ -19,8 +48,8 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
           </div>
         ))
       ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="pairs">
+        <DragDropContext onDragEnd={handleDragDrop}>
+          <Droppable droppableId="root" type="group">
             {(provided, snapshot) => (
               <div
                 {...provided.droppableProps}
@@ -32,7 +61,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   minHeight: '100px',
                 }}
               >
-                {answers.map((answer, index) => (
+                {dragAnswers.map((answer, index) => (
                   <Draggable
                     key={answer._id}
                     draggableId={answer._id}
