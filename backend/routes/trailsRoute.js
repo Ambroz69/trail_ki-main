@@ -46,7 +46,7 @@ router.get('/:id', auth, async(request, response) => {
 // Route to Update a trail
 router.put('/:id', auth, async (request, response) => {
     try {
-        const { name, points } = request.body;
+        const { name, description, difficulty, locality, season, thumbnail, length, points } = request.body;
 
         if (!name || !Array.isArray(points) || points.length === 0) {
             return response.status(400).send({
@@ -65,7 +65,7 @@ router.put('/:id', auth, async (request, response) => {
         const { id } = request.params;
         const updatedTrail = await Trail.findByIdAndUpdate(
             id,
-            { name, points },
+            { name, description, difficulty, locality, season, thumbnail, length, points },
             { new: true }
         );
 
