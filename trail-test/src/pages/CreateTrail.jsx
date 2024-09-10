@@ -39,6 +39,9 @@ import Cookies from "universal-cookie";
 
 //svg import
 import file_upload from '../assets/file_upload.png';
+import accordion_default from '../assets/accordion_default.svg';
+import accordion_points from '../assets/accordion_points.svg';
+import accordion_question_type from '../assets/accordion_question_type.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -164,14 +167,14 @@ const CreateTrail = () => {
       });
     }
   }, [id]);
-  
+
 
   useEffect(() => {
     if (quill) {
       if (!hasLoadedInitialContent.current && description) {
         quill.clipboard.dangerouslyPasteHTML(description); // Set the initial description
-        hasLoadedInitialContent.current = true; 
-      } 
+        hasLoadedInitialContent.current = true;
+      }
       quill.on('text-change', (delta, oldDelta, source) => {
         const currentContent = quill.root.innerHTML;
 
@@ -179,7 +182,7 @@ const CreateTrail = () => {
         if (descriptionRef.current !== currentContent) {
           descriptionRef.current = currentContent;
           setDescription(currentContent);
-        }        
+        }
       });
     }
   }, [quill, description]);
@@ -675,15 +678,48 @@ const CreateTrail = () => {
                 <div className={`${styles.tabs_bg} p-0`}>
                   <p>Points of interest</p>
                   <div className='d-flex'>
-                    <div className='col-6 p-4'>
+                    <div className={`${styles.accordion_header} col-6 p-4`}>
                       <Accordion defaultActiveKey={['0']} alwaysOpen>
                         {points.map(point => (
-                          <Accordion.Item eventKey={point.id}>
-                            <Accordion.Header className={`${styles.accordion_header}`}>
-                              {point.title}
-                              </Accordion.Header>
+                          <Accordion.Item eventKey={point.id} key={point.id}>
+                            <Accordion.Header>
+                              <div className='d-flex flex-column w-100 p-2'>
+                                <img src={accordion_default} alt="publish" className='' style={{ width: '3.1rem', height: '3.1rem' }} />
+                                <p className={`${styles.accordion_point_title}`}>{point.title}</p>
+                                {console.log("undefined or null?" + !(point.quiz !== undefined && point.quiz !== null))}
+                                <div className='d-flex'>
+                                  {point.quiz ? (
+                                    <>
+                                      <div className='col-6 d-flex'>
+                                        <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' />
+                                        {(() => {
+                                          switch (point.quiz?.type) {
+                                            case 'short-answer': return (<p>Short Written Answer</p>);
+                                            case 'single': return (<p>Single Correct Answer</p>);
+                                            case 'multiple': return (<p>Multiple Correct Answers</p>);
+                                            case 'slider': return (<p>Slider</p>);
+                                            case 'pairs': return (<p>Matching Pairs</p>);
+                                            case 'order': return (<p>Ordering</p>);
+                                            case 'true-false': return (<p>True/False</p>);
+                                            default: return (<></>);
+                                          }
+                                        })()}
+                                      </div>
+                                      <div className='col-6 d-flex'>
+                                        <img src={accordion_points} alt="accordion_points" className='pe-2' />
+                                        {point.quiz.points} {point.quiz.points === 1 ? " point" : " points"}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <p>No Quiz</p>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </Accordion.Header>
                             <Accordion.Body>
-                              LAT: {point.latitude}, LON: {point.longitude} <br/>
+                              LAT: {point.latitude}, LON: {point.longitude} <br />
                               {point.content}
                             </Accordion.Body>
                           </Accordion.Item>

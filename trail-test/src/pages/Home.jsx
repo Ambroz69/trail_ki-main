@@ -267,7 +267,7 @@ const Home = () => {
             keyboard={false}
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
-              <img src={modal_clone} alt="sort_button" className='px-2 pb-2' />
+              <img src={modal_clone} alt="modal_clone" className='px-2 pb-2' />
               <h1 className={`${styles.modal_heading}`}>Duplicate Trail</h1>
               <p className={`${styles.modal_text}`}>Are you sure you want to create a duplicate of this trail?</p>
             </Modal.Body>
@@ -287,7 +287,7 @@ const Home = () => {
             keyboard={false}
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
-              <img src={modal_publish} alt="sort_button" className='px-2 pb-2' />
+              <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
               <h1 className={`${styles.modal_heading}`}>Publish Trail</h1>
               <p className={`${styles.modal_text} mb-0`}>Are you sure you want to publish this trail?</p>
               <p className={`${styles.modal_text} `}>Once published, it will be available to the public.</p>
@@ -308,7 +308,7 @@ const Home = () => {
             keyboard={false}
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
-              <img src={modal_delete} alt="sort_button" className='px-2 pb-2' />
+              <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
               <h1 className={`${styles.modal_heading}`}>Delete Trail</h1>
               <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this trail?</p>
               <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
