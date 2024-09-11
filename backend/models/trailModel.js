@@ -93,6 +93,15 @@ const trailSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        estimatedTime: {
+            type: Number,
+            default: 0,
+        },
+        language: {
+            type: String,
+            required: true,  
+            default: 'English',          
+        },
         rating: {
             type: Number,
             min: 0,

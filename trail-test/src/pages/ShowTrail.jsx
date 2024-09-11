@@ -173,7 +173,9 @@ const ShowTrail = () => {
                     <div className='my-4'>
                         <span className='text-l text-gray-500 mr-4'>Difficulty: </span><span>{trail.difficulty}</span><br />
                         <span className='text-l text-gray-500 mr-4'>Season: </span><span>{trail.season}</span><br />
-                        <span className='text-l text-gray-500 mr-4'>Locality: </span><span>{trail.locality}</span>
+                        <span className='text-l text-gray-500 mr-4'>Locality: </span><span>{trail.locality}</span><br />
+                        <span className='text-l text-gray-500 mr-4'>Estimated time: </span><span>{trail.estimatedTime} min</span><br />
+                        <span className='text-l text-gray-500 mr-4'>Language: </span><span>{trail.language}</span>
                     </div>
                     <div className='my-4'>
                         <span className='text-xl mr-4 text-gray-500'>Points of Interest</span>

@@ -7,8 +7,8 @@ const router = express.Router();
 // Route to Save a new Trail
 router.post('/', auth, async (request, response) => {
     try {
-        const { name, description, thumbnail, difficulty, locality, season, length, points } = request.body;
-        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season,  length, points});
+        const { name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
+        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points});
         await newTrail.save();
         return response.status(201).send(newTrail);
     } catch(error) {
@@ -46,7 +46,7 @@ router.get('/:id', auth, async(request, response) => {
 // Route to Update a trail
 router.put('/:id', auth, async (request, response) => {
     try {
-        const { name, description, difficulty, locality, season, thumbnail, length, points } = request.body;
+        const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points } = request.body;
 
         if (!name || !Array.isArray(points) || points.length === 0) {
             return response.status(400).send({
@@ -65,7 +65,7 @@ router.put('/:id', auth, async (request, response) => {
         const { id } = request.params;
         const updatedTrail = await Trail.findByIdAndUpdate(
             id,
-            { name, description, difficulty, locality, season, thumbnail, length, points },
+            { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points },
             { new: true }
         );
 
@@ -132,6 +132,8 @@ router.post('/clone/:id', auth, async (request, response) => {
             locality: trail.locality,
             length: trail.length || 0,
             difficulty: trail.difficulty,
+            estimatedTime: trail.estimatedTime,
+            language: trail.language,
             published: false // Set published to false for the cloned trail
         });
 

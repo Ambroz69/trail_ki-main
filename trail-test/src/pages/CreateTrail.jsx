@@ -40,6 +40,8 @@ const CreateTrail = () => {
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
   const [thumbnail, setThumbnail] = useState('-');
+  const [estimatedTime, setEstimatedTime] = useState(0);
+  const [language, setLanguage] = useState('English');
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tempPoint, setTempPoint] = useState(null);
@@ -108,6 +110,8 @@ const CreateTrail = () => {
         season,
         thumbnail,
         length: trailLength,
+        estimatedTime,
+        language,
         points
       }
     };
@@ -143,6 +147,8 @@ const CreateTrail = () => {
         setSeason(response.data.season);
         setThumbnail(response.data.thumbnail);
         setPoints(response.data.points || []);
+        setEstimatedTime(response.data.estimatedTime);
+        setLanguage(response.data.language);
         //loadExistingPoints(response.data.points || []);
         setLoading(false);
       }).catch(error => {
@@ -265,7 +271,7 @@ const CreateTrail = () => {
   const handleChangeAnswer = (index, field, value) => {
     const updatedAnswers = answers.map((answer, i) => {
       if (i === index) {
-        if (quizType==='true-false') { // transform the true/false into the text as there will be the correct answer
+        if (quizType === 'true-false') { // transform the true/false into the text as there will be the correct answer
           answers[0].text = String(!answers[0].isCorrect);
         }
         //console.log("isCorrect? <" + answers[0].isCorrect + ">");
@@ -327,7 +333,7 @@ const CreateTrail = () => {
                     </div>
                     <div className='col-3 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>Estimated Time (min.)</label>
-                      <input type='number' /* value={estimated_time} onChange={(e) => setName(e.target.value)} */ min="0" className={`${styles.form_input} form-control`}></input>
+                      <input type='number' value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} min="0" className={`${styles.form_input} form-control`}></input>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
@@ -342,7 +348,12 @@ const CreateTrail = () => {
                     </div>
                     <div className='col-6 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>Language</label>
-                      <input type='text' /* value={language} onChange={(e) => setName(e.target.value)} */ className={`${styles.form_input} form-control`}></input>
+                      <select value={language} onChange={e => setLanguage(e.target.value)} className={`${styles.form_input} form-select`} >
+                        <option value="English">English</option>
+                        <option value="Slovak">Slovak</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
