@@ -12,7 +12,7 @@ const quizSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['single', 'multiple', 'short-answer', 'slider', 'pairs', 'order', 'foto']
+        enum: ['single', 'multiple', 'short-answer', 'slider', 'pairs', 'order', 'foto', 'true-false']
     },
     points: {
         type: Number,
