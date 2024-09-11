@@ -65,6 +65,7 @@ const CreateTrail = () => {
   const [sliderMaxValue, setSliderMaxValue] = useState(100);
   const { id } = useParams(); // Extract id for edit mode
   const hasLoadedInitialContent = useRef(false); // initial loading of description
+  const [accordionEdit, setAccordionEdit] = useState(false);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -200,12 +201,12 @@ const CreateTrail = () => {
         point._id === pointId || point.id === pointId ? { ...point, ...updatedPoint } : point
       )
     );
-    console.log(pointsTemp);
   };
 
   const handleSavePoint = (data) => {
     if (editMode) {
-      setPoints(points => points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
+      let cID = currentPoint.id || currentPoint._id;
+      setPoints(points => points.map(p => p.id === cID || p._id === cID ? { ...p, ...data } : p));
       //updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
     } else {
       const point = { ...data, longitude: tempPoint.longitude, latitude: tempPoint.latitude, id: tempPoint.id };
@@ -214,6 +215,11 @@ const CreateTrail = () => {
     }
     //setModalOpen(false);
     setEditMode(false);
+    if (accordionEdit) {
+      // Switch to the "Overview" tab programmatically
+      document.getElementById("create-trail-tab-tab-overview").click();
+      setAccordionEdit(false);
+    }
     setCurrentPoint(null);
   }
 
@@ -241,7 +247,7 @@ const CreateTrail = () => {
           },
         };
       }
-
+      console.log(pointData);
       handleSavePoint(pointData);
       resetContent();
       //onClose();
@@ -291,6 +297,34 @@ const CreateTrail = () => {
 
   const handleRemoveAnswer = (index) => {
     setAnswers(answers.filter((_, i) => i !== index));
+  };
+
+  const handleAccordionClick = (pointId) => {
+    const pointToEdit = points.find((point) => point.id === pointId || point._id === pointId);
+    console.log('accordion id', pointId);
+    if (pointToEdit) {
+      setTitle(pointToEdit.title || '');
+      setContent(pointToEdit.content || '');
+      setQuizChecked(!!pointToEdit.quiz);
+      setQuestion(pointToEdit.quiz?.question || '');
+      setQuizType(pointToEdit.quiz?.type || 'single');
+      setPpoints(pointToEdit.quiz?.points || '');
+      setAnswers(pointToEdit.quiz?.answers || [{ text: '', isCorrect: true }]);
+      setCorrectFeedback(pointToEdit.quiz?.feedback?.correct || '');
+      setIncorrectFeedback(pointToEdit.quiz?.feedback?.incorrect || '');
+      setSliderCorrectValue(pointToEdit.quiz?.answers[0]?.text || 50);
+      setSliderMinValue(pointToEdit.quiz?.answers[0]?.minValue || 0);
+      setSliderMaxValue(pointToEdit.quiz?.answers[0]?.maxValue || 100);
+      setEditMode(true);
+      setCurrentPoint(pointToEdit);
+
+      // Switch to the "Trail Content" tab 
+      document.getElementById("create-trail-tab-tab-points").click();
+
+      setPointCreated(true);
+      setEditMode(true);
+      setAccordionEdit(true);
+    }
   };
 
   return (
@@ -579,7 +613,7 @@ const CreateTrail = () => {
                                 </div>
                               </div>
                             </Accordion.Header>
-                            <Accordion.Body>
+                            <Accordion.Body onClick={() => handleAccordionClick(point._id)}>
                               LAT: {point.latitude}, LON: {point.longitude} <br />
                               {point.content}
                             </Accordion.Body>
