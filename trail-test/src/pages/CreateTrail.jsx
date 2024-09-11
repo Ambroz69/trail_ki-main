@@ -19,21 +19,7 @@ import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
 import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
 import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
-
-// openlayers components
-import 'ol/ol.css';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import { Tile as TileLayer } from 'ol/layer';
-import OSM from 'ol/source/OSM';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
-import LineString from 'ol/geom/LineString';
-import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
-import { fromLonLat, toLonLat } from 'ol/proj';
-import { Modify } from 'ol/interaction';
+import TrailMap from '../../components/TrailMap';
 
 import Cookies from "universal-cookie";
 
@@ -57,8 +43,6 @@ const CreateTrail = () => {
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tempPoint, setTempPoint] = useState(null);
-  const mapRef = useRef(null);
-  const vectorSourceRef = useRef(new VectorSource());  // Reference for the vector source (points & lines)
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
@@ -78,7 +62,6 @@ const CreateTrail = () => {
   const [sliderMinValue, setSliderMinValue] = useState(0);
   const [sliderMaxValue, setSliderMaxValue] = useState(100);
   const { id } = useParams(); // Extract id for edit mode
-  const mapInstanceRef = useRef(null); // storage of mapinstance
   const hasLoadedInitialContent = useRef(false); // initial loading of description
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -160,7 +143,7 @@ const CreateTrail = () => {
         setSeason(response.data.season);
         setThumbnail(response.data.thumbnail);
         setPoints(response.data.points || []);
-        loadExistingPoints(response.data.points || []);
+        //loadExistingPoints(response.data.points || []);
         setLoading(false);
       }).catch(error => {
         console.error(error);
@@ -187,90 +170,6 @@ const CreateTrail = () => {
     }
   }, [quill, description]);
 
-  useEffect(() => {
-    // Initialize the map once (not every time the points state changes)
-    if (mapInstanceRef.current || !mapRef.current) return;
-
-    const vectorLayer = new VectorLayer({
-      source: vectorSourceRef.current,
-    });
-
-    const map = new Map({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-        vectorLayer,
-      ],
-      view: new View({
-        center: fromLonLat([0, 0]),  // default location - maybe could be changed to something different
-        zoom: 2,  // initial zoom level
-      }),
-    });
-
-    mapInstanceRef.current = map; // store map for later usage
-
-    /* useEffect(() => {
-      if (quizType !== 'pairs' && quizType !== 'order') {
-        // Only reset if it's not pairs to prevent overwriting when switching modes
-        if (quizType in previousAnswers) {
-          setAnswers(previousAnswers[quizType]);
-        } else {
-          resetAnswers();
-        }
-      }
-    }, [quizType]); */
-
-    // BENKO toto co je???
-    const resetAnswers = () => {
-      if (!previousAnswers[quizType]) {
-        setAnswers([{ text: '', isCorrect: true }]);
-        if (quizType === 'pairs') {
-          setShuffledAnswers(shuffleAnswers([...answers]));  // Reset shuffled answers for pairs
-        }
-        setSliderCorrectValue(50); // Reset slider value for slider type
-      }
-    };
-
-    // click event listener to the map
-    map.on('click', function (evt) {
-
-      const coordinates = evt.coordinate;
-      const lonLat = toLonLat(coordinates);
-      console.log("click " + lonLat);
-      //if (!editMode) { - neviem
-      setTempPoint({ longitude: lonLat[0], latitude: lonLat[1], coordinates: coordinates, id: Date.now() });
-      //setModalKey(modalKey => modalKey + 1);
-      //setModalOpen(true);
-      setPointCreated(true);
-      //}
-    });
-
-    // point movement if you want to edit the placement
-    const modify = new Modify({ source: vectorSourceRef.current });
-    map.addInteraction(modify);
-    modify.on('modifyend', (evt) => {
-      evt.features.forEach(feature => {
-        const newCoords = toLonLat(feature.getGeometry().getCoordinates());
-        const featureId = feature.getId();
-
-        setPoints(currentPoints => currentPoints.map(point => {
-          if (String(point._id) === featureId) {
-            return { ...point, longitude: newCoords[0], latitude: newCoords[1] };
-          }
-          return point;
-        }));
-      });
-    });
-  }, []);  // empty array to ensure the map initializes only once
-
-  const handleEditPoint = (point) => {
-    setCurrentPoint(point);
-    setEditMode(true);
-    setModalOpen(true);
-  }
-
   const removePoint = (pointId) => {
     setPoints(points => {
       const updatedPoints = points.filter(p => p.id !== pointId);
@@ -279,91 +178,34 @@ const CreateTrail = () => {
     });
   }
 
-  // function to load existing points to the map
-  const loadExistingPoints = (trailPoints) => {
-    vectorSourceRef.current.clear();
-    trailPoints.forEach(p => { addPointToMap(p); });
-    drawLine(trailPoints); //drawTrail(trailPoints);
-    // zoom to the first point on trail
-    if (trailPoints.length > 0) {
-      const firstPoint = trailPoints[0];
-      const firstPointCoords = fromLonLat([firstPoint.longitude, firstPoint.latitude]);
-      mapInstanceRef.current.getView().setCenter(firstPointCoords);
-      mapInstanceRef.current.getView().setZoom(14);
-    }
+  // handle for TrailMap component  
+  const handleAddPoint = (point) => {
+    //setPoints((prevPoints) => [...prevPoints, point]);
+    setCurrentPoint(point);
+    setTempPoint(point);
+    setPointCreated(true);
   };
 
-  // function to add point to the map - BENKO ček it if not duplicate niekde dole
-  const addPointToMap = (point) => {
-    const pointFeature = new Feature({
-      geometry: new Point(fromLonLat([point.longitude, point.latitude])),
-    });
-    pointFeature.setId(String(point._id));
-    pointFeature.setStyle(new Style({
-      image: new CircleStyle({
-        radius: 6,
-        fill: new Fill({ color: 'blue' }),
-        stroke: new Stroke({ color: 'white', width: 2 }),
-      }),
-    }));
-    vectorSourceRef.current.addFeature(pointFeature);
-  };
-
-
-  const updateMapPoints = (points) => {
-    vectorSourceRef.current.clear();
-    points.forEach(point => {
-      const pointFeature = new Feature({
-        geometry: new Point(fromLonLat([point.longitude, point.latitude])),
-        id: point.id
-      });
-      console.log(point.id);
-      pointFeature.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 6,
-            fill: new Fill({ color: 'blue' }),
-            stroke: new Stroke({
-              color: 'white',
-              width: 2,
-            }),
-          }),
-        })
-      );
-      vectorSourceRef.current.addFeature(pointFeature);
-    });
-    drawLine(points);
-  };
-
-  const drawLine = (points) => {
-    if (points.length > 1) {
-      const lineCoordinates = points.map(p => fromLonLat([p.longitude, p.latitude]));
-      const lineFeature = new Feature({
-        geometry: new LineString(lineCoordinates),
-      });
-
-      lineFeature.setStyle(
-        new Style({
-          stroke: new Stroke({
-            color: 'green',
-            width: 2,
-          }),
-        })
-      );
-      vectorSourceRef.current.addFeature(lineFeature);
-    }
+  // handle for TrailMap component
+  const handleEditPoint = (pointId, updatedPoint, pointsTemp) => {
+    setPoints(pointsTemp);
+    setPoints((prevPoints) =>
+      prevPoints.map((point) =>
+        point._id === pointId || point.id === pointId ? { ...point, ...updatedPoint } : point
+      )
+    );
+    console.log(pointsTemp);
   };
 
   const handleSavePoint = (data) => {
     if (editMode) {
       setPoints(points => points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
-      updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
+      //updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
     } else {
       const point = { ...data, longitude: tempPoint.longitude, latitude: tempPoint.latitude, id: tempPoint.id };
       setPoints(prevPoints => [...prevPoints, point]);
-      updateMapPoints([...points, point]);
+      //updateMapPoints([...points, point]);
     }
-
     //setModalOpen(false);
     setEditMode(false);
     setCurrentPoint(null);
@@ -423,10 +265,13 @@ const CreateTrail = () => {
   const handleChangeAnswer = (index, field, value) => {
     const updatedAnswers = answers.map((answer, i) => {
       if (i === index) {
-        console.log("isCorrect? <" + answers[0].isCorrect + ">");
+        if (quizType==='true-false') { // transform the true/false into the text as there will be the correct answer
+          answers[0].text = String(!answers[0].isCorrect);
+        }
+        //console.log("isCorrect? <" + answers[0].isCorrect + ">");
         return { ...answer, [field]: value };
       }
-      console.log("i !== index..." + answer);
+      //console.log("i !== index..." + answer);
       return answer;
     });
     setAnswers(updatedAnswers);
@@ -669,7 +514,12 @@ const CreateTrail = () => {
 
                   </div>
                   <div className='col-6'>
-                    <div ref={mapRef} className={`${styles.map_container}`}></div>
+                    <TrailMap
+                      points={points}
+                      onPointAdd={handleAddPoint}
+                      onPointEdit={handleEditPoint}
+                      editable={true}
+                    />
                   </div>
                 </div>
               </Tab>
@@ -681,12 +531,12 @@ const CreateTrail = () => {
                     <div className={`${styles.accordion_header} col-6 p-4`}>
                       <Accordion defaultActiveKey={['0']} alwaysOpen>
                         {points.map(point => (
-                          <Accordion.Item eventKey={point.id} key={point.id}>
+                          <Accordion.Item eventKey={point.id || point._id} key={point.id || point._id}>
                             <Accordion.Header>
                               <div className='d-flex flex-column w-100 p-2'>
                                 <img src={accordion_default} alt="publish" className='' style={{ width: '3.1rem', height: '3.1rem' }} />
                                 <p className={`${styles.accordion_point_title}`}>{point.title}</p>
-                                {console.log("undefined or null?" + !(point.quiz !== undefined && point.quiz !== null))}
+                                {/*console.log("undefined or null?" + !(point.quiz !== undefined && point.quiz !== null))*/}
                                 <div className='d-flex'>
                                   {point.quiz ? (
                                     <>
@@ -727,7 +577,10 @@ const CreateTrail = () => {
                       </Accordion>
                     </div>
                     <div className='col-6'>
-                      mapa s bodmi, pospajanymi sipkou a pri kazdom bode aj title
+                      <TrailMap
+                        points={points}
+                        editable={false}
+                      /> {/* Second map instance */}
                     </div>
                   </div>
                 </div>
