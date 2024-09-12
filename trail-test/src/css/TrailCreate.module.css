@@ -34,7 +34,9 @@
   font-weight: 800;
 }
 
-input.form_input, select.form_input, textarea.form_input {
+input.form_input,
+select.form_input,
+textarea.form_input {
   background-color: #FFF;
   font-weight: 500;
   color: #535353;
@@ -44,7 +46,8 @@ input.form_input, select.form_input, textarea.form_input {
   border-radius: 0.5rem;
 }
 
-.form_input::placeholder, .form_input:focus {
+.form_input::placeholder,
+.form_input:focus {
   color: #787D84;
 }
 
@@ -65,7 +68,13 @@ button.save_button {
   border-radius: 0 0 0.5rem 0.5rem;
 }
 
-.map_container {
+.map_container_trail_content {
+  width: 100% !important;
+  height: 38rem !important;
+  border-radius: 1rem;
+}
+
+.map_container_overview {
   width: 100% !important;
   height: 38rem !important;
   border-radius: 1rem;
@@ -86,7 +95,7 @@ button.point_save_button:visited {
   padding-bottom: 0.5rem;
 }
 
-button.point_save_button:hover, 
+button.point_save_button:hover,
 button.point_save_button:focus,
 button.point_save_button:not(:disabled):not(:disabled):active {
   color: #FFF;
@@ -104,10 +113,100 @@ button.point_delete_button:visited {
   padding-bottom: 0.5rem;
 }
 
-button.point_delete_button:hover, 
+button.point_delete_button:hover,
 button.point_delete_button:focus,
 button.point_delete_button:not(:disabled):not(:disabled):active {
   color: #FFF;
   background-color: #8c2929;
   border: none;
+}
+
+.accordion_header>button.accordion-button:not(.collapsed) {
+  background-color: #F3F3F3;
+}
+
+.overview_heading {
+  color: #000;
+  font-weight: 900;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #DEE2E6;
+}
+
+.accordion_point_title {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.accordion_point_question_type {
+  color: #939CA7;
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding-top: 0.1rem;
+}
+
+.accordion_point_coords {
+  color: #6C7885;
+}
+
+button.accordion_buttons,
+button.accordion_buttons:visited {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+button.accordion_buttons:hover,
+button.accordion_buttons:focus,
+button.accordion_buttons:not(:disabled):not(:disabled):active {
+  background-color: #dfdfdf;
+  border: none;
+}
+
+div.accordion_divider_bottom {
+  border-bottom: 1px solid #DEE2E6;
+}
+
+div.accordion_divider_top {
+  border-top: 1px solid #DEE2E6;
+}
+
+.accordion_point_answers_index {
+  color: #007AF7;
+  background-color: #fff;
+  border: 1px solid #007AF7;
+  border-radius: 0.3rem;
+  font-weight: 900;
+  width: 2rem;
+}
+
+.accordion_point_answers_index_correct {
+  color: #fff;
+  background-color: #007AF7;
+  border: 1px solid #007AF7;
+  border-radius: 0.3rem;
+  font-weight: 900;
+  width: 2rem;
+}
+
+.accordion_point_answers_text {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #007AF7;
+  border-radius: 0.3rem;
+  font-weight: 500;
+}
+
+.accordion_point_answers_text_correct {
+  color: #fff;
+  background-color: #007AF7;
+  border: 1px solid #007AF7;
+  border-radius: 0.3rem;
+  font-weight: 500;
+}
+
+.test1 {
+  color:#8c2929;
+}
+
+.test2 {
+  color:#5ccf26;
 }

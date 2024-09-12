@@ -28,6 +28,8 @@ import file_upload from '../assets/file_upload.png';
 import accordion_default from '../assets/accordion_default.svg';
 import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
+import accordion_action_delete from '../assets/accordion_action_delete.svg';
+import accordion_action_edit from '../assets/accordion_action_edit.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -66,6 +68,7 @@ const CreateTrail = () => {
   const { id } = useParams(); // Extract id for edit mode
   const hasLoadedInitialContent = useRef(false); // initial loading of description
   const [accordionEdit, setAccordionEdit] = useState(false);
+  const [showPointContent, setShowPointContent] = useState(false);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -246,6 +249,8 @@ const CreateTrail = () => {
             incorrect: incorrectFeedback,
           },
         };
+      } else {
+        pointData.quiz = null;
       }
       console.log(pointData);
       handleSavePoint(pointData);
@@ -434,7 +439,7 @@ const CreateTrail = () => {
                         </div>
                         <div className="d-flex flex-row justify-content-between mt-3">
                           <div className=" form-check col-8">
-                            <input className="form-check-input" type="checkbox" value={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
+                            <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
                             <label className='form-check-label' htmlFor="quiz_included" >
                               Do you want to include quiz?
                             </label>
@@ -564,6 +569,7 @@ const CreateTrail = () => {
                       onPointAdd={handleAddPoint}
                       onPointEdit={handleEditPoint}
                       editable={true}
+                      height='38rem'
                     />
                   </div>
                 </div>
@@ -571,51 +577,115 @@ const CreateTrail = () => {
               <Tab eventKey="overview" title="Overview">
 
                 <div className={`${styles.tabs_bg} p-0`}>
-                  <p>Points of interest</p>
+                  <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>Points of Interest</p>
                   <div className='d-flex'>
-                    <div className={`${styles.accordion_header} col-6 p-4`}>
+                    <div className={`col-6 p-4 pt-0`}>
                       <Accordion defaultActiveKey={['0']} alwaysOpen>
                         {points.map(point => (
                           <Accordion.Item eventKey={point.id || point._id} key={point.id || point._id}>
-                            <Accordion.Header>
+                            <Accordion.Header className={`${styles.accordion_header}`}>
                               <div className='d-flex flex-column w-100 p-2'>
-                                <img src={accordion_default} alt="publish" className='' style={{ width: '3.1rem', height: '3.1rem' }} />
-                                <p className={`${styles.accordion_point_title}`}>{point.title}</p>
+                                <img src={accordion_default} alt="publish" className='mb-3' style={{ width: '3.1rem', height: '3.1rem' }} />
+                                <p className={`${styles.accordion_point_title} mb-2`}>{point.title}</p>
                                 {/*console.log("undefined or null?" + !(point.quiz !== undefined && point.quiz !== null))*/}
                                 <div className='d-flex'>
                                   {point.quiz ? (
                                     <>
                                       <div className='col-6 d-flex'>
-                                        <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' />
-                                        {(() => {
-                                          switch (point.quiz?.type) {
-                                            case 'short-answer': return (<p>Short Written Answer</p>);
-                                            case 'single': return (<p>Single Correct Answer</p>);
-                                            case 'multiple': return (<p>Multiple Correct Answers</p>);
-                                            case 'slider': return (<p>Slider</p>);
-                                            case 'pairs': return (<p>Matching Pairs</p>);
-                                            case 'order': return (<p>Ordering</p>);
-                                            case 'true-false': return (<p>True/False</p>);
-                                            default: return (<></>);
-                                          }
-                                        })()}
+                                        <div>
+                                          <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' style={{ width: '1.3rem', height: '1.3rem' }} />
+                                        </div>
+                                        <p className={`${styles.accordion_point_question_type} m-0`}>
+                                          {(() => {
+                                            switch (point.quiz?.type) {
+                                              case 'short-answer': return ("Short Written Answer");
+                                              case 'single': return ("Single Correct Answer");
+                                              case 'multiple': return ("Multiple Correct Answers");
+                                              case 'slider': return ("Slider");
+                                              case 'pairs': return ("Matching Pairs");
+                                              case 'order': return ("Ordering");
+                                              case 'true-false': return ("True/False");
+                                              default: return (<></>);
+                                            }
+                                          })()}
+                                        </p>
                                       </div>
                                       <div className='col-6 d-flex'>
-                                        <img src={accordion_points} alt="accordion_points" className='pe-2' />
-                                        {point.quiz.points} {point.quiz.points === 1 ? " point" : " points"}
+                                        <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
+                                        <p className={`${styles.accordion_point_question_type} m-0`}>{point.quiz.points} {point.quiz.points === 1 ? " point" : " points"}</p>
                                       </div>
                                     </>
                                   ) : (
                                     <>
-                                      <p>No Quiz</p>
+                                      <p className={`${styles.accordion_point_question_type} m-0`}>No Quiz</p>
                                     </>
                                   )}
                                 </div>
                               </div>
                             </Accordion.Header>
-                            <Accordion.Body onClick={() => handleAccordionClick(point._id)}>
-                              LAT: {point.latitude}, LON: {point.longitude} <br />
-                              {point.content}
+                            <Accordion.Body>
+                              <div className='p-2 pt-0'>
+                                <div className={`${styles.accordion_divider_bottom} d-flex pb-2 mb-2`}>
+                                  <div className='col-9'>
+                                    <div className='d-flex'>
+                                      <div className='col-3'>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>Latitude:</p>
+                                      </div>
+                                      <div className='col-9'>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>{point.latitude}</p>
+                                      </div>
+                                    </div>
+                                    <div className='d-flex'>
+                                      <div className='col-3'>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>Longitude:</p>
+                                      </div>
+                                      <div className='col-9'>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>{point.longitude}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className='col-3 d-flex justify-content-end'>
+                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleAccordionClick(point._id)}>
+                                      <img src={accordion_action_edit} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
+                                    </button>
+                                    <button className={`${styles.accordion_buttons} btn p-1`}>
+                                      <img src={accordion_action_delete} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="form-check form-switch mb-1 mt-3">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    checked={showPointContent}
+                                    onChange={e => setShowPointContent(e.target.checked)}
+                                    id="show_content_checkbox" />
+                                  <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? "Hide Content" : "Show Content"}</label>
+                                </div>
+                                <div className={showPointContent ? "d-block" : "d-none"}>
+                                  <p className={`${styles.accordion_point_coords}`}>{point.content}</p>
+                                </div>
+                                {point.quiz ? (
+                                  <>
+                                    <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                      <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
+                                      {point.quiz.answers.map((answer, index) => (
+                                        <div className='d-flex my-1'>
+                                          <div className='col-1 d-flex justify-content-start'>
+                                            <p className={`${answer.isCorrect? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{index + 1}</p>
+                                          </div>
+                                          <div className='col-11'>
+                                            <p className={`${answer.isCorrect? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
+                                           {/*  <p className={answer.isCorrect? styles.test1 : styles.test2}>{answer.text}</p> */}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
                             </Accordion.Body>
                           </Accordion.Item>
                         ))}
@@ -625,6 +695,7 @@ const CreateTrail = () => {
                       <TrailMap
                         points={points}
                         editable={false}
+                        height='35rem'
                       /> {/* Second map instance */}
                     </div>
                   </div>
@@ -638,80 +709,5 @@ const CreateTrail = () => {
     </div>
   )
 };
-
-
-/* <div className='p-4'>
-  <BackButton></BackButton>
-  <h1 className='text-3xl my-4'>Create Trail</h1>
-  {loading ? <Spinner /> : ''}
-  <div className='flex flex-col p-4'>
-    {successMessage && (
-      <div className='bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3'>
-        <p>{successMessage}</p>
-      </div>
-    )}
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Name</label>
-      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className='border-2 border-gray-500 px-4'></input>
-    </div>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Description</label>
-      <div style={{ width: 500 }}><div ref={quillRef} /></div>
-    </div>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Difficulty</label>
-      <select value={difficulty} onChange={e => setDifficulty(e.target.value)} >
-        <option value="Easy">Easy</option>
-        <option value="Moderate">Moderate</option>
-        <option value="Challenging">Challenging</option>
-        <option value="Difficult">Difficult</option>
-      </select>
-    </div>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Season</label>
-      <select value={season} onChange={e => setSeason(e.target.value)} >
-        <option value="All Seasons">All Seasons</option>
-        <option value="Spring">Spring</option>
-        <option value="Summer">Summer</option>
-        <option value="Autumn">Autumn</option>
-        <option value="Winter">Winter</option>
-      </select>
-    </div>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Locality</label>
-      <select value={locality} onChange={e => setLocality(e.target.value)} >
-        <option value="Slovakia">Slovakia</option>
-        <option value="Czech Republic">Czech Republic</option>
-        <option value="Spain">Spain</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Thumbnail</label>
-      <input type='text' value={thumbnail} placeholder="Add Link to Image" onChange={(e) => setThumbnail(e.target.value)} className='border-2 border-gray-500 px-4'></input>
-    </div>
-    <div className='my-4'>
-      <label className='text-l mr-4 text-gray-500'>Map points:</label>
-      <ul>
-        {points.map(point => (
-          <li key={point.id}>
-            {point.title || 'New Point'} - {point.latitude}, {point.longitude}
-            <button onClick={() => handleEditPoint(point)}><AiOutlineEdit className='text-yellow-600'/></button>
-            <button onClick={() => removePoint(point.id)}><MdOutlineDelete className='text-red-600'/></button>
-          </li>
-        ))}
-      </ul>
-    </div>
-    <PointModal key={modalKey} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSavePoint} editMode={editMode} pointData={currentPoint}></PointModal>
-    <div className='my-4'>
-      <label className='text-xl mr-4 text-gray-500'>Map - Click to Add Points</label>
-      <div ref={mapRef} className='w-full h-96 border-2 border-gray-300' />
-    </div>
-
-    <button className='p-2 bg-sky-300 m-8' onClick={handleSaveTrail}>
-      Save
-    </button>
-  </div>
-</div> */
 
 export default CreateTrail;

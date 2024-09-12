@@ -12,8 +12,9 @@ import LineString from 'ol/geom/LineString';
 import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Modify } from 'ol/interaction';
+import styles from '../src/css/TrailCreate.module.css';
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable }) => {
+const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
@@ -174,7 +175,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable }) 
 
   }, [points, editable]);
 
-  return <div ref={mapRef} style={{ height: '400px', width: '100%' }} />;
+  return <div ref={mapRef} style={{ height: '38rem', width: '100%'}}/>;
 };
 
 export default TrailMap;
