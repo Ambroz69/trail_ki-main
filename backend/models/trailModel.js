@@ -28,11 +28,11 @@ const quizSchema = new mongoose.Schema({
     feedback: {
         correct: {
             type: String,
-            required: true,
+            required: false,
         },
         incorrect: {
             type: String,
-            required: true,
+            required: false,
         }
     }
 });

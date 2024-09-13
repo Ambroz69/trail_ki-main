@@ -1,11 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import BackButton from '../../components/BackButton';
-import Spinner from '../../components/Spinner';
-import PointModal from '../../components/PointModal';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MdOutlineDelete } from 'react-icons/md';
-import { AiOutlineEdit } from 'react-icons/ai';
 import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.snow.css';
 import Navbar from '../Navbar';
@@ -69,6 +64,8 @@ const CreateTrail = () => {
   const hasLoadedInitialContent = useRef(false); // initial loading of description
   const [accordionEdit, setAccordionEdit] = useState(false);
   const [showPointContent, setShowPointContent] = useState(false);
+  const [longitude, setLongitude] = useState('');
+  const [latitude, setLatitude] = useState('');
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -192,6 +189,8 @@ const CreateTrail = () => {
   const handleAddPoint = (point) => {
     //setPoints((prevPoints) => [...prevPoints, point]);
     setCurrentPoint(point);
+    setLongitude(point.longitude);
+    setLatitude(point.latitude);
     setTempPoint(point);
     setPointCreated(true);
   };
@@ -230,6 +229,8 @@ const CreateTrail = () => {
     if (title) {
       const pointData = {
         title,
+        longitude,
+        latitude,
         content
       };
 
@@ -264,6 +265,8 @@ const CreateTrail = () => {
   const resetContent = () => {
     setPointCreated(false);
     setTitle('');
+    setLongitude('');
+    setLatitude('');
     setContent('');
     setQuizChecked(false);
     setQuestion('');
@@ -304,11 +307,22 @@ const CreateTrail = () => {
     setAnswers(answers.filter((_, i) => i !== index));
   };
 
+  const toLetters = (num) => {
+    "use strict";
+    var mod = num % 26,
+      pow = num / 26 | 0,
+      out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
+    return pow ? toLetters(pow) + out : out;
+  };
+
+
   const handleAccordionClick = (pointId) => {
     const pointToEdit = points.find((point) => point.id === pointId || point._id === pointId);
-    console.log('accordion id', pointId);
+    console.log('accordion id:', pointId);
     if (pointToEdit) {
       setTitle(pointToEdit.title || '');
+      setLongitude(pointToEdit.longitude || '');
+      setLatitude(pointToEdit.latitude || '');
       setContent(pointToEdit.content || '');
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
@@ -432,6 +446,16 @@ const CreateTrail = () => {
                         <div className='mb-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>Interaction Title</label>
                           <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                        </div>
+                        <div className='mb-3 d-flex'>
+                          <div className='col-6 pe-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>Longitude</label>
+                            <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
+                          </div>
+                          <div className='col-6 ps-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>Latitude</label>
+                            <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
+                          </div>
                         </div>
                         <div className='mb-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>Content</label>
@@ -645,7 +669,7 @@ const CreateTrail = () => {
                                     </div>
                                   </div>
                                   <div className='col-3 d-flex justify-content-end'>
-                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleAccordionClick(point._id)}>
+                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleAccordionClick(point._id || point.id)}>
                                       <img src={accordion_action_edit} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
                                     </button>
                                     <button className={`${styles.accordion_buttons} btn p-1`}>
@@ -667,20 +691,59 @@ const CreateTrail = () => {
                                 </div>
                                 {point.quiz ? (
                                   <>
-                                    <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                      <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
-                                      {point.quiz.answers.map((answer, index) => (
-                                        <div className='d-flex my-1'>
-                                          <div className='col-1 d-flex justify-content-start'>
-                                            <p className={`${answer.isCorrect? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{index + 1}</p>
-                                          </div>
-                                          <div className='col-11'>
-                                            <p className={`${answer.isCorrect? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
-                                           {/*  <p className={answer.isCorrect? styles.test1 : styles.test2}>{answer.text}</p> */}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
+                                    {(() => {
+                                      switch (point.quiz.type) {
+                                        case 'short-answer': return (
+                                          <>
+                                          </>);
+                                        case 'single':
+                                        case 'multiple': return (
+                                          <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
+                                              {point.quiz.answers.map((answer, index) => (
+                                                <div className='d-flex my-1'>
+                                                  <div className='col-1 d-flex justify-content-start'>
+                                                    <p className={`${answer.isCorrect ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
+                                                  </div>
+                                                  <div className='col-11'>
+                                                    <p className={`${answer.isCorrect ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
+                                                    {/*  <p className={answer.isCorrect? styles.test1 : styles.test2}>{answer.text}</p> */}
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </>);
+                                        case 'slider': return (
+                                          <>
+                                          </>);
+                                        case 'pairs': return (
+                                          <>
+                                          </>);
+                                        case 'order': return (
+                                          <>
+                                          </>);
+                                        case 'true-false': return (
+                                          <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
+                                              <div className="form-check">
+                                                <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={point.quiz.answers[0]?.isCorrect} />
+                                                <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
+                                                  True
+                                                </label>
+                                              </div>
+                                              <div className="form-check">
+                                                <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionFalse" value="false" readOnly checked={!point.quiz.answers[0]?.isCorrect} />
+                                                <label className={`${styles.form_label} form-check-label`} htmlFor="optionFalse">
+                                                  False
+                                                </label>
+                                              </div>
+                                            </div>
+                                          </>);
+                                        default: return (<></>);
+                                      }
+                                    })()}
                                   </>
                                 ) : (
                                   <></>
@@ -695,7 +758,7 @@ const CreateTrail = () => {
                       <TrailMap
                         points={points}
                         editable={false}
-                        height='35rem'
+                        height='32rem'
                       /> {/* Second map instance */}
                     </div>
                   </div>
