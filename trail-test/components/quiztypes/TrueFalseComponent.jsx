@@ -9,7 +9,7 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer }) => {
         <input
           className="form-check-input"
           type="checkbox"
-          checked={answer.isCorrect}
+          checked={answer.isCorrect || false}
           onChange={e => handleChangeAnswer(0, "isCorrect", e.target.checked)}
           id="flexSwitchCheckDefault" />
         <label className={`${styles.form_label} form-check-label`} htmlFor="flexSwitchCheckDefault">{value ? "True" : "False"}</label>
