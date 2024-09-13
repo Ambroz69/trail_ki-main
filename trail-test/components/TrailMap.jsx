@@ -9,7 +9,7 @@ import VectorLayer from 'ol/layer/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
-import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
+import { Style, Stroke, Fill, Circle as CircleStyle, Text as TextStyle } from 'ol/style';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Modify } from 'ol/interaction';
 import styles from '../src/css/TrailCreate.module.css';
@@ -114,11 +114,26 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
       points.forEach((point) => {
         let feature = vectorSourceRef.current.getFeatureById(point.id || point._id);
 
+        const pointStyle = new Style({
+          image: new CircleStyle({
+            radius: 6,
+            fill: new Fill({ color: 'blue' }),
+            stroke: new Stroke({ color: 'white', width: 2 }),
+          }),
+          text: !editable ? new TextStyle({
+            text: point.title, // Display point title when not editable
+            offsetY: -15, // Adjust text position above the point
+            fill: new Fill({ color: 'blue' }),
+            stroke: new Stroke({ color: 'white', width: 2 }),
+          }) : null,
+        });
+
         if (feature) {
           // If feature exists, update its geometry
           setTimeout(() => {
             try {
               feature.getGeometry().setCoordinates(fromLonLat([point.longitude, point.latitude]));
+              feature.setStyle(pointStyle);
             } catch (error) {
               console.error('Error while updating feature coordinates:', error);
             }
@@ -129,15 +144,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
             geometry: new Point(fromLonLat([point.longitude, point.latitude])),
             id: point._id || point.id,
           });
-          pointFeature.setStyle(
-            new Style({
-              image: new CircleStyle({
-                radius: 6,
-                fill: new Fill({ color: 'blue' }),
-                stroke: new Stroke({ color: 'white', width: 2 }),
-              }),
-            })
-          );
+          pointFeature.setStyle(pointStyle);
           pointFeature.setId(point._id || point.id); // Assign ID to the feature
           setTimeout(() => {
             vectorSourceRef.current.addFeature(pointFeature);
@@ -175,7 +182,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
 
   }, [points, editable]);
 
-  return <div ref={mapRef} style={{ height: '38rem', width: '100%'}}/>;
+  return <div ref={mapRef} style={{ height: height, width: '100%'}}/>;
 };
 
 export default TrailMap;
