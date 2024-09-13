@@ -79,9 +79,9 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   style={{
-                    background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
+                    background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
                     padding: 8,
-                    width: '25%',
+                    width: '40%',
                     minHeight: '100px',
                   }}
                 >
@@ -97,17 +97,12 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                             padding: 16,
                             margin: `0 0 8px 0`,
                             minHeight: '50px',
-                            backgroundColor: snapshot.isDragging ? '#263B4A' : '#456C86',
-                            color: 'black',
+                            backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
+                            color: 'white',
                             ...provided.draggableProps.style,
                           }}
                         >
-                          <input
-                            type="text"
-                            value={text}
-                            readOnly
-                            className='border-2 border-gray-500 px-4 mr-4'
-                          />
+                          <p className={`p-2 m-0 text-center`}>{text}</p>
                         </div>
                       )}
                     </Draggable>
@@ -122,9 +117,9 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   style={{
-                    background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
+                    background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
                     padding: 8,
-                    width: '25%',
+                    width: '40%',
                     minHeight: '100px',
                   }}
                 >
@@ -140,17 +135,12 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                             padding: 16,
                             margin: `0 0 8px 0`,
                             minHeight: '50px',
-                            backgroundColor: snapshot.isDragging ? '#263B4A' : '#456C86',
-                            color: 'black',
+                            backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
+                            color: 'white',
                             ...provided.draggableProps.style,
                           }}
                         >
-                          <input
-                            type="text"
-                            value={pairText}
-                            readOnly
-                            className='border-2 border-gray-500 px-4 mr-4'
-                          />
+                          <p className={`p-2 m-0 text-center`}>{pairText}</p>
                         </div>
                       )}
                     </Draggable>
