@@ -55,7 +55,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={{
-                  background: snapshot.isDraggingOver ? 'lightblue' : 'F3F3F3',
+                  background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
                   padding: 8,
                   width: '40%',
                   minHeight: '100px',

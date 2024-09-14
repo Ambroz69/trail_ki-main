@@ -52,7 +52,7 @@ const handleSliderChange = (e) => {
             min={minValue}
             max={maxValue}
             value={correctValue}
-            onChange={e => handleSliderChange(e.target.value)}
+            onChange={e => setCorrectValue(e.target.value)}
             className='form-range ps-3'
           />
         </div>
