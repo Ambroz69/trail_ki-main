@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import styles from '../../src/css/TrailCreate.module.css';
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -15,29 +16,29 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
   const [shuffledRight, setShuffledRight] = useState([]);
 
   const handleDragDrop = (result) => {
-    const {source, destination, type} = result;
-    
+    const { source, destination, type } = result;
+
     if (!destination) return;
 
-    if(source.droppableId === destination.droppableId && source.index === destination.index) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    if(type === 'leftGroup') {
-        const reorderedAnswers = [...shuffledLeft];
-        const sourceIndex = source.index;
-        const destinationIndex = destination.index;
-        const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
-        reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
-        return setShuffledLeft(reorderedAnswers);
+    if (type === 'leftGroup') {
+      const reorderedAnswers = [...shuffledLeft];
+      const sourceIndex = source.index;
+      const destinationIndex = destination.index;
+      const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
+      reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      return setShuffledLeft(reorderedAnswers);
     }
-    if(type === 'rightGroup') {
-        const reorderedAnswers = [...shuffledRight];
-        const sourceIndex = source.index;
-        const destinationIndex = destination.index;
-        const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
-        reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
-        return setShuffledRight(reorderedAnswers);
+    if (type === 'rightGroup') {
+      const reorderedAnswers = [...shuffledRight];
+      const sourceIndex = source.index;
+      const destinationIndex = destination.index;
+      const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
+      reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      return setShuffledRight(reorderedAnswers);
     }
-};
+  };
 
   useEffect(() => {
     if (quizMode) {
@@ -49,9 +50,9 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
 
   return (
     <div>
-      <label className='mr-4 text-gray-500'>Insert Correct Pairings</label>
+      <label className={`${styles.form_label} form-label mb-1`}>Insert Correct Pairings</label>
       {!quizMode ? (
-        answers.map((answer, index) => (
+        /* answers.map((answer, index) => (
           <div className='my-4' key={index}>
             <input
               type="text"
@@ -68,6 +69,31 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
               className='border-2 border-gray-500 px-4 mr-4'
             />
             <span className="close mr-4" onClick={() => handleRemoveAnswer(index)} >&times;</span>
+          </div>
+        )) */
+        answers.map((answer, index) => (
+          <div className='d-flex justify-content-between align-items-center mb-3' key={index}>
+            <div className='d-flex col-11'>
+              <div className='col-6 pe-2'>
+                <input
+                  type="text"
+                  value={answer.text}
+                  onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
+                  className={`${styles.form_input} form-control`}
+                />
+              </div>
+              <div className='col-6 ps-2'>
+                <input
+                  type="text"
+                  value={answer.pairText || ''}
+                  onChange={e => handleChangeAnswer(index, 'pairText', e.target.value)}
+                  className={`${styles.form_input} form-control`}
+                />
+              </div>
+            </div>
+            <div className='col-1 d-flex justify-content-end'>
+              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)}>X</button>
+            </div>
           </div>
         ))
       ) : (

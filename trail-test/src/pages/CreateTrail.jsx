@@ -464,7 +464,7 @@ const CreateTrail = () => {
                         <div className="d-flex flex-row justify-content-between mt-3">
                           <div className=" form-check col-8">
                             <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
-                            <label className='form-check-label' htmlFor="quiz_included" >
+                            <label className={`${styles.form_label} form-check-label`} htmlFor="quiz_included" >
                               Do you want to include quiz?
                             </label>
                           </div>
@@ -539,7 +539,7 @@ const CreateTrail = () => {
                                         handleChangeAnswer={handleChangeAnswer}
                                         handleRemoveAnswer={handleRemoveAnswer}
                                       />
-                                      <button onClick={handleAddAnswer} className='p-2 border-2 border-gray-500 m-4'>Add Another Pair</button>
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
                                     </>
                                   );
                                 case 'order':
@@ -550,7 +550,7 @@ const CreateTrail = () => {
                                         handleChangeAnswer={handleChangeAnswer}
                                         handleRemoveAnswer={handleRemoveAnswer}
                                       />
-                                      <button onClick={handleAddAnswer} className='p-2 border-2 border-gray-500 m-4'>Add Another Answer</button>
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
                                     </>
                                   );
                                 case 'true-false':
@@ -611,7 +611,6 @@ const CreateTrail = () => {
                               <div className='d-flex flex-column w-100 p-2'>
                                 <img src={accordion_default} alt="publish" className='mb-3' style={{ width: '3.1rem', height: '3.1rem' }} />
                                 <p className={`${styles.accordion_point_title} mb-2`}>{point.title}</p>
-                                {/*console.log("undefined or null?" + !(point.quiz !== undefined && point.quiz !== null))*/}
                                 <div className='d-flex'>
                                   {point.quiz ? (
                                     <>
@@ -687,7 +686,7 @@ const CreateTrail = () => {
                                   <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? "Hide Content" : "Show Content"}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
-                                  <p className={`${styles.accordion_point_coords}`}>{point.content}</p>
+                                  <p className={`${styles.accordion_text_gray}`}>{point.content}</p>
                                 </div>
                                 {point.quiz ? (
                                   <>
@@ -695,12 +694,18 @@ const CreateTrail = () => {
                                       switch (point.quiz.type) {
                                         case 'short-answer': return (
                                           <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              <div className='my-1'>
+                                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{point.quiz.answers[0].text}</p>
+                                              </div>
+                                            </div>
                                           </>);
                                         case 'single':
                                         case 'multiple': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
                                               {point.quiz.answers.map((answer, index) => (
                                                 <div className='d-flex my-1'>
                                                   <div className='col-1 d-flex justify-content-start'>
@@ -716,17 +721,56 @@ const CreateTrail = () => {
                                           </>);
                                         case 'slider': return (
                                           <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              <div className='d-flex justify-content-between mt-2'>
+                                                <p className={`${styles.accordion_text_gray} mb-0`}>{point.quiz.answers[0].minValue}</p>
+                                                <p className={`${styles.accordion_slider_value} mb-0`}>{point.quiz.answers[0].text}</p>
+                                                <p className={`${styles.accordion_text_gray} mb-0`}>{point.quiz.answers[0].maxValue}</p>
+                                              </div>
+                                              <div className='d-flex align-items-center justify-content-center'>
+                                                <input
+                                                  type="range"
+                                                  min={point.quiz.answers[0].minValue}
+                                                  max={point.quiz.answers[0].maxValue}
+                                                  value={point.quiz.answers[0].text}
+                                                  readOnly
+                                                  className='form-range'
+                                                />
+                                              </div>
+                                            </div>
                                           </>);
                                         case 'pairs': return (
                                           <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              {point.quiz.answers.map((answer) => (
+                                                <div className='d-flex my-1'>
+                                                  <div className='col-6 pe-2'>
+                                                    <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
+                                                  </div>
+                                                  <div className='col-6 ps-2'>
+                                                    <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.pairText}</p>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
                                           </>);
                                         case 'order': return (
                                           <>
+                                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              {point.quiz.answers.map((answer) => (
+                                                <div className='my-1'>
+                                                  <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
+                                                </div>
+                                              ))}
+                                            </div>
                                           </>);
                                         case 'true-false': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_point_coords} my-2`}>{point.quiz.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
                                               <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={point.quiz.answers[0]?.isCorrect} />
                                                 <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
@@ -744,6 +788,21 @@ const CreateTrail = () => {
                                         default: return (<></>);
                                       }
                                     })()}
+                                    {(point.quiz.feedback && ((point.quiz.feedback?.correct !== "" && point.quiz.feedback?.correct !== null) || (point.quiz.feedback?.incorrect !== "" && point.quiz.feedback?.incorrect !== null))) ? (
+                                      <>
+                                        <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                          <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
+                                          <div className={(point.quiz.feedback.correct !== "" && point.quiz.feedback.correct !== null) ? 'my-1' : 'my-1 d-none'}>
+                                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.correct}</p>
+                                          </div>
+                                          <div className={(point.quiz.feedback.incorrect !== "" && point.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
+                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect}</p>
+                                          </div>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <></>
+                                    )}
                                   </>
                                 ) : (
                                   <></>

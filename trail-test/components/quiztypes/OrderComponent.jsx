@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import styles from '../../src/css/TrailCreate.module.css';
 
 const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDragEnd, quizMode }) => {
 
@@ -33,18 +34,21 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
 
   return (
     <div>
-      <label className='mr-4 text-gray-500'>Insert Correct Order</label>
+      <label className={`${styles.form_label} form-label mb-1`}>Answers in correct order</label>
       {!quizMode ? (
         answers.map((answer, index) => (
-          <div className='my-4' key={index}>
-            <input
-              type="text"
-              placeholder={`Step ${index + 1}`}
-              value={answer.text}
-              onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
-              className='border-2 border-gray-500 px-4 mr-4'
-            />
-            <span className="close mr-4" onClick={() => handleRemoveAnswer(index)} >&times;</span>
+          <div className='d-flex justify-content-between align-items-center mb-3' key={index}>
+            <div className='col-11'>
+              <input
+                type="text"
+                value={answer.text}
+                onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
+                className={`${styles.form_input} form-control`}
+              />
+            </div>
+            <div className='col-1 d-flex justify-content-end'>
+              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)}>X</button>
+            </div>
           </div>
         ))
       ) : (

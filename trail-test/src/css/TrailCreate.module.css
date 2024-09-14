@@ -146,6 +146,7 @@ button.point_delete_button:not(:disabled):not(:disabled):active {
 
 .accordion_point_coords {
   color: #6C7885;
+  font-size: 0.9rem;
 }
 
 button.accordion_buttons,
@@ -203,10 +204,26 @@ div.accordion_divider_top {
   font-weight: 500;
 }
 
-.test1 {
-  color:#8c2929;
+.accordion_slider_value {
+  color: #007AF7;
 }
 
-.test2 {
-  color:#5ccf26;
+.accordion_text_gray {
+  color: #6C7885;
+}
+
+.accordion_correct_feedback {
+  color: #59944d;
+  background-color: #ddffd6;
+  border: 1px solid #59944d;
+  border-radius: 0.3rem;
+  font-weight: 500;
+}
+
+.accordion_incorrect_feedback {
+  color: #944d4d;
+  background-color: #ffd6d6;
+  border: 1px solid #944d4d;
+  border-radius: 0.3rem;
+  font-weight: 500;
 }
