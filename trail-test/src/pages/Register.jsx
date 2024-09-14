@@ -20,7 +20,7 @@ const Register = () => {
       method: "post",
       url: "http://localhost:5555/users/register",
       data: {
-        /* ADD NAME TO BACKEND CALL name */
+        name,
         email,
         password
       },

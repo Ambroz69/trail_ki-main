@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './css/Navbar.module.css';
 import { Button } from "react-bootstrap";
 import Cookies from "universal-cookie";
@@ -16,6 +16,18 @@ const cookies = new Cookies();
 //const token = cookies.get("SESSION_TOKEN");
 
 function Navbar() {
+
+  const isTokenExpired = (tok) => {
+    const arrayToken = tok.split('.');
+    const tokenPayload = JSON.parse(atob(arrayToken[1]));
+    setUserEmail(tokenPayload?.userEmail || '');
+    setUserName(tokenPayload?.userName || '');
+    return Math.floor(new Date().getTime() /1000) >= tokenPayload?.sub;
+  };
+
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+
   // adding the states 
   const [isActive, setIsActive] = useState(false);
   //add the active class
@@ -35,6 +47,10 @@ function Navbar() {
   }
 
   const [token, setToken] = useState(cookies.get("SESSION_TOKEN"));
+
+  useEffect(() => {
+    isTokenExpired(token);
+  }, [token]);
 
   return (
     <div className={`${styles.sidebar} d-flex flex-column flex-shrink-0 p-3 mx-0 px-0 pt-4`}>
@@ -92,10 +108,10 @@ function Navbar() {
             <img src="https://liquipedia.net/commons/images/1/1a/Brawl_Hank.png" referrerPolicy="no-referrer" alt="" width="50" height="50" className="rounded-circle me-3" />
             <div className='d-flex flex-column'>
               <div className={`${styles.sidebar_link_profile_name}`}>
-                Janka Pecuchová
+                {userName || 'Hank the Fish'}
               </div>
               <div className={`${styles.sidebar_link_profile_email}`}>
-                jaja@gmail.com
+                {userEmail}
               </div>
             </div>
           </div>

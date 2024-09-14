@@ -12,6 +12,7 @@ router.post("/register", (request, response) => {
     .then((hashedPassword) => {
       // create a new user instance and collect the data
       const user = new User({
+        name: request.body.name,
         email: request.body.email,
         password: hashedPassword,
       });
@@ -69,6 +70,7 @@ router.post("/login", (request, response) => {
             {
               userId: user._id,
               userEmail: user.email,
+              userName: user.name,
             },
             "RANDOM-TOKEN",
             { expiresIn: "24h" }
