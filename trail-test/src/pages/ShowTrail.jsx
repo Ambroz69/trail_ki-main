@@ -12,6 +12,8 @@ import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
 import TrailMap from '../../components/TrailMap';
 
+import filter_button from '../assets/filter_button.svg';
+
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
@@ -19,6 +21,7 @@ const token = cookies.get("SESSION_TOKEN");
 
 const ShowTrail = () => {
     const [trail, setTrail] = useState(null);
+    const [isFlipped, setIsFlipped] = useState(false);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
     const [modalOpen, setModalOpen] = useState(false);
@@ -50,21 +53,25 @@ const ShowTrail = () => {
 
     const handleChangeAnswer = (index, field, value) => {
         const updatedAnswers = answers.map((answer, i) => {
-          if (i === index) {
-            if (quizType === 'true-false') { // transform the true/false into the text as there will be the correct answer
-              answers[0].text = String(!answers[0].isCorrect);
+            if (i === index) {
+                if (quizType === 'true-false') { // transform the true/false into the text as there will be the correct answer
+                    answers[0].text = String(!answers[0].isCorrect);
+                }
+                //console.log("isCorrect? <" + answers[0].isCorrect + ">");
+                return { ...answer, [field]: value };
             }
-            //console.log("isCorrect? <" + answers[0].isCorrect + ">");
-            return { ...answer, [field]: value };
-          }
-          //console.log("i !== index..." + answer);
-          return answer;
+            //console.log("i !== index..." + answer);
+            return answer;
         });
         //setAnswers(updatedAnswers);
         // Store the updated answers to preserve them when switching types
         //setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
-      };
+    };
 
+    const handleFlip = () => {
+        setIsFlipped(!isFlipped);
+    };
+    
     return (
         <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
             <div className='col-3 pe-4'>
@@ -80,6 +87,8 @@ const ShowTrail = () => {
                         <div className='my-4'>
                             <div dangerouslySetInnerHTML={{ __html: trail.description }} />
                         </div>
+                                {/* Trail Info Card */}
+                                {!isFlipped ? (
                         <div className='my-4'>
                             <h4>Trail Contest:</h4>
                             <span className='text-l text-gray-500 mr-4'>Trail Type: </span><span>{trail.season}</span><br />
@@ -90,11 +99,24 @@ const ShowTrail = () => {
                             <span className='text-l text-gray-500 mr-4'>Trail Length: </span><span>{trail.length.toFixed(2)} km</span><br />
                             <span className='text-l text-gray-500 mr-4'>Trail Difficulty: </span><span>{trail.difficulty}</span><br />
                             <span className='text-l text-gray-500 mr-4'>Language: </span><span>{trail.language}</span>
+                            <img src={filter_button} alt="filter_button" className='px-2' onClick={handleFlip} />
                         </div>
+                                ) : (
+                                    <div className='my-4'>
+                        {/* Map Card */}
+                        <h4>Trail Map:</h4>
+                            <TrailMap
+                            points={trail.points}
+                            height='13rem'
+                            editable={false}
+                        />
+                        <img src={filter_button} alt="filter_button" className='px-2' onClick={handleFlip} />
+                                </div>
+                        )}
                         <div className='my-4'>
                             <span className='text-xl mr-4 text-gray-500'>Points of Interest ({trail.points.length})</span>
                             <span>
-                                {console.log(trail.points)}
+                                {/*console.log(trail.points)*/}
                                 {trail.points && trail.points.length > 0 ? (
                                     <ul>
                                         {trail.points.map((point, idx) => (
@@ -118,6 +140,7 @@ const ShowTrail = () => {
                                                                     <ChoiceComponent
                                                                         quizType={point.quiz?.type}
                                                                         answers={point.quiz?.answers}
+                                                                        quizMode={true}
                                                                         handleChangeAnswer={handleChangeAnswer}
                                                                     />
                                                                 </>
@@ -172,11 +195,7 @@ const ShowTrail = () => {
                                 )}
                             </span>
                         </div>
-                        <TrailMap
-                            points={trail.points}
-                            height='35rem'
-                            editable={false}
-                        />
+                        
                     </div>
                 ) : (
                     <div>No Trail Data Available</div>
