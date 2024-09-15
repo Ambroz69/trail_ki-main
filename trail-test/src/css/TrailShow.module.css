@@ -1,3 +1,15 @@
+.show_trail_bg {
+  background: #FAFBFF;
+}
+
+.white_bg {
+  background: #FFF;
+}
+
+.trail_card_div {
+  cursor: pointer;
+}
+
 .show_trail_div_border {
   border: 1px solid #F1F1F1;
   border-radius: 1rem;
@@ -7,6 +19,10 @@
   border-top: 1px solid #F1F1F1;
   border-radius: 1rem;
   border-radius: 0 0 1rem 1rem;
+}
+
+.show_trail_div_border_right {
+  border-right: 1px solid #F1F1F1;
 }
 
 .trail_content_heading {
@@ -36,4 +52,59 @@
 .trail_description {
   color: #91979F;
   font-size: 1.1rem;
+}
+
+.rating_practice_apply_button {
+  border: 1px solid #F1F1F1;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.rating_practice_apply_text {
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+.lower_card_heading {
+  color: #23242A;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+button.show_all_button,
+button.show_all_button:visited {
+  color: #0E2134;
+  background-color: #FFF;
+  border: 1px solid #8B8FAC;
+  font-weight: 900;
+  border-radius: 0.25rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+button.show_all_button:hover,
+button.show_all_button:focus,
+button.show_all_button:not(:disabled):not(:disabled):active {
+  background-color: #d4d4d4;
+  border: 1px solid #8B8FAC;
+}
+
+button.start_button,
+button.start_button:visited {
+  color: #FFF;
+  background-color: #1976D3;
+  border: none;
+  font-weight: 400;
+  border-radius: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+button.start_button:hover,
+button.start_button:focus,
+button.start_button:not(:disabled):not(:disabled):active {
+  color: #FFF;
+  background-color: #125292;
+  border: none;
 }

@@ -111,7 +111,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
 
     // Function to update or add individual points without clearing the whole source
     const updateMapPoints = (points) => {
-      points.forEach((point) => {
+      points?.forEach((point) => {
         let feature = vectorSourceRef.current.getFeatureById(point.id || point._id);
 
         const pointStyle = new Style({
@@ -157,7 +157,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     updateMapPoints(points);
 
     // Draw lines between points if there are multiple
-    if (points.length > 1) {
+    if (points?.length > 1) {
       const lineCoordinates = points.map(p => fromLonLat([p.longitude, p.latitude]));
       const lineFeature = new Feature({
         geometry: new LineString(lineCoordinates),
@@ -174,7 +174,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     }
 
     // Optionally zoom the map to fit points
-    if (points.length > 0 && mapInstanceRef.current) {
+    if (points?.length > 0 && mapInstanceRef.current) {
       const firstPointCoords = fromLonLat([points[0].longitude, points[0].latitude]);
       mapInstanceRef.current.getView().setCenter(firstPointCoords);
       mapInstanceRef.current.getView().setZoom(14); // Adjust zoom as needed
