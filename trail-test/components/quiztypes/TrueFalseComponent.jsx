@@ -6,6 +6,8 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
   return (
     <>
       {!quizMode ? (
+        <>
+        {answer.text = String(answer.isCorrect)}
         <div className='mb-3'>
           <label className={`${styles.form_label} form-label mb-1`}>Correct answer</label>
           <div className="form-check form-switch">
@@ -18,6 +20,7 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
             <label className={`${styles.form_label} form-check-label`} htmlFor="flexSwitchCheckDefault">{value ? "True" : "False"}</label>
           </div>
         </div>
+        </>
       ) : (
         <div className='mb-3'>
           <div className="form-check form-switch">
