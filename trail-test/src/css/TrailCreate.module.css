@@ -227,3 +227,35 @@ div.accordion_divider_top {
   border-radius: 0.3rem;
   font-weight: 500;
 }
+
+h1.modal_heading {
+  font-size: 1.2rem;
+  color: #000;
+  font-weight: 800;
+}
+
+p.modal_text {
+  font-size: 0.9rem;
+  color: #6D7174;
+}
+
+button.modal_delete_button,
+button.modal_delete_button:visited {
+  color: #FFF;
+  background-color: #F24646;
+  border: none;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+button.modal_delete_button:hover,
+button.modal_delete_button:focus,
+button.modal_delete_button:not(:disabled):not(:disabled):active {
+  color: #FFF;
+  background-color: #8c2929;
+  border: none;
+}
+
+div.modal_footer {
+  border: none;
+}

@@ -15,6 +15,8 @@ import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
 import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
 import TrailMap from '../../components/TrailMap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 import Cookies from "universal-cookie";
 
@@ -25,6 +27,7 @@ import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
 import accordion_action_delete from '../assets/accordion_action_delete.svg';
 import accordion_action_edit from '../assets/accordion_action_edit.svg';
+import modal_delete from '../assets/modal_delete.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -66,6 +69,8 @@ const CreateTrail = () => {
   const [showPointContent, setShowPointContent] = useState(false);
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
+  const [deleteModalShow, setDeleteModalShow] = useState(false);
+  const [pointToProcess, setPointToProcess] = useState(null);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -177,13 +182,25 @@ const CreateTrail = () => {
     }
   }, [quill, description]);
 
-  const removePoint = (pointId) => {
+  const handleConfirmDelete = () => {
     setPoints(points => {
-      const updatedPoints = points.filter(p => p.id !== pointId);
-      updateMapPoints(updatedPoints);
+      const updatedPoints = points.filter(p => (p.id || p._id) !== pointToProcess);
+      //updateMapPoints(updatedPoints);
       return updatedPoints;
     });
+    setDeleteModalShow(false);
+    setPointToProcess(null);
   }
+
+  const handleDeleteModalShow = (point_id) => {
+    setPointToProcess(point_id);
+    setDeleteModalShow(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setPointToProcess(null);
+    setDeleteModalShow(false);
+  };
 
   // handle for TrailMap component  
   const handleAddPoint = (point) => {
@@ -671,7 +688,7 @@ const CreateTrail = () => {
                                     <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleAccordionClick(point._id || point.id)}>
                                       <img src={accordion_action_edit} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
                                     </button>
-                                    <button className={`${styles.accordion_buttons} btn p-1`}>
+                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleDeleteModalShow(point._id || point.id)}>
                                       <img src={accordion_action_delete} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
                                     </button>
                                   </div>
@@ -828,6 +845,27 @@ const CreateTrail = () => {
           </div>
         </div>
       </div>
+      <Modal
+            show={deleteModalShow}
+            onHide={handleDeleteModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Delete Point</h1>
+              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this point?</p>
+              <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
     </div>
   )
 };
