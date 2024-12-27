@@ -33,6 +33,7 @@ const Home = () => {
   const [trailToProcess, setTrailToProcess] = useState(null);
   const [cloneModalShow, setCloneModalShow] = useState(false);
   const [publishModalShow, setPublishModalShow] = useState(false);
+  const [unpublishModalShow, setUnpublishModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
 
   useEffect(() => {
@@ -72,6 +73,23 @@ const Home = () => {
         console.log(error);
         setLoading(false);
         handlePublishModalClose();
+      });
+  };
+
+  const handleConfirmUnpublish = () => {
+    setLoading(true);
+    axios.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(response => {
+        setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: false } : trail));
+        setLoading(false);
+        handleUnpublishModalClose();
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+        handleUnpublishModalClose();
       });
   };
 
@@ -135,9 +153,19 @@ const Home = () => {
     setPublishModalShow(true);
   };
 
+  const handleUnpublishModalShow = (trail_id) => {
+    setTrailToProcess(trail_id);
+    setUnpublishModalShow(true);
+  };
+
   const handlePublishModalClose = () => {
     setTrailToProcess(null);
     setPublishModalShow(false);
+  };
+
+  const handleUnpublishModalClose = () => {
+    setTrailToProcess(null);
+    setUnpublishModalShow(false);
   };
 
   const handleDeleteModalShow = (trail_id) => {
@@ -235,9 +263,15 @@ const Home = () => {
                             <Dropdown.Item href="#" onClick={() => handleCloneModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_duplicate} alt="duplicate" className='pe-2' />Duplicate
                             </Dropdown.Item>
-                            <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_publish} alt="publish" className='pe-2' />Publish
-                            </Dropdown.Item>
+                            {trail.published ? ( // change icon
+                              <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish  
+                              </Dropdown.Item>
+                            ) : (
+                              <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                <img src={table_action_publish} alt="publish" className='pe-2' />Publish
+                              </Dropdown.Item>
+                            )}
                             <Dropdown.Item href={`/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show Trail
                             </Dropdown.Item>
@@ -298,6 +332,27 @@ const Home = () => {
               </Button>
               <Button variant="primary" onClick={() => handleConfirmPublish()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
                 Publish
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={unpublishModalShow}
+            onHide={handleUnpublishModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Unpublish Trail</h1>
+              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to return this trail to draft?</p>
+              <p className={`${styles.modal_text} `}>Once unpublished, it will not be available to the public anymore.</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleUnpublishModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmUnpublish()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
+                Unpublish
               </Button>
             </Modal.Footer>
           </Modal>
