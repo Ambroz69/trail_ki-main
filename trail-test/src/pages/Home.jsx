@@ -275,9 +275,11 @@ const Home = () => {
                             <Dropdown.Item href={`/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show Trail
                             </Dropdown.Item>
-                            <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
-                            </Dropdown.Item>
+                            {(!trail.published) && (
+                              <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
+                              </Dropdown.Item>
+                            )}
                             <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_delete} alt="delete" className='pe-2' />Delete
                             </Dropdown.Item>
