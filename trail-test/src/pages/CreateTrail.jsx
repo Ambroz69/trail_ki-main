@@ -72,6 +72,8 @@ const CreateTrail = () => {
   const [latitude, setLatitude] = useState('');
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [pointToProcess, setPointToProcess] = useState(null);
+  const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -414,6 +416,38 @@ const CreateTrail = () => {
     }
   };
 
+  const handleAreaClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleAreaDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleAreaDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleAreaDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+    if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        setThumbnail(file);
+        let fileURL = URL.createObjectURL(file);
+        setThumbnailPreview(fileURL);
+      }
+    }
+  };
+
   return (
     <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
       <div className='col-3 pe-4'>
@@ -439,24 +473,19 @@ const CreateTrail = () => {
             >
               <Tab eventKey="general" title="General Information">
                 <div className={`${styles.tabs_bg} p-4`}>
-                  <div className={`${styles.file_upload} d-flex flex-column align-items-center mb-3 w-100`}>
-                    <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
+                  <div className={`${styles.file_upload} d-flex flex-column align-items-center mb-3 w-100`} onClick={handleAreaClick} onDragOver={handleAreaDragOver} onDragLeave={handleAreaDragLeave} onDrop={handleAreaDrop}>
+                    <input type = "file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} accept="image/*" />
+                    {thumbnailPreview ? ( // preview the selected file
+                      <img src={thumbnailPreview} alt="preview" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
+                    ) : thumbnail ? ( // show thumbnail in edit 
+                      <img src={`http://localhost:5555/${thumbnail}`} alt="thumbnail" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
+                    ) : (
+                      <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
+                    )}
                     <div className='d-flex'>
                       <div className={`${styles.upload_text_black} pe-1`}>Drag and drop or</div>
-                      {/*<div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>*/}
-                      <label className={`${styles.upload_text_blue} pe-1`} style={{ cursor: 'pointer' }} >
-                        Choose File
-                        <input type="file" style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
-                      </label>
+                      <div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>
                       <div className={`${styles.upload_text_black}`}>to upload</div>
-                      <div className="mt-2">
-                        {thumbnailPreview && ( // preview the selected file
-                          <img src={thumbnailPreview} alt="preview" style={{ maxWidth: '200px', maxHeight: '200px', marginTop: '0.5rem' }} />
-                        )}
-                        {thumbnail && thumbnailPreview==null && ( // show thumbnail in edit 
-                          <img src={`http://localhost:5555/${thumbnail}`} alt="thumbnail" style={{ maxWidth: '200px', maxHeight: '200px', marginTop: '0.5rem' }} />
-                        )}
-                      </div>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
