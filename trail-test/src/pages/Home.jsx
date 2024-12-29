@@ -234,7 +234,7 @@ const Home = () => {
                       <td className='ps-4'>{index + 1}</td>
                       <td>
                         <div className='d-flex align-items-center'>
-                          <img src={trail.thumbnail} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
+                          <img src={`http://localhost:5555/${trail.thumbnail}`} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
                           {trail.name}
                         </div>
                       </td>

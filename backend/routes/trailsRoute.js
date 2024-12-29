@@ -1,14 +1,32 @@
 import express from 'express';
 import { Trail } from '../models/trailModel.js';
 import auth from '../auth.js';
+import multer from 'multer';
 
 const router = express.Router();
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    },
+});
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024}, // 5MB file limit
+});
 
 // Route to Save a new Trail
-router.post('/', auth, async (request, response) => {
+router.post('/', auth, upload.single('thumbnail'), async (request, response) => {
     try {
-        const { name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
-        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points});
+        const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
+        const parsedPoints = JSON.parse(points);
+        let thumbnail = null;
+        if (request.file) {
+            thumbnail = request.file.path;
+        }
+        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints});
         await newTrail.save();
         return response.status(201).send(newTrail);
     } catch(error) {
@@ -44,17 +62,17 @@ router.get('/:id', auth, async(request, response) => {
 });
 
 // Route to Update a trail
-router.put('/:id', auth, async (request, response) => {
+router.put('/:id', auth, upload.single('thumbnail'), async (request, response) => {
     try {
         const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points } = request.body;
-
-        if (!name || !Array.isArray(points) || points.length === 0) {
+        const parsedPoints = JSON.parse(points);
+        if (!name || !Array.isArray(parsedPoints) || parsedPoints.length === 0) {
             return response.status(400).send({
                 message: 'Send all required fields: name and points array (with title, longitude, latitude)',
             });
         }
 
-        for (let point of points) {
+        for (let point of parsedPoints) {
             if (!point.title || !point.longitude || !point.latitude) {
                 return response.status(400).send({
                     message: 'Each point must have a title, longitude, and latitude',
@@ -63,9 +81,21 @@ router.put('/:id', auth, async (request, response) => {
         }
 
         const { id } = request.params;
+        let existingTrail = await Trail.findById(id);
+        if (!existingTrail) {
+            return response.status(404).send({
+                message: 'Trail not found',
+            });
+        }
+
+        let newThumbnail = existingTrail.thumbnail; // if there is no change, keep the old one
+        if (request.file) {
+            newThumbnail = request.file.path;
+        }
+
         const updatedTrail = await Trail.findByIdAndUpdate(
             id,
-            { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points },
+            { name, description, difficulty, locality, season, thumbnail: newThumbnail, length, estimatedTime, language, points: parsedPoints },
             { new: true }
         );
 

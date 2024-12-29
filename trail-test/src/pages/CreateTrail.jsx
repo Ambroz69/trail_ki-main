@@ -39,7 +39,8 @@ const CreateTrail = () => {
   const [difficulty, setDifficulty] = useState('Easy');
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
-  const [thumbnail, setThumbnail] = useState('-');
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState(0);
   const [language, setLanguage] = useState('English');
   const [points, setPoints] = useState([]);
@@ -98,7 +99,57 @@ const CreateTrail = () => {
     return totalLength; // Length in kilometers
   }
 
+  const handleFileChange = (event) => {
+    let file = event.target.files[0];
+    if (!file) return;
+    setThumbnail(file);
+    let fileURL = URL.createObjectURL(file);
+    setThumbnailPreview(fileURL);
+  };
+
   const handleSaveTrail = () => {
+    setLoading(true);
+    let trailLength = calculateTrailLength(points);
+    const formData = new FormData();
+    formData.append('name',name);
+    formData.append('description', description);
+    formData.append('difficulty', difficulty);
+    formData.append('locality', locality);
+    formData.append('season', season);
+    formData.append('thumbnail', thumbnail); 
+    formData.append('length', trailLength);
+    formData.append('estimatedTime', estimatedTime);
+    formData.append('language', language);
+    formData.append('points', JSON.stringify(points));
+    const url = id 
+      ? `http://localhost:5555/trails/${id}` 
+      : 'http://localhost:5555/trails';
+    const method = id ? 'put' : 'post';
+    const configuration = {
+      method,
+      url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    };
+    axios(configuration)
+      .then((response) => {
+        setLoading(false);
+        console.log(id ? 'Trail updated.' : 'Trail created.');
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('An error occured.');
+        setLoading(false);
+      });
+  };
+
+  /*const handleSaveTrail = () => {
     setLoading(true);
     let trailLength = calculateTrailLength(points);
     // set configurations for the API call here
@@ -136,7 +187,7 @@ const CreateTrail = () => {
         alert('An error occured.');
         setLoading(false);
       });
-  };
+  };*/
 
   useEffect(() => {
     if (id) {
@@ -392,8 +443,20 @@ const CreateTrail = () => {
                     <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
                     <div className='d-flex'>
                       <div className={`${styles.upload_text_black} pe-1`}>Drag and drop or</div>
-                      <div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>
+                      {/*<div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>*/}
+                      <label className={`${styles.upload_text_blue} pe-1`} style={{ cursor: 'pointer' }} >
+                        Choose File
+                        <input type="file" style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
+                      </label>
                       <div className={`${styles.upload_text_black}`}>to upload</div>
+                      <div className="mt-2">
+                        {thumbnailPreview && ( // preview the selected file
+                          <img src={thumbnailPreview} alt="preview" style={{ maxWidth: '200px', maxHeight: '200px', marginTop: '0.5rem' }} />
+                        )}
+                        {thumbnail && thumbnailPreview==null && ( // show thumbnail in edit 
+                          <img src={`http://localhost:5555/${thumbnail}`} alt="thumbnail" style={{ maxWidth: '200px', maxHeight: '200px', marginTop: '0.5rem' }} />
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>

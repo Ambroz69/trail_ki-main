@@ -121,7 +121,7 @@ const ShowTrail = () => {
                       <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
                     </div>
                     <div className='d-flex mt-3'>
-                      <img src={trail?.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
+                      <img src={`http://localhost:5555/${trail?.thumbnail}`} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
                       <h1 className={`${styles.trail_heading} ms-2`}>{trail?.name}</h1>
                     </div>
                     <p className={`${styles.trail_description} mt-3`} dangerouslySetInnerHTML={{ __html: trail?.description }}></p>

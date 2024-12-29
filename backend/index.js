@@ -25,6 +25,7 @@ app.get('/', (request, response)=>{
 
 app.use('/trails', trailsRoute);
 app.use('/users', usersRoute);
+app.use('/uploads', express.static('uploads'));
 
 mongoose.connect(mongoDBRUL)
 .then(() => { 
