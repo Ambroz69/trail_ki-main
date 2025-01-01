@@ -119,9 +119,10 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
 router.put('/publish/:id', auth, async (request, response) => {
     try {
         const { id } = request.params;
+        const { published } = request.body;
         const updatedTrail = await Trail.findByIdAndUpdate(
             id,
-            { published: true },
+            { published: published },
             { new: true }
         );
 

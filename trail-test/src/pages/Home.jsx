@@ -62,7 +62,7 @@ const Home = () => {
 
   const handleConfirmPublish = () => {
     setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: true}, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -79,7 +79,7 @@ const Home = () => {
 
   const handleConfirmUnpublish = () => {
     setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: false}, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
