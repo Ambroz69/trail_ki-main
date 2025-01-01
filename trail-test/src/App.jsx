@@ -8,6 +8,7 @@ import ShowTrail from './pages/ShowTrail';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtectedRoute from "./ProtectedRoute";
+import Users from "./pages/Users";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path='/trails/edit/:id' element={<CreateTrail />} />
         <Route path='/trails/remove/:id' element={<DeleteTrail />} />
         <Route path='/trails/create' element={<CreateTrail />} />
+        <Route path='/users' element={<Users />} />
       </Route>
       <Route path='users/register' element={<Register />} />
       <Route path='users/login' element={<Login />} />

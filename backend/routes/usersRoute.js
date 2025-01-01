@@ -2,8 +2,23 @@ import express from 'express';
 import { User } from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import auth from '../auth.js';
 
 const router = express.Router();
+
+// Route to get all users from DB
+router.get('/', auth, async(request, response) => {
+  try {
+      const users = await User.find({});
+      return response.status(201).send({
+          count: users.length,
+          data: users
+      });
+  } catch(error) {
+      console.log(error.message);
+      response.status(500).send({message: error.message});
+  }
+});
 
 router.post("/register", (request, response) => {
   // hash the password

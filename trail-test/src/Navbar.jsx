@@ -82,7 +82,7 @@ function Navbar() {
                 </a>
               </li>
               <li className=''>
-                <a href="#" className={`${styles.sidebar_link} nav-link ps-0`}>
+                <a href="/users" className={`${styles.sidebar_link} nav-link ps-0`}>
                   User Management
                 </a>
               </li>
