@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import api from '../axiosConfig';
 import Spinner from '../../components/Spinner';
 import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
@@ -48,7 +49,7 @@ const Home = () => {
     };
 
     // make the API call
-    axios(configuration)
+    api(configuration)
       .then((response) => {
         setTrail(response.data.data);
         setLoading(false);
@@ -61,7 +62,7 @@ const Home = () => {
 
   const handleConfirmPublish = () => {
     setLoading(true);
-    axios.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -78,7 +79,7 @@ const Home = () => {
 
   const handleConfirmUnpublish = () => {
     setLoading(true);
-    axios.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -95,7 +96,7 @@ const Home = () => {
 
   const handleConfirmClone = () => {
     setLoading(true);
-    axios.post(`http://localhost:5555/trails/clone/${trailToProcess}`, null, {
+    api.post(`http://localhost:5555/trails/clone/${trailToProcess}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -121,7 +122,7 @@ const Home = () => {
     };
 
     // make the API call
-    axios(configuration)
+    api(configuration)
       .then((response) => {
         setTrail(trails.filter(trail => trail._id !== trailToProcess));
         setLoading(false);

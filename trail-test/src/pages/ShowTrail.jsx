@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
 import styles from '../css/TrailShow.module.css';
@@ -63,7 +64,7 @@ const ShowTrail = () => {
     };
 
     // make the API call
-    axios(configuration)
+    api(configuration)
       .then((response) => {
         setTrail(response.data);
         console.log(trail);

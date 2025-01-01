@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import api from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.snow.css';
@@ -136,7 +137,7 @@ const CreateTrail = () => {
       },
       data: formData,
     };
-    axios(configuration)
+    api(configuration)
       .then((response) => {
         setLoading(false);
         console.log(id ? 'Trail updated.' : 'Trail created.');
@@ -193,7 +194,7 @@ const CreateTrail = () => {
 
   useEffect(() => {
     if (id) {
-      axios({
+      api({
         method: "get",
         url: `http://localhost:5555/trails/${id}`,
         headers: { Authorization: `Bearer ${token}` },

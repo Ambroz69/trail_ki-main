@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import api from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import Spinner from '../../components/Spinner';
@@ -26,7 +27,7 @@ const DeleteTrail = () => {
     };
 
     // make the API call
-    axios(configuration)
+    api(configuration)
       .then((response) => {
         setLoading(false);
         setSuccessMessage('Trail removed.');
