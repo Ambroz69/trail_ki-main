@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtectedRoute from "./ProtectedRoute";
 import Users from "./pages/Users";
+import UserProfile from "./pages/UserProfile";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path='/trails/remove/:id' element={<DeleteTrail />} />
         <Route path='/trails/create' element={<CreateTrail />} />
         <Route path='/users' element={<Users />} />
+        <Route path='/profile' element={<UserProfile />} />
       </Route>
       <Route path='users/register' element={<Register />} />
       <Route path='users/login' element={<Login />} />

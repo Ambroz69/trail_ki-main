@@ -115,4 +115,53 @@ router.post("/login", (request, response) => {
     });
 });
 
+router.put('/profile', auth, async(request, response) => {
+  try {
+    const userId = request.user.userId;
+    const { name, password } = request.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return response.status(404).send({ message: 'User not found.'});
+    }
+
+    if (name) {
+      user.name = name;
+    }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+    await user.save();
+
+    return response.status(200).send({
+      message: 'Profile updated successfully.',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).send({
+      message: 'Error updating profile',
+      error: error.message,
+    });
+  }
+});
+
+router.get('/me', auth, (request, response) => {
+  User.findById(request.user.userId)
+  .then(user => {
+    if (!user) return response.status(404).send({ message: 'User not found.'});
+    response.status(200).send({
+      user: {
+        name: user.name,
+        email: user.email,
+      }
+    });
+  });
+});
+
 export default router;

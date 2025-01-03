@@ -90,7 +90,7 @@ function Navbar() {
           </div>
         </div>
         {<li className="nav-item pb-2">
-          <a href="#" className={`${styles.sidebar_link} nav-link d-flex`}>
+          <a href="/profile" className={`${styles.sidebar_link} nav-link d-flex`}>
             <img src={sidebar_profile} alt='sidebar_profile' className='pe-2' />
             Profile
           </a>
@@ -103,7 +103,7 @@ function Navbar() {
         </li>
       </ul>
       <div className='ms-4 me-5 d-flex align-items-center justify-content-between'>
-        <a href="#" className="text-decoration-none ">
+        <a href="/profile" className="text-decoration-none ">
           <div className={` d-flex align-items-center justify-content-start`}>
             <img src="https://liquipedia.net/commons/images/1/1a/Brawl_Hank.png" referrerPolicy="no-referrer" alt="" width="50" height="50" className="rounded-circle me-3" />
             <div className='d-flex flex-column'>
