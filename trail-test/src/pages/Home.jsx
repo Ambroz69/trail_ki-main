@@ -36,6 +36,7 @@ const Home = () => {
   const [publishModalShow, setPublishModalShow] = useState(false);
   const [unpublishModalShow, setUnpublishModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -179,6 +180,13 @@ const Home = () => {
     setDeleteModalShow(false);
   };
 
+  const getDisplayedTrails = () => {
+    let searched = trails.filter((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    return searched;
+  };
+
+  const displayedTrails = getDisplayedTrails();
+
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
@@ -199,7 +207,7 @@ const Home = () => {
                 <span className={`${styles.search_icon} input-group-text`} id="basic-addon1">
                   <img src={search_button} alt="search_button" className='pe-2' />
                 </span>
-                <input type="text" className={`${styles.search_input} form-control`} placeholder="Search trails..." />
+                <input type="text" className={`${styles.search_input} form-control`} placeholder="Search trails..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
               <div className='d-flex align-items-center'>
                 <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-2`} href='#'>
@@ -230,7 +238,7 @@ const Home = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {trails.map((trail, index) => (
+                  {displayedTrails.map((trail, index) => (
                     <tr key={trail._id} className={`${styles.table_data}`}>
                       <td className='ps-4'>{index + 1}</td>
                       <td>
