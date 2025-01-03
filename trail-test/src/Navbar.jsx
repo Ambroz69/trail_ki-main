@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { NavLink } from "react-router-dom";
 import styles from './css/Navbar.module.css';
 import { Button } from "react-bootstrap";
 import Cookies from "universal-cookie";
@@ -22,22 +23,22 @@ function Navbar() {
     const tokenPayload = JSON.parse(atob(arrayToken[1]));
     setUserEmail(tokenPayload?.userEmail || '');
     setUserName(tokenPayload?.userName || '');
-    return Math.floor(new Date().getTime() /1000) >= tokenPayload?.sub;
+    return Math.floor(new Date().getTime() / 1000) >= tokenPayload?.sub;
   };
 
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
 
   // adding the states 
-  const [isActive, setIsActive] = useState(false);
+  //const [isActive, setIsActive] = useState(false);
   //add the active class
-  const toggleActiveClass = () => {
-    setIsActive(!isActive);
-  };
+  //const toggleActiveClass = () => {
+  //  setIsActive(!isActive);
+  //};
   //clean up function to remove the active class
-  const removeActive = () => {
-    setIsActive(false)
-  }
+  //const removeActive = () => {
+  //  setIsActive(false)
+  //}
 
   const logout = () => {
     // destroy the cookie
@@ -59,16 +60,22 @@ function Navbar() {
       </a>
       <ul className="nav nav-pills flex-column mb-auto mx-4">
         <li className="nav-item pb-2">
-          <a href="/" className={`${styles.sidebar_link} nav-link d-flex`} aria-current="page">
+          <NavLink to="/" aria-current="page" className={({ isActive }) =>
+            isActive ? `${styles.sidebar_link}  nav-link d-flex` // add when created another home ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg}
+              : `${styles.sidebar_link} nav-link d-flex`
+          }>
             <img src={sidebar_home} alt='sidebar_home' className='pe-2' />
             Home
-          </a>
+          </NavLink>
         </li>
         <li>
-          <a href="#" className={`${styles.sidebar_link} ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg} nav-link d-flex`}>
+          <NavLink to="/" className={({ isActive }) =>
+            isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg} nav-link d-flex`
+              : `${styles.sidebar_link} nav-link d-flex`
+          }>
             <img src={sidebar_dashboard} alt='sidebar_dashboard' className={`${styles.icon_active} pe-2`} />
             Dashboard
-          </a>
+          </NavLink>
         </li>
         <div className='d-flex pb-2'>
           <div className={`${styles.sidebar_submenu}`}>
@@ -77,29 +84,41 @@ function Navbar() {
           <div >
             <ul className='px-0 pt-2'>
               <li className=''>
-                <a href="/" className={`${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`}>
+                <NavLink to="/" className={({ isActive }) =>
+                  isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
+                    : `${styles.sidebar_link} nav-link ps-0`
+                }>
                   Trail Management
-                </a>
+                </NavLink>
               </li>
               <li className=''>
-                <a href="/users" className={`${styles.sidebar_link} nav-link ps-0`}>
+                <NavLink to="/users" className={({ isActive }) =>
+                  isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
+                    : `${styles.sidebar_link} nav-link ps-0`
+                }>
                   User Management
-                </a>
+                </NavLink>
               </li>
             </ul>
           </div>
         </div>
         {<li className="nav-item pb-2">
-          <a href="/profile" className={`${styles.sidebar_link} nav-link d-flex`}>
+          <NavLink to="/profile" className={({ isActive }) =>
+            isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link d-flex`
+              : `${styles.sidebar_link} nav-link d-flex`
+          }>
             <img src={sidebar_profile} alt='sidebar_profile' className='pe-2' />
             Profile
-          </a>
+          </NavLink>
         </li>}
         <li className="nav-item pb-2">
-          <a href="#" className={`${styles.sidebar_link} nav-link d-flex`}>
+          <NavLink to="#" className={({ isActive }) =>
+            isActive ? `${styles.sidebar_link}  nav-link d-flex` //add when created ${styles.sidebar_link_active}
+              : `${styles.sidebar_link} nav-link d-flex`
+          }>
             <img src={sidebar_faq} alt='sidebar_faq' className='pe-2' />
             FAQ
-          </a>
+          </NavLink>
         </li>
       </ul>
       <div className='ms-4 me-5 d-flex align-items-center justify-content-between'>
@@ -116,7 +135,7 @@ function Navbar() {
             </div>
           </div>
         </a>
-        <div onClick={() => logout()} className= {`${styles.sidebar_logout_btn} ps-2 py-3 pe-2`}>
+        <div onClick={() => logout()} className={`${styles.sidebar_logout_btn} ps-2 py-3 pe-2`}>
           <img src={sidebar_logout} alt='sidebar_logout' />
         </div>
       </div>
