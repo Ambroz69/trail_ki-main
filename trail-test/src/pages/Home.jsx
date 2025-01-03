@@ -38,6 +38,9 @@ const Home = () => {
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const [difficultyFilter, setDifficultyFilter] = useState('');
+  const [localityFilter, setLocalityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -181,21 +184,42 @@ const Home = () => {
     setDeleteModalShow(false);
   };
 
+  // create maps for filters
+  const getTrailStatus = (trail) => (trail.published ? "Published" : "Draft");
+  const trailDifficulties = Array.from(new Set(trails.map((t) => t.difficulty)));
+  const trailLocalities = Array.from(new Set(trails.map((t) => t.locality)));
+  const trailStatuses = Array.from(new Set(trails.map((t) => getTrailStatus(t))));
+
   const getDisplayedTrails = () => {
+    // search
     let searched = trails.filter((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    let sorted = [...searched];
-    switch(sortOption) {
+    // filter
+    let filtered = [...searched];
+    if (difficultyFilter) {
+      filtered = filtered.filter((t) => t.difficulty === difficultyFilter);
+    }
+    if (localityFilter) {
+      filtered = filtered.filter((t) => t.locality === localityFilter);
+    }
+    if (statusFilter === 'Published') {
+      filtered = filtered.filter((t) => t.published);
+    } else if (statusFilter === 'Draft') {
+      filtered = filtered.filter((t) => !t.published);
+    }
+    // sort
+    let sorted = [...filtered];
+    switch (sortOption) {
       case 'name-asc':
-        sorted.sort((t1,t2) => t1.name.localeCompare(t2.name));
+        sorted.sort((t1, t2) => t1.name.localeCompare(t2.name));
         break;
       case 'name-desc':
-        sorted.sort((t1,t2) => t2.name.localeCompare(t1.name));
+        sorted.sort((t1, t2) => t2.name.localeCompare(t1.name));
         break;
       case 'length-asc':
-        sorted.sort((t1,t2) => t1.length - t2.length);
+        sorted.sort((t1, t2) => t1.length - t2.length);
         break;
       case 'length-desc':
-        sorted.sort((t1,t2) => t2.length - t1.length);
+        sorted.sort((t1, t2) => t2.length - t1.length);
         break;
       default:
         break;
@@ -228,12 +252,56 @@ const Home = () => {
                 <input type="text" className={`${styles.search_input} form-control`} placeholder="Search trails..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
               <div className='d-flex align-items-center'>
-                <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-2`} href='#'>
-                  <div className='d-flex'>
-                    Filters
+                <Dropdown className="btn-secondary pe-4 py-1 me-2" >
+                  <Dropdown.Toggle variant="secondary" id="dropdown-filters" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
+                    {difficultyFilter || localityFilter || statusFilter
+                      ? `Filters (${difficultyFilter || ''} ${localityFilter || ''} ${statusFilter || ''})`
+                      : 'Filters'
+                    }
                     <img src={filter_button} alt="filter_button" className='px-2' />
-                  </div>
-                </a>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Header>Difficulty</Dropdown.Header>
+                    <Dropdown.Item key='All difficulties' onClick={() => setDifficultyFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        All Difficulties
+                      </Dropdown.Item>
+                    {trailDifficulties.map((trailDifficulty) => {
+                      return (
+                      <Dropdown.Item key={trailDifficulty} onClick={() => setDifficultyFilter(trailDifficulty)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        {trailDifficulty}
+                      </Dropdown.Item>
+                      )
+                    })}
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Header>Location</Dropdown.Header>
+                      <Dropdown.Item key='All localities' onClick={() => setLocalityFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        All Localities
+                      </Dropdown.Item>
+                    {trailLocalities.map((trailLocation) => {
+                      return (
+                      <Dropdown.Item key={trailLocation} onClick={() => setLocalityFilter(trailLocation)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        {trailLocation}
+                      </Dropdown.Item>
+                      )
+                    })}
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Header>Status</Dropdown.Header>
+                    <Dropdown.Item key='All statuses' onClick={() => setStatusFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        All Statuses
+                      </Dropdown.Item>
+                    {trailStatuses.map((trailStatus) => {
+                      return (                        
+                      <Dropdown.Item key={trailStatus} onClick={() => setStatusFilter(trailStatus)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        {trailStatus}
+                      </Dropdown.Item>
+                      )
+                    })}
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item key="reset" onClick={() => {setStatusFilter(''); setDifficultyFilter(''); setLocalityFilter('');}} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                        Reset Filter
+                      </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
                 <Dropdown className='btn-secondary py-1 me-2' >
                   <Dropdown.Toggle variant="secondary" id="dropdown-sort" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
                     Sort <img src={sort_button} alt="sort_button" className='px-2' />
@@ -332,7 +400,7 @@ const Home = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              Showing 1 to {Object.keys(trails).length} of {Object.keys(trails).length} entries
+              Showing 1 to {Object.keys(displayedTrails).length} of {Object.keys(displayedTrails).length} entries
             </div>
           </div>
 
