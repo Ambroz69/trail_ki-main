@@ -37,6 +37,7 @@ const Home = () => {
   const [unpublishModalShow, setUnpublishModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -63,7 +64,7 @@ const Home = () => {
 
   const handleConfirmPublish = () => {
     setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: true}, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: true }, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -80,7 +81,7 @@ const Home = () => {
 
   const handleConfirmUnpublish = () => {
     setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: false}, {
+    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: false }, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
@@ -182,7 +183,24 @@ const Home = () => {
 
   const getDisplayedTrails = () => {
     let searched = trails.filter((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    return searched;
+    let sorted = [...searched];
+    switch(sortOption) {
+      case 'name-asc':
+        sorted.sort((t1,t2) => t1.name.localeCompare(t2.name));
+        break;
+      case 'name-desc':
+        sorted.sort((t1,t2) => t2.name.localeCompare(t1.name));
+        break;
+      case 'length-asc':
+        sorted.sort((t1,t2) => t1.length - t2.length);
+        break;
+      case 'length-desc':
+        sorted.sort((t1,t2) => t2.length - t1.length);
+        break;
+      default:
+        break;
+    }
+    return sorted;
   };
 
   const displayedTrails = getDisplayedTrails();
@@ -216,12 +234,25 @@ const Home = () => {
                     <img src={filter_button} alt="filter_button" className='px-2' />
                   </div>
                 </a>
-                <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-3`} href='#'>
-                  <div className='d-flex'>
-                    Sort
-                    <img src={sort_button} alt="sort_button" className='px-2' />
-                  </div>
-                </a>
+                <Dropdown className='btn-secondary py-1 me-2' >
+                  <Dropdown.Toggle variant="secondary" id="dropdown-sort" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
+                    Sort <img src={sort_button} alt="sort_button" className='px-2' />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className=''>
+                    <Dropdown.Item onClick={() => setSortOption('name-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Name (A → Z)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('name-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Name (Z → A)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('length-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Length (from shortest)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('length-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Length (from longest)
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
             </div>
             <div className='pb-3'>
@@ -274,7 +305,7 @@ const Home = () => {
                             </Dropdown.Item>
                             {trail.published ? ( // change icon
                               <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish  
+                                <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish
                               </Dropdown.Item>
                             ) : (
                               <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>

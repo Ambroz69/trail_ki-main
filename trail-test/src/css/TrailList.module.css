@@ -66,6 +66,22 @@ button.dropdown_toggle::after {
   display: none; 
 }
 
+button.dropdown_toggle_sort, button.dropdown_toggle_sort:not(:disabled):not(:disabled):active {
+  background-color: #F3F3F3;
+  color: #99A0A6;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+button.dropdown_toggle_sort:hover, button.dropdown_toggle:focus {
+  border: none;
+}
+
+button.dropdown_toggle_sort::after {
+  display: none; 
+}
+
 a.table_action_dropdown_item {
   color: #535353;
   font-size: 0.8rem;
