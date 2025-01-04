@@ -2,6 +2,7 @@ import express from 'express';
 import { User } from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import auth from '../auth.js';
 
 const router = express.Router();
@@ -20,7 +21,106 @@ router.get('/', auth, async(request, response) => {
   }
 });
 
-router.post("/register", (request, response) => {
+router.post('/register', async(request, response) => {
+  try {
+    // hash the password
+    const hashedPassword = await bcrypt.hash(request.body.password, 10);
+
+    // create a new user instance
+    const user = new User({
+      name: request.body.name,
+      email: request.body.email,
+      password: hashedPassword,
+      verified: false,
+      verificationToken: null,
+    });
+    
+
+    // generate the verification token
+    const emailToken = jwt.sign(
+      { email: request.body.email },
+      process.env.EMAIL_SECRET, 
+      { expiresIn: '1d' }
+    );
+
+    // attach token to user
+    user.verificationToken = emailToken;
+    
+    // save user
+    await user.save();
+
+    // configure nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_SERVER,
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSCODE,
+      },
+    });
+
+    // send the verification email
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: request.body.email,
+      subject: 'AVA Trail - Account verification',
+      text: `Verify your email\n\n Hello ${request.body.name}, thanks for registering on AVA Trail! \n Please click the link below to verify your email: \n http://localhost:5555/users/verify/${emailToken} \n This link will expire in 24 hours.`,
+      html: `
+        <h2>Verify your email</h2>
+        <p>Hello ${request.body.name}, thanks for registering on AVA Trail!</p>
+        <p>Please click the link below to verify your email:</p>
+        <a href="http://localhost:5555/users/verify/${emailToken}">Verify your account</a>
+        <p>This link will expire in 24 hours.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // respond the client
+    return response.status(201).json({
+      message: 'User created successfully. Please check your email to activate the account.',
+    })
+
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({
+      message: 'Error creating user.',
+      error: error.message,
+    });
+  }
+});
+
+router.get('/verify/:token', async (request, response) => {
+  try {
+    // decode token
+    const { token } = request.params;
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
+
+    // find the user matching mail and token
+    const user = await User.findOne({
+      email: decoded.email,
+      verificationToken: token,
+    });
+    if(!user) {
+      return response.status(400).send('Invalid token or user not found.');
+    }
+
+    // set user as verified
+    user.verified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    // redirect to login
+    return response.redirect('http://localhost:5173/users/login');
+  } catch (error) {
+    console.log(error);
+    return response.status(400).send('Invalid or expired token.');
+  }
+});
+
+// old register without mail confirmation
+/*router.post("/register", (request, response) => {
   // hash the password
   bcrypt
     .hash(request.body.password, 10)
@@ -57,7 +157,7 @@ router.post("/register", (request, response) => {
         e,
       });
     });
-});
+});*/
 
 router.post("/login", (request, response) => {
   // check if email exists

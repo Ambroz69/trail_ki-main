@@ -29,6 +29,7 @@ const Register = () => {
     axios(configuration)
       .then((result) => {
         setRegister(true);
+        alert("Registration successful! Please check your email for verification.");
         // redirect user to the login page
         window.location.href = "/users/login";
       })
