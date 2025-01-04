@@ -19,6 +19,8 @@ const token = cookies.get("SESSION_TOKEN");
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('');
 
   useEffect(() => {
     const configuration = {
@@ -37,6 +39,32 @@ const Users = () => {
       })
   }, []);
 
+  const getDisplayedUsers = () => {
+    // search
+    let searched = users.filter((u) => u.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    // sort
+    let sorted = [...searched];
+    switch (sortOption) {
+      case 'name-asc':
+        sorted.sort((u1,u2) => u1.name.localeCompare(u2.name));
+        break;
+      case 'name-desc':
+        sorted.sort((u1,u2) => u2.name.localeCompare(u1.name));
+        break;
+      case 'email-asc':
+        sorted.sort((u1,u2) => u1.email.localeCompare(u2.email));
+        break;
+      case 'email-desc':
+        sorted.sort((u1,u2) => u2.email.localeCompare(u1.email));
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  }
+
+  const displayedUsers = getDisplayedUsers();
+
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
@@ -53,7 +81,7 @@ const Users = () => {
                 <span className={`${styles.search_icon} input-group-text`} id="basic-addon1">
                   <img src={search_button} alt="search_button" className='pe-2' />
                 </span>
-                <input type="text" className={`${styles.search_input} form-control`} placeholder="Search users..." />
+                <input type="text" className={`${styles.search_input} form-control`} placeholder="Search users..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
               <div className='d-flex align-items-center'>
                 <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-2`} href='#'>
@@ -62,12 +90,25 @@ const Users = () => {
                     <img src={filter_button} alt="filter_button" className='px-2' />
                   </div>
                 </a>
-                <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-3`} href='#'>
-                  <div className='d-flex'>
-                    Sort
-                    <img src={sort_button} alt="sort_button" className='px-2' />
-                  </div>
-                </a>
+                <Dropdown className='btn-secondary py-1 me-2' >
+                  <Dropdown.Toggle variant="secondary" id="dropdown-sort" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
+                    Sort <img src={sort_button} alt="sort_button" className='px-2' />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className=''>
+                    <Dropdown.Item onClick={() => setSortOption('name-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Name (A → Z)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('name-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Name (Z → A)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('email-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Length (from shortest)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setSortOption('email-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Length (from longest)
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
             </div>
             <div className='pb-3'>
@@ -81,7 +122,7 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user, index) => (
+                  {displayedUsers.map((user, index) => (
                     <tr key={user._id} className={`${styles.table_data}`}>
                       <td className='ps-4'>{index + 1}</td>
                       <td>
@@ -114,7 +155,7 @@ const Users = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              Showing 1 to {Object.keys(users).length} of {Object.keys(users).length} entries
+              Showing 1 to {Object.keys(displayedUsers).length} of {Object.keys(displayedUsers).length} entries
             </div>
           </div>
         </div>
