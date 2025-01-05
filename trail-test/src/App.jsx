@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import ProtectedRoute from "./ProtectedRoute";
 import Users from "./pages/Users";
 import UserProfile from "./pages/UserProfile";
+import ResetPassword from "./pages/ResetPassword";
+import ForgottenPassword from './pages/ForgottenPassword';
 
 const App = () => {
   return (
@@ -25,6 +27,8 @@ const App = () => {
       </Route>
       <Route path='users/register' element={<Register />} />
       <Route path='users/login' element={<Login />} />
+      <Route path='/reset-password/:token' element={<ResetPassword />} />
+      <Route path='/forgot-password' element={<ForgottenPassword />} />
     </Routes>
   )
 }

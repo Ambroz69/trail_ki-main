@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
 })
 
 export const User = mongoose.model.User || mongoose.model('User', UserSchema);

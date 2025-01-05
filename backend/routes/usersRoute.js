@@ -159,6 +159,91 @@ router.get('/verify/:token', async (request, response) => {
     });
 });*/
 
+router.post("/forgot-password", async (request, response) => {
+  try {
+    const { email } = request.body;
+
+    // find user by mail
+    const user = await User.findOne({email});
+    if(!user) {
+      return response.status(404).json({ message: 'No user found with that email.'});
+    }
+
+    // generate a reset token
+    const resetToken = jwt.sign(
+      { email: request.body.email },
+      process.env.FORGOTTEN_SECRET, 
+      { expiresIn: '1d' }
+    );
+
+    // set resettoken
+    user.resetPasswordToken = resetToken;
+    await user.save();
+
+    // configure nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_SERVER,
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSCODE,
+      },
+    });
+
+    // send email
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: request.body.email,
+      subject: 'AVA Trail - Password Reset',
+      text: `Password reset\n\n Hello ${request.body.name}, you requested a password reset for your account on AVA Trail. \n Please click the link below to set a new password (valid for 60 minutes): \n http://localhost:5555/reset-password/${resetToken} `,
+      html: `
+        <h2>Password reset</h2>
+        <p>Hello ${request.body.name}, you requested a password reset for your account on AVA Trail.</p>
+        <p>Please click the link below to set a new password (valid for 60 minutes):</p>
+        <a href="http://localhost:5173/reset-password/${resetToken}">Reset your password</a>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return response.status(200).json({ message: 'Password reset email sent.'});
+  } catch(error) {
+    console.error(error);
+    return response.status(500).json({ message: 'Error processing password reset', error });
+  }
+});
+
+router.post("/reset-password", async (request, response) => {
+  try {
+    const { token, newPassword } = request.body;
+    const decoded = jwt.verify(token, process.env.FORGOTTEN_SECRET);
+
+    // find user by token
+    const user = await User.findOne({
+      email: decoded.email,
+      resetPasswordToken: token,
+    });
+    if(!user) {
+      return response.status(400).send('Invalid token or user not found.');
+    }
+
+    // hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // update user
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
+    await user.save();
+
+    //return response.status(200).json({ message: 'Password has been reset successfully.'});
+    return response.redirect('http://localhost:5173/users/login');
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ message: 'Error resetting password', error});
+  }
+});
+
 router.post("/login", (request, response) => {
   // check if email exists
   User.findOne({ email: request.body.email })

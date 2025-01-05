@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 
-function ForgottenPassword() {
-  const [email, setEmail] = useState('');
+function ResetPassword() {
+  const { token } = useParams();
+  const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (event) => {
+  const handleReset = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5555/users/forgot-password', {
-        email,
+      const response = await axios.post('http://localhost:5555/users/reset-password', {
+        token,
+        newPassword,
       });
       setMessage(response.data.message);
     } catch (error) {
@@ -28,16 +31,17 @@ function ForgottenPassword() {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <img src={logo} alt="logo" />
-            <h2 className={`${styles.login_header}`}>Forgotten Password</h2>
-            <Form onSubmit={handleSubmit} className={`${styles.form_width}`}>
-              {/* email */}
+            <h2 className={`${styles.login_header}`}>Reset Password</h2>
+            <Form onSubmit={handleReset} className={`${styles.form_width}`}>
+              {/* new password */}
               <Form.Group controlId="formBasicPassword" className='mt-3'>
+                {/* <Form.Label>Password</Form.Label> */}
                 <Form.Control
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
+                  type="password"
+                  name="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Set a new Password"
                   required
                 />
               </Form.Group>
@@ -47,7 +51,7 @@ function ForgottenPassword() {
                   type="submit"
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                 >
-                  Send Reset Link
+                  Save Password
                 </Button>
               </div>
             </Form>
@@ -61,4 +65,4 @@ function ForgottenPassword() {
   )
 }
 
-export default ForgottenPassword;
+export default ResetPassword;

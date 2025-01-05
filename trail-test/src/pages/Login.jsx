@@ -83,7 +83,7 @@ const Login = () => {
                   </label>
                 </div>
                 <div className="col-6 text-end">
-                  <a href='#' className={`${styles.forgot_pass_link}`}>
+                  <a href='/forgot-password' className={`${styles.forgot_pass_link}`}>
                     Forgot password?
                   </a>
                 </div>
