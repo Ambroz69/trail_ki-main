@@ -45,7 +45,7 @@ const Register = () => {
       <Row>
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
-            <img src={logo} alt="logo" />
+            <a href="/"><img src={logo} alt="logo" /></a>
             <h2 className={`${styles.login_header}`}>Sign up</h2>
             <Form onSubmit={(e) => handleSubmit(e)} className={`${styles.form_width}`}>
               {/* name */}
