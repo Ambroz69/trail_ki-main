@@ -271,6 +271,7 @@ router.post("/login", (request, response) => {
               userId: user._id,
               userEmail: user.email,
               userName: user.name,
+              userVerified: user.verified,
             },
             "RANDOM-TOKEN",
             { expiresIn: "24h" }
