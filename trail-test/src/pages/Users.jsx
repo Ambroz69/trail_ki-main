@@ -4,6 +4,8 @@ import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
 import styles from '../css/TrailList.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 //svg import
 import search_button from '../assets/search_button.svg';
@@ -13,6 +15,8 @@ import table_actions from '../assets/table_actions.svg';
 import table_action_delete from '../assets/table_action_delete.svg';
 import table_action_edit from '../assets/table_action_edit.svg';
 import table_action_show from '../assets/table_action_show.svg';
+import table_action_publish from '../assets/table_action_publish.svg';
+import modal_publish from '../assets/modal_publish.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -21,6 +25,8 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const [userToProcess, setUserToProcess] = useState(null);
+  const [verifyModalShow, setVerifyModalShow] = useState(false);
 
   useEffect(() => {
     const configuration = {
@@ -46,16 +52,16 @@ const Users = () => {
     let sorted = [...searched];
     switch (sortOption) {
       case 'name-asc':
-        sorted.sort((u1,u2) => u1.name.localeCompare(u2.name));
+        sorted.sort((u1, u2) => u1.name.localeCompare(u2.name));
         break;
       case 'name-desc':
-        sorted.sort((u1,u2) => u2.name.localeCompare(u1.name));
+        sorted.sort((u1, u2) => u2.name.localeCompare(u1.name));
         break;
       case 'email-asc':
-        sorted.sort((u1,u2) => u1.email.localeCompare(u2.email));
+        sorted.sort((u1, u2) => u1.email.localeCompare(u2.email));
         break;
       case 'email-desc':
-        sorted.sort((u1,u2) => u2.email.localeCompare(u1.email));
+        sorted.sort((u1, u2) => u2.email.localeCompare(u1.email));
         break;
       default:
         break;
@@ -64,6 +70,30 @@ const Users = () => {
   }
 
   const displayedUsers = getDisplayedUsers();
+
+  const handleConfirmVerify = () => {
+    api.put(`http://localhost:5555/users/verify/${userToProcess}`, { verified: true }, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(response => {
+        setUsers(users.map(user => user._id === userToProcess ? { ...user, verified: true } : user));
+        handleVerifyModalClose();
+      })
+      .catch(error => {
+        console.log(error);
+        handleVerifyModalClose();
+      });
+  };
+
+  const handleVerifyModalShow = (user_id) => {
+    setUserToProcess(user_id);
+    setVerifyModalShow(true);
+  };
+
+  const handleVerifyModalClose = () => {
+    setUserToProcess(null);
+    setVerifyModalShow(false);
+  };
 
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
@@ -118,6 +148,7 @@ const Users = () => {
                     <th className='ps-4'>No.</th>
                     <th className=''>Name</th>
                     <th className=''>Email</th>
+                    <th className=''>Verified</th>
                     <th className=''>Action</th>
                   </tr>
                 </thead>
@@ -131,12 +162,20 @@ const Users = () => {
                       <td>
                         {user.email}
                       </td>
+                      <td>
+                        {user.verified ? 'yes' : 'no'}
+                      </td>
                       <td className='ps-3'>
                         <Dropdown>
                           <Dropdown.Toggle variant="secondary" id="dropdown-basic" className={`${styles.dropdown_toggle} rounded-circle p-1`}>
                             <img src={table_actions} alt="search_button" className='' />
                           </Dropdown.Toggle>
                           <Dropdown.Menu className=''>
+                            {!user.verified ? (
+                              <Dropdown.Item href="#" onClick={() => handleVerifyModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                <img src={table_action_publish} alt="show" className='pe-2' />Verify User
+                              </Dropdown.Item>
+                            ) : (<></>)}
                             <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show User
                             </Dropdown.Item>
@@ -158,6 +197,27 @@ const Users = () => {
               Showing 1 to {Object.keys(displayedUsers).length} of {Object.keys(displayedUsers).length} entries
             </div>
           </div>
+          <Modal
+            show={verifyModalShow}
+            onHide={handleVerifyModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Verify User</h1>
+              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to verify this user?</p>
+              <p className={`${styles.modal_text} `}>Once verified, he/she will be able to login to the system.</p>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleVerifyModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmVerify()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
+                Verify
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </div>

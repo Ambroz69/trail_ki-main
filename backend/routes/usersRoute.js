@@ -349,4 +349,31 @@ router.get('/me', auth, (request, response) => {
   });
 });
 
+// Route for Verify a user manually
+router.put('/verify/:id', auth, async (request, response) => {
+  try {
+      const { id } = request.params;
+      const { verified } = request.body;
+      const updatedUser = await User.findByIdAndUpdate(
+          id,
+          { verified: verified },
+          { new: true }
+      );
+
+      if (!updatedUser) {
+          return response.status(404).send({
+              message: 'User not found',
+          });
+      }
+
+      response.status(200).send({
+          message: 'User verified.',
+          user: updatedUser,
+      });
+  } catch (error) {
+      console.log(error.message);
+      response.status(500).send({ message: error.message });
+  }
+});
+
 export default router;
