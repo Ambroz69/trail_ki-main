@@ -148,7 +148,7 @@ const Users = () => {
                     <th className='ps-4'>No.</th>
                     <th className=''>Name</th>
                     <th className=''>Email</th>
-                    <th className=''>Verified</th>
+                    <th className=''>Status</th>
                     <th className=''>Action</th>
                   </tr>
                 </thead>
@@ -163,7 +163,11 @@ const Users = () => {
                         {user.email}
                       </td>
                       <td>
-                        {user.verified ? 'yes' : 'no'}
+                        {user.verified ? (
+                          <button className={`${styles.status_published} btn disabled`}>Verified</button>
+                        ) : (
+                          <button className={`${styles.status_unverified} btn disabled`}>Not Verified</button>
+                        )}
                       </td>
                       <td className='ps-3'>
                         <Dropdown>
