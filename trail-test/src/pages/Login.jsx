@@ -1,6 +1,5 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useState, } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
-import { Link } from 'react-router-dom';
 import axios from "axios";
 import Cookies from "universal-cookie";
 import styles from '../css/Main.module.css';
@@ -8,6 +7,8 @@ import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 
 const cookies = new Cookies();
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +21,7 @@ const Login = () => {
     // set configurations
     const configuration = {
       method: "post",
-      url: "http://localhost:5555/users/login",
+      url: `${backendUrl}/users/login`,
       data: {
         email,
         password

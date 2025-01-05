@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-//import axios from 'axios';
 import api from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuill } from 'react-quilljs';
@@ -33,6 +32,8 @@ import modal_delete from '../assets/modal_delete.svg';
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -45,7 +46,6 @@ const CreateTrail = () => {
   const [estimatedTime, setEstimatedTime] = useState(0);
   const [language, setLanguage] = useState('English');
   const [points, setPoints] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [tempPoint, setTempPoint] = useState(null);
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
@@ -61,7 +61,7 @@ const CreateTrail = () => {
   const [quizChecked, setQuizChecked] = useState(false);
   const [pointCreated, setPointCreated] = useState(false);
   const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
-  const [previousAnswers, setPreviousAnswers] = useState({}); // Store previous answers for each quiz type
+  //const [previousAnswers, setPreviousAnswers] = useState({}); // Store previous answers for each quiz type
   const [sliderCorrectValue, setSliderCorrectValue] = useState(50);
   const [sliderMinValue, setSliderMinValue] = useState(0);
   const [sliderMaxValue, setSliderMaxValue] = useState(100);
@@ -111,22 +111,21 @@ const CreateTrail = () => {
   };
 
   const handleSaveTrail = () => {
-    setLoading(true);
     let trailLength = calculateTrailLength(points);
     const formData = new FormData();
-    formData.append('name',name);
+    formData.append('name', name);
     formData.append('description', description);
     formData.append('difficulty', difficulty);
     formData.append('locality', locality);
     formData.append('season', season);
-    formData.append('thumbnail', thumbnail); 
+    formData.append('thumbnail', thumbnail);
     formData.append('length', trailLength);
     formData.append('estimatedTime', estimatedTime);
     formData.append('language', language);
     formData.append('points', JSON.stringify(points));
-    const url = id 
-      ? `http://localhost:5555/trails/${id}` 
-      : 'http://localhost:5555/trails';
+    const url = id
+      ? `${backendUrl}/trails/${id}`
+      : `${backendUrl}/trails`;
     const method = id ? 'put' : 'post';
     const configuration = {
       method,
@@ -139,7 +138,6 @@ const CreateTrail = () => {
     };
     api(configuration)
       .then((response) => {
-        setLoading(false);
         console.log(id ? 'Trail updated.' : 'Trail created.');
         setTimeout(() => {
           navigate('/');
@@ -148,72 +146,34 @@ const CreateTrail = () => {
       .catch((error) => {
         console.log(error);
         alert('An error occured.');
-        setLoading(false);
       });
   };
 
-  /*const handleSaveTrail = () => {
-    setLoading(true);
-    let trailLength = calculateTrailLength(points);
-    // set configurations for the API call here
-    const configuration = {
-      method: id ? "put" : "post",
-      url: id ? `http://localhost:5555/trails/${id}` : "http://localhost:5555/trails",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
-        name,
-        description,
-        difficulty,
-        locality,
-        season,
-        thumbnail,
-        length: trailLength,
-        estimatedTime,
-        language,
-        points
-      }
-    };
-
-    // make the API call
-    axios(configuration)
-      .then((response) => {
-        setLoading(false);
-        console.log(id ? 'Trail updated.' : 'Trail created.');
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      })
-      .catch((error) => {
-        console.log(error);
-        alert('An error occured.');
-        setLoading(false);
-      });
-  };*/
-
   useEffect(() => {
     if (id) {
-      api({
+      const configuration = {
         method: "get",
-        url: `http://localhost:5555/trails/${id}`,
-        headers: { Authorization: `Bearer ${token}` },
-      }).then(response => {
-        // Load data into state for editing
-        setName(response.data.name);
-        setDescription(response.data.description);
-        setLocality(response.data.locality);
-        setDifficulty(response.data.difficulty);
-        setSeason(response.data.season);
-        setThumbnail(response.data.thumbnail);
-        setPoints(response.data.points || []);
-        setEstimatedTime(response.data.estimatedTime);
-        setLanguage(response.data.language);
-        //loadExistingPoints(response.data.points || []);
-        setLoading(false);
-      }).catch(error => {
-        console.error(error);
-      });
+        url: `${backendUrl}/trails/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      api(configuration)
+        .then(response => {
+          // Load data into state for editing
+          setName(response.data.name);
+          setDescription(response.data.description);
+          setLocality(response.data.locality);
+          setDifficulty(response.data.difficulty);
+          setSeason(response.data.season);
+          setThumbnail(response.data.thumbnail);
+          setPoints(response.data.points || []);
+          setEstimatedTime(response.data.estimatedTime);
+          setLanguage(response.data.language);
+          //loadExistingPoints(response.data.points || []);
+        }).catch(error => {
+          console.error(error);
+        });
     }
   }, [id]);
 
@@ -324,7 +284,6 @@ const CreateTrail = () => {
       } else {
         pointData.quiz = null;
       }
-      console.log(pointData);
       handleSavePoint(pointData);
       resetContent();
       //onClose();
@@ -350,7 +309,7 @@ const CreateTrail = () => {
     setCorrectFeedback('');
     setIncorrectFeedback('');
     setTempPoint(null);
-    setPreviousAnswers({});
+    //setPreviousAnswers({});
   };
 
   const handleChangeAnswer = (index, field, value) => {
@@ -367,7 +326,7 @@ const CreateTrail = () => {
     });
     setAnswers(updatedAnswers);
     // Store the updated answers to preserve them when switching types
-    setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
+    //setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
   };
 
   const handleAddAnswer = () => {
@@ -475,11 +434,11 @@ const CreateTrail = () => {
               <Tab eventKey="general" title="General Information">
                 <div className={`${styles.tabs_bg} p-4`}>
                   <div className={`${styles.file_upload} d-flex flex-column align-items-center mb-3 w-100`} onClick={handleAreaClick} onDragOver={handleAreaDragOver} onDragLeave={handleAreaDragLeave} onDrop={handleAreaDrop}>
-                    <input type = "file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} accept="image/*" />
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} accept="image/*" />
                     {thumbnailPreview ? ( // preview the selected file
                       <img src={thumbnailPreview} alt="preview" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
                     ) : thumbnail ? ( // show thumbnail in edit 
-                      <img src={`http://localhost:5555/${thumbnail}`} alt="thumbnail" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
+                      <img src={`${backendUrl}/${thumbnail}`} alt="thumbnail" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
                     ) : (
                       <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
                     )}
@@ -939,26 +898,26 @@ const CreateTrail = () => {
         </div>
       </div>
       <Modal
-            show={deleteModalShow}
-            onHide={handleDeleteModalClose}
-            backdrop="static"
-            keyboard={false}
-          >
-            <Modal.Body className='d-flex flex-column align-items-center p-4'>
-              <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Delete Point</h1>
-              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this point?</p>
-              <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
-            </Modal.Body>
-            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
-              <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
-                Delete
-              </Button>
-            </Modal.Footer>
-          </Modal>
+        show={deleteModalShow}
+        onHide={handleDeleteModalClose}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Body className='d-flex flex-column align-items-center p-4'>
+          <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
+          <h1 className={`${styles.modal_heading}`}>Delete Point</h1>
+          <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this point?</p>
+          <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
+        </Modal.Body>
+        <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+          <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 };

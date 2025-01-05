@@ -5,217 +5,217 @@ import multer from 'multer';
 
 const router = express.Router();
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    },
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
 });
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024}, // 5MB file limit
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file limit
 });
 
 // Route to Save a new Trail
 router.post('/', auth, upload.single('thumbnail'), async (request, response) => {
-    try {
-        const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
-        const parsedPoints = JSON.parse(points);
-        let thumbnail = null;
-        if (request.file) {
-            thumbnail = request.file.path;
-        }
-        const newTrail = new Trail({name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints});
-        await newTrail.save();
-        return response.status(201).send(newTrail);
-    } catch(error) {
-        console.log(error.message);
-        response.status(500).send({message: error.message});
+  try {
+    const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
+    const parsedPoints = JSON.parse(points);
+    let thumbnail = null;
+    if (request.file) {
+      thumbnail = request.file.path;
     }
+    const newTrail = new Trail({ name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints });
+    await newTrail.save();
+    return response.status(201).send(newTrail);
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route to get all trails from DB
-router.get('/', auth, async(request, response) => {
-    try {
-        const trails = await Trail.find({});
-        return response.status(201).send({
-            count: trails.length,
-            data: trails
-        });
-    } catch(error) {
-        console.log(error.message);
-        response.status(500).send({message: error.message});
-    }
+router.get('/', auth, async (request, response) => {
+  try {
+    const trails = await Trail.find({});
+    return response.status(201).send({
+      count: trails.length,
+      data: trails
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route to get one trail from DB by ID
-router.get('/:id', auth, async(request, response) => {
-    try {
-        const {id} = request.params;
-        const trail = await Trail.findById(id);
-        return response.status(201).send(trail);
-    } catch(error) {
-        console.log(error.message);
-        response.status(500).send({message: error.message});
-    }
+router.get('/:id', auth, async (request, response) => {
+  try {
+    const { id } = request.params;
+    const trail = await Trail.findById(id);
+    return response.status(201).send(trail);
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route to Update a trail
 router.put('/:id', auth, upload.single('thumbnail'), async (request, response) => {
-    try {
-        const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points } = request.body;
-        const parsedPoints = JSON.parse(points);
-        if (!name || !Array.isArray(parsedPoints) || parsedPoints.length === 0) {
-            return response.status(400).send({
-                message: 'Send all required fields: name and points array (with title, longitude, latitude)',
-            });
-        }
-
-        for (let point of parsedPoints) {
-            if (!point.title || !point.longitude || !point.latitude) {
-                return response.status(400).send({
-                    message: 'Each point must have a title, longitude, and latitude',
-                });
-            }
-        }
-
-        const { id } = request.params;
-        let existingTrail = await Trail.findById(id);
-        if (!existingTrail) {
-            return response.status(404).send({
-                message: 'Trail not found',
-            });
-        }
-
-        let newThumbnail = existingTrail.thumbnail; // if there is no change, keep the old one
-        if (request.file) {
-            newThumbnail = request.file.path;
-        }
-
-        const updatedTrail = await Trail.findByIdAndUpdate(
-            id,
-            { name, description, difficulty, locality, season, thumbnail: newThumbnail, length, estimatedTime, language, points: parsedPoints },
-            { new: true }
-        );
-
-        if (!updatedTrail) {
-            return response.status(404).send({
-                message: 'Trail not found',
-            });
-        }
-
-        response.status(200).send({
-            message: 'Trail updated.',
-            trail: updatedTrail,
-        });
-    } catch (error) {
-        console.log(error.message);
-        response.status(500).send({ message: error.message });
+  try {
+    const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points } = request.body;
+    const parsedPoints = JSON.parse(points);
+    if (!name || !Array.isArray(parsedPoints) || parsedPoints.length === 0) {
+      return response.status(400).send({
+        message: 'Send all required fields: name and points array (with title, longitude, latitude)',
+      });
     }
+
+    for (let point of parsedPoints) {
+      if (!point.title || !point.longitude || !point.latitude) {
+        return response.status(400).send({
+          message: 'Each point must have a title, longitude, and latitude',
+        });
+      }
+    }
+
+    const { id } = request.params;
+    let existingTrail = await Trail.findById(id);
+    if (!existingTrail) {
+      return response.status(404).send({
+        message: 'Trail not found',
+      });
+    }
+
+    let newThumbnail = existingTrail.thumbnail; // if there is no change, keep the old one
+    if (request.file) {
+      newThumbnail = request.file.path;
+    }
+
+    const updatedTrail = await Trail.findByIdAndUpdate(
+      id,
+      { name, description, difficulty, locality, season, thumbnail: newThumbnail, length, estimatedTime, language, points: parsedPoints },
+      { new: true }
+    );
+
+    if (!updatedTrail) {
+      return response.status(404).send({
+        message: 'Trail not found',
+      });
+    }
+
+    response.status(200).send({
+      message: 'Trail updated.',
+      trail: updatedTrail,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route for Publish a trail
 router.put('/publish/:id', auth, async (request, response) => {
-    try {
-        const { id } = request.params;
-        const { published } = request.body;
-        const updatedTrail = await Trail.findByIdAndUpdate(
-            id,
-            { published: published },
-            { new: true }
-        );
+  try {
+    const { id } = request.params;
+    const { published } = request.body;
+    const updatedTrail = await Trail.findByIdAndUpdate(
+      id,
+      { published: published },
+      { new: true }
+    );
 
-        if (!updatedTrail) {
-            return response.status(404).send({
-                message: 'Trail not found',
-            });
-        }
-
-        response.status(200).send({
-            message: 'Trail published.',
-            trail: updatedTrail,
-        });
-    } catch (error) {
-        console.log(error.message);
-        response.status(500).send({ message: error.message });
+    if (!updatedTrail) {
+      return response.status(404).send({
+        message: 'Trail not found',
+      });
     }
+
+    response.status(200).send({
+      message: 'Trail published.',
+      trail: updatedTrail,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route for Clonning a trail
 router.post('/clone/:id', auth, async (request, response) => {
-    try {
-        const { id } = request.params;
-        const trail = await Trail.findById(id);
+  try {
+    const { id } = request.params;
+    const trail = await Trail.findById(id);
 
-        if (!trail) {
-            return response.status(404).send({
-                message: 'Trail not found',
-            });
-        }
-
-        const clonedTrail = new Trail({
-            name: `${trail.name} (Copy)`,
-            description: trail.description,
-            thumbnail: trail.thumbnail,
-            points: trail.points,
-            season: trail.season,
-            locality: trail.locality,
-            length: trail.length || 0,
-            difficulty: trail.difficulty,
-            estimatedTime: trail.estimatedTime,
-            language: trail.language,
-            published: false // Set published to false for the cloned trail
-        });
-
-        await clonedTrail.save();
-
-        response.status(201).send({
-            message: 'Trail cloned successfully.',
-            trail: clonedTrail,
-        });
-    } catch (error) {
-        console.log(error.message);
-        response.status(500).send({ message: error.message });
+    if (!trail) {
+      return response.status(404).send({
+        message: 'Trail not found',
+      });
     }
+
+    const clonedTrail = new Trail({
+      name: `${trail.name} (Copy)`,
+      description: trail.description,
+      thumbnail: trail.thumbnail,
+      points: trail.points,
+      season: trail.season,
+      locality: trail.locality,
+      length: trail.length || 0,
+      difficulty: trail.difficulty,
+      estimatedTime: trail.estimatedTime,
+      language: trail.language,
+      published: false // Set published to false for the cloned trail
+    });
+
+    await clonedTrail.save();
+
+    response.status(201).send({
+      message: 'Trail cloned successfully.',
+      trail: clonedTrail,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 // Route for Delete a trail
-router.delete('/:id', auth, async(request, response) => {
-    try {
-        const {id} = request.params;
-        const result = await Trail.findByIdAndDelete(id);
-        if(!result) {
-            return response.status(400).send({
-                message: 'Trail not found',
-            });
-        }
-        response.status(200).send({message: 'Trail deleted successfully.'});
-    } catch(error) {
-        console.log(error.message);
-        response.status(500).send({message: error.message});
+router.delete('/:id', auth, async (request, response) => {
+  try {
+    const { id } = request.params;
+    const result = await Trail.findByIdAndDelete(id);
+    if (!result) {
+      return response.status(400).send({
+        message: 'Trail not found',
+      });
     }
+    response.status(200).send({ message: 'Trail deleted successfully.' });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 })
 
 // Route for Delete a point of the trail
 router.delete('/point/:trailId/:pointId', auth, async (request, response) => {
-    const { trailId, pointId } = request.params;
+  const { trailId, pointId } = request.params;
 
-    try {
-        const trail = await Trail.findById(trailId);
-        if (!trail) {
-            return response.status(404).send({ message: 'Trail not found' });
-        }
-        const updatedPoints = trail.points.filter(point => point._id.toString() !== pointId);
-
-        trail.points = updatedPoints;
-        await trail.save();
-
-        response.status(200).send({ message: 'Point deleted successfully.', trail: trail });
-    } catch (error) {
-        console.log(error.message);
-        response.status(500).send({ message: error.message });
+  try {
+    const trail = await Trail.findById(trailId);
+    if (!trail) {
+      return response.status(404).send({ message: 'Trail not found' });
     }
+    const updatedPoints = trail.points.filter(point => point._id.toString() !== pointId);
+
+    trail.points = updatedPoints;
+    await trail.save();
+
+    response.status(200).send({ message: 'Point deleted successfully.', trail: trail });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
 });
 
 export default router;

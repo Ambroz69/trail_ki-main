@@ -20,6 +20,7 @@ import modal_publish from '../assets/modal_publish.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -31,7 +32,7 @@ const Users = () => {
   useEffect(() => {
     const configuration = {
       method: "get",
-      url: "http://localhost:5555/users",
+      url: `${backendUrl}/users`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -72,9 +73,15 @@ const Users = () => {
   const displayedUsers = getDisplayedUsers();
 
   const handleConfirmVerify = () => {
-    api.put(`http://localhost:5555/users/verify/${userToProcess}`, { verified: true }, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const configuration = {
+      method: "put",
+      url: `${backendUrl}/users/verify/${userToProcess}`,
+      data: { verified: true },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, verified: true } : user));
         handleVerifyModalClose();

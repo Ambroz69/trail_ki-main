@@ -8,20 +8,20 @@ import auth from '../auth.js';
 const router = express.Router();
 
 // Route to get all users from DB
-router.get('/', auth, async(request, response) => {
+router.get('/', auth, async (request, response) => {
   try {
-      const users = await User.find({});
-      return response.status(201).send({
-          count: users.length,
-          data: users
-      });
-  } catch(error) {
-      console.log(error.message);
-      response.status(500).send({message: error.message});
+    const users = await User.find({});
+    return response.status(201).send({
+      count: users.length,
+      data: users
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
   }
 });
 
-router.post('/register', async(request, response) => {
+router.post('/register', async (request, response) => {
   try {
     // hash the password
     const hashedPassword = await bcrypt.hash(request.body.password, 10);
@@ -34,18 +34,18 @@ router.post('/register', async(request, response) => {
       verified: false,
       verificationToken: null,
     });
-    
+
 
     // generate the verification token
     const emailToken = jwt.sign(
       { email: request.body.email },
-      process.env.EMAIL_SECRET, 
+      process.env.EMAIL_SECRET,
       { expiresIn: '1d' }
     );
 
     // attach token to user
     user.verificationToken = emailToken;
-    
+
     // save user
     await user.save();
 
@@ -70,7 +70,7 @@ router.post('/register', async(request, response) => {
         <h2>Verify your email</h2>
         <p>Hello ${request.body.name}, thanks for registering on AVA Trail!</p>
         <p>Please click the link below to verify your email:</p>
-        <a href="http://localhost:5555/users/verify/${emailToken}">Verify your account</a>
+        <a href="${process.env.BACKEND_URL}/users/verify/${emailToken}">Verify your account</a>
         <p>This link will expire in 24 hours.</p>
       `,
     };
@@ -102,7 +102,7 @@ router.get('/verify/:token', async (request, response) => {
       email: decoded.email,
       verificationToken: token,
     });
-    if(!user) {
+    if (!user) {
       return response.status(400).send('Invalid token or user not found.');
     }
 
@@ -112,7 +112,7 @@ router.get('/verify/:token', async (request, response) => {
     await user.save();
 
     // redirect to login
-    return response.redirect('http://localhost:5173/users/login');
+    return response.redirect(`${process.env.FRONTEND_URL}/users/login`);
   } catch (error) {
     console.log(error);
     return response.status(400).send('Invalid or expired token.');
@@ -164,15 +164,15 @@ router.post("/forgot-password", async (request, response) => {
     const { email } = request.body;
 
     // find user by mail
-    const user = await User.findOne({email});
-    if(!user) {
-      return response.status(404).json({ message: 'No user found with that email.'});
+    const user = await User.findOne({ email });
+    if (!user) {
+      return response.status(404).json({ message: 'No user found with that email.' });
     }
 
     // generate a reset token
     const resetToken = jwt.sign(
       { email: request.body.email },
-      process.env.FORGOTTEN_SECRET, 
+      process.env.FORGOTTEN_SECRET,
       { expiresIn: '1d' }
     );
 
@@ -201,14 +201,14 @@ router.post("/forgot-password", async (request, response) => {
         <h2>Password reset</h2>
         <p>Hello ${request.body.name}, you requested a password reset for your account on AVA Trail.</p>
         <p>Please click the link below to set a new password (valid for 60 minutes):</p>
-        <a href="http://localhost:5173/reset-password/${resetToken}">Reset your password</a>
+        <a href="${process.env.FRONTEND_URL}/reset-password/${resetToken}">Reset your password</a>
       `,
     };
 
     await transporter.sendMail(mailOptions);
 
-    return response.status(200).json({ message: 'Password reset email sent.'});
-  } catch(error) {
+    return response.status(200).json({ message: 'Password reset email sent.' });
+  } catch (error) {
     console.error(error);
     return response.status(500).json({ message: 'Error processing password reset', error });
   }
@@ -224,7 +224,7 @@ router.post("/reset-password", async (request, response) => {
       email: decoded.email,
       resetPasswordToken: token,
     });
-    if(!user) {
+    if (!user) {
       return response.status(400).send('Invalid token or user not found.');
     }
 
@@ -237,10 +237,10 @@ router.post("/reset-password", async (request, response) => {
     await user.save();
 
     //return response.status(200).json({ message: 'Password has been reset successfully.'});
-    return response.redirect('http://localhost:5173/users/login');
+    return response.redirect(`${process.env.FRONTEND_URL}/users/login`);
   } catch (error) {
     console.error(error);
-    return response.status(500).json({ message: 'Error resetting password', error});
+    return response.status(500).json({ message: 'Error resetting password', error });
   }
 });
 
@@ -258,7 +258,7 @@ router.post("/login", (request, response) => {
         .then((passwordCheck) => {
 
           // check if password matches
-          if(!passwordCheck) {
+          if (!passwordCheck) {
             return response.status(400).send({
               message: "Invalid Password",
               error,
@@ -301,14 +301,14 @@ router.post("/login", (request, response) => {
     });
 });
 
-router.put('/profile', auth, async(request, response) => {
+router.put('/profile', auth, async (request, response) => {
   try {
     const userId = request.user.userId;
     const { name, password } = request.body;
 
     const user = await User.findById(userId);
     if (!user) {
-      return response.status(404).send({ message: 'User not found.'});
+      return response.status(404).send({ message: 'User not found.' });
     }
 
     if (name) {
@@ -339,41 +339,41 @@ router.put('/profile', auth, async(request, response) => {
 
 router.get('/me', auth, (request, response) => {
   User.findById(request.user.userId)
-  .then(user => {
-    if (!user) return response.status(404).send({ message: 'User not found.'});
-    response.status(200).send({
-      user: {
-        name: user.name,
-        email: user.email,
-      }
+    .then(user => {
+      if (!user) return response.status(404).send({ message: 'User not found.' });
+      response.status(200).send({
+        user: {
+          name: user.name,
+          email: user.email,
+        }
+      });
     });
-  });
 });
 
 // Route for Verify a user manually
 router.put('/verify/:id', auth, async (request, response) => {
   try {
-      const { id } = request.params;
-      const { verified } = request.body;
-      const updatedUser = await User.findByIdAndUpdate(
-          id,
-          { verified: verified },
-          { new: true }
-      );
+    const { id } = request.params;
+    const { verified } = request.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { verified: verified },
+      { new: true }
+    );
 
-      if (!updatedUser) {
-          return response.status(404).send({
-              message: 'User not found',
-          });
-      }
-
-      response.status(200).send({
-          message: 'User verified.',
-          user: updatedUser,
+    if (!updatedUser) {
+      return response.status(404).send({
+        message: 'User not found',
       });
+    }
+
+    response.status(200).send({
+      message: 'User verified.',
+      user: updatedUser,
+    });
   } catch (error) {
-      console.log(error.message);
-      response.status(500).send({ message: error.message });
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
   }
 });
 

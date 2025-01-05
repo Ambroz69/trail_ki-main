@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import CreateTrail from './pages/CreateTrail';
-import EditTrail from './pages/EditTrail';
 import DeleteTrail from './pages/DeleteTrail';
 import ShowTrail from './pages/ShowTrail';
 import Register from './pages/Register';

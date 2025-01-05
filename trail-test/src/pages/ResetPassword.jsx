@@ -6,6 +6,8 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 function ResetPassword() {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState('');
@@ -14,7 +16,7 @@ function ResetPassword() {
   const handleReset = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5555/users/reset-password', {
+      const response = await axios.post(`${backendUrl}/users/reset-password`, {
         token,
         newPassword,
       });

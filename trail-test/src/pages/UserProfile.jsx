@@ -6,6 +6,7 @@ import styles from '../css/TrailCreate.module.css';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const UserProfile = () => {
   const [name, setName] = useState('');
@@ -15,7 +16,7 @@ const UserProfile = () => {
   useEffect(() => {
     const configuration = {
       method: "get",
-      url: "http://localhost:5555/users/me",
+      url: `${backendUrl}/users/me`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -37,7 +38,7 @@ const UserProfile = () => {
       const data = {};
       if (name) { data.name = name; }
       if (password) { data.password = password; }
-      await api.put('http://localhost:5555/users/profile', data, {
+      await api.put(`${backendUrl}/users/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
@@ -83,8 +84,8 @@ const UserProfile = () => {
             </div>
           </form>
         </div>
-        </div>
-        </div>
+      </div>
+    </div>
   );
 };
 

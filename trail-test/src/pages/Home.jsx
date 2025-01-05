@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import api from '../axiosConfig';
-import Spinner from '../../components/Spinner';
 import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
 import styles from '../css/TrailList.module.css';
@@ -27,10 +25,10 @@ import modal_publish from '../assets/modal_publish.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Home = () => {
   const [trails, setTrail] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [trailToProcess, setTrailToProcess] = useState(null);
   const [cloneModalShow, setCloneModalShow] = useState(false);
   const [publishModalShow, setPublishModalShow] = useState(false);
@@ -43,11 +41,10 @@ const Home = () => {
   const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
-    setLoading(true);
     // set configurations for the API call here
     const configuration = {
       method: "get",
-      url: "http://localhost:5555/trails",
+      url: `${backendUrl}/trails`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,70 +54,75 @@ const Home = () => {
     api(configuration)
       .then((response) => {
         setTrail(response.data.data);
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false);
       });
   }, []);
 
   const handleConfirmPublish = () => {
-    setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: true }, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const configuration = {
+      method: "put",
+      url: `${backendUrl}/trails/publish/${trailToProcess}`,
+      data: { published: true },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: true } : trail));
-        setLoading(false);
         handlePublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setLoading(false);
         handlePublishModalClose();
       });
   };
 
   const handleConfirmUnpublish = () => {
-    setLoading(true);
-    api.put(`http://localhost:5555/trails/publish/${trailToProcess}`, { published: false }, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const configuration = {
+      method: "put",
+      url: `${backendUrl}/trails/publish/${trailToProcess}`,
+      data: { published: false },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: false } : trail));
-        setLoading(false);
         handleUnpublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setLoading(false);
         handleUnpublishModalClose();
       });
   };
 
   const handleConfirmClone = () => {
-    setLoading(true);
-    api.post(`http://localhost:5555/trails/clone/${trailToProcess}`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const configuration = {
+      method: "post",
+      url: `${backendUrl}/trails/clone/${trailToProcess}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    api(configuration)
       .then(response => {
         setTrail([...trails, response.data.trail]);
-        setLoading(false);
         handleCloneModalClose();
       })
       .catch(error => {
         console.log(error);
-        setLoading(false);
         handleCloneModalClose();
       });
   };
 
   const handleConfirmDelete = () => {
-    setLoading(true);
     const configuration = {
       method: "delete",
-      url: `http://localhost:5555/trails/${trailToProcess}`,
+      url: `${backendUrl}/trails/${trailToProcess}`,
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -130,12 +132,10 @@ const Home = () => {
     api(configuration)
       .then((response) => {
         setTrail(trails.filter(trail => trail._id !== trailToProcess));
-        setLoading(false);
         handleDeleteModalClose();
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false);
         handleDeleteModalClose();
       });
   };
@@ -263,43 +263,43 @@ const Home = () => {
                   <Dropdown.Menu>
                     <Dropdown.Header>Difficulty</Dropdown.Header>
                     <Dropdown.Item key='All difficulties' onClick={() => setDifficultyFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        All Difficulties
-                      </Dropdown.Item>
+                      All Difficulties
+                    </Dropdown.Item>
                     {trailDifficulties.map((trailDifficulty) => {
                       return (
-                      <Dropdown.Item key={trailDifficulty} onClick={() => setDifficultyFilter(trailDifficulty)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        {trailDifficulty}
-                      </Dropdown.Item>
+                        <Dropdown.Item key={trailDifficulty} onClick={() => setDifficultyFilter(trailDifficulty)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                          {trailDifficulty}
+                        </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Header>Location</Dropdown.Header>
-                      <Dropdown.Item key='All localities' onClick={() => setLocalityFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        All Localities
-                      </Dropdown.Item>
+                    <Dropdown.Item key='All localities' onClick={() => setLocalityFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      All Localities
+                    </Dropdown.Item>
                     {trailLocalities.map((trailLocation) => {
                       return (
-                      <Dropdown.Item key={trailLocation} onClick={() => setLocalityFilter(trailLocation)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        {trailLocation}
-                      </Dropdown.Item>
+                        <Dropdown.Item key={trailLocation} onClick={() => setLocalityFilter(trailLocation)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                          {trailLocation}
+                        </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Header>Status</Dropdown.Header>
                     <Dropdown.Item key='All statuses' onClick={() => setStatusFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        All Statuses
-                      </Dropdown.Item>
+                      All Statuses
+                    </Dropdown.Item>
                     {trailStatuses.map((trailStatus) => {
-                      return (                        
-                      <Dropdown.Item key={trailStatus} onClick={() => setStatusFilter(trailStatus)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        {trailStatus}
-                      </Dropdown.Item>
+                      return (
+                        <Dropdown.Item key={trailStatus} onClick={() => setStatusFilter(trailStatus)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                          {trailStatus}
+                        </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
-                    <Dropdown.Item key="reset" onClick={() => {setStatusFilter(''); setDifficultyFilter(''); setLocalityFilter('');}} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                        Reset Filter
-                      </Dropdown.Item>
+                    <Dropdown.Item key="reset" onClick={() => { setStatusFilter(''); setDifficultyFilter(''); setLocalityFilter(''); }} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                      Reset Filter
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
                 <Dropdown className='btn-secondary py-1 me-2' >
@@ -342,7 +342,7 @@ const Home = () => {
                       <td className='ps-4'>{index + 1}</td>
                       <td>
                         <div className='d-flex align-items-center'>
-                          <img src={`http://localhost:5555/${trail.thumbnail}`} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
+                          <img src={`${backendUrl}/${trail.thumbnail}`} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
                           {trail.name}
                         </div>
                       </td>

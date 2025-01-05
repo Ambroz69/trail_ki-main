@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
-//import axios from 'axios';
 import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
 import styles from '../css/TrailShow.module.css';
 import ReactCardFlip from 'react-card-flip';
 
-import SliderComponent from '../../components/quiztypes/SliderComponent'
-import ShortAnswerComponent from '../../components/quiztypes/ShortAnswerComponent';
-import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
-import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
-import PairsComponent from '../../components/quiztypes/PairsComponent';
-import OrderComponent from '../../components/quiztypes/OrderComponent';
 import TrailMap from '../../components/TrailMap';
 
-import filter_button from '../assets/filter_button.svg';
+//import filter_button from '../assets/filter_button.svg';
 
 import Cookies from "universal-cookie";
 
@@ -41,23 +34,19 @@ import trail_type from '../../src/assets/trail_type.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ShowTrail = () => {
   const [trail, setTrail] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { id } = useParams();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalKey, setModalKey] = useState(0); // re-rendering the modal
-  const [currentPoint, setCurrentPoint] = useState(null);
   const [cardFlipped, setCardFlipped] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     // set configurations for the API call here
     const configuration = {
       method: "get",
-      url: `http://localhost:5555/trails/${id}`,
+      url: `${backendUrl}/trails/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -67,16 +56,13 @@ const ShowTrail = () => {
     api(configuration)
       .then((response) => {
         setTrail(response.data);
-        console.log(trail);
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false);
       });
   }, [id]);
 
-  const handleChangeAnswer = (index, field, value) => {
+  /*const handleChangeAnswer = (index, field, value) => {
     const updatedAnswers = answers.map((answer, i) => {
       if (i === index) {
         if (quizType === 'true-false') { // transform the true/false into the text as there will be the correct answer
@@ -91,7 +77,7 @@ const ShowTrail = () => {
     //setAnswers(updatedAnswers);
     // Store the updated answers to preserve them when switching types
     //setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
-  };
+  };*/
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -122,7 +108,7 @@ const ShowTrail = () => {
                       <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
                     </div>
                     <div className='d-flex mt-3'>
-                      <img src={`http://localhost:5555/${trail?.thumbnail}`} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
+                      <img src={`${backendUrl}/${trail?.thumbnail}`} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
                       <h1 className={`${styles.trail_heading} ms-2`}>{trail?.name}</h1>
                     </div>
                     <p className={`${styles.trail_description} mt-3`} dangerouslySetInnerHTML={{ __html: trail?.description }}></p>

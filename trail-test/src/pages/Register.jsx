@@ -1,9 +1,11 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useState, } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from "axios";
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +20,7 @@ const Register = () => {
     // set configurations
     const configuration = {
       method: "post",
-      url: "http://localhost:5555/users/register",
+      url: `${backendUrl}/users/register`,
       data: {
         name,
         email,

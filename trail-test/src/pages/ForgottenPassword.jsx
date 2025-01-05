@@ -5,6 +5,8 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 function ForgottenPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -12,7 +14,7 @@ function ForgottenPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5555/users/forgot-password', {
+      const response = await axios.post(`${backendUrl}/users/forgot-password`, {
         email,
       });
       setMessage(response.data.message);

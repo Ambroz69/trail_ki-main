@@ -2,9 +2,10 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const api = axios.create({
-  baseURL: 'http://localhost:5555',
+  baseURL: `${backendUrl}`,
 });
 
 // Response interceptor for 401 - not logged in
