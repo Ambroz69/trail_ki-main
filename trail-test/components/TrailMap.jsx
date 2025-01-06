@@ -14,12 +14,13 @@ import { fromLonLat, toLonLat } from 'ol/proj';
 import { Modify } from 'ol/interaction';
 import styles from '../src/css/TrailCreate.module.css';
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height }) => {
+const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
   const modifyInteractionRef = useRef(null); // Store modify interaction to avoid adding multiple
   const pointsRef = useRef([]); // Keep track of points with useRef
+  const positionSourceRef = useRef(new VectorSource()); // source for position marker
 
   // Update pointsRef whenever points change
   useEffect(() => {
@@ -36,6 +37,10 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
       source: vectorSourceRef.current,
     });
 
+    const positionLayer = new VectorLayer({
+      source: positionSourceRef.current,
+    });
+
     const map = new Map({
       target: mapRef.current,
       layers: [
@@ -43,6 +48,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
           source: new OSM(),
         }),
         vectorLayer,
+        positionLayer,
       ],
       view: new View({
         center: fromLonLat([0, 0]), // Default location, adjust as needed
@@ -176,13 +182,49 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     // Optionally zoom the map to fit points
     if (points?.length > 0 && mapInstanceRef.current) {
       const firstPointCoords = fromLonLat([points[0].longitude, points[0].latitude]);
-      mapInstanceRef.current.getView().setCenter(firstPointCoords);
-      mapInstanceRef.current.getView().setZoom(14); // Adjust zoom as needed
+      if (useGPS) { // center map on the user location
+        if (!navigator.geolocation) {
+          console.log('Geolocation is not supported by your browser.');
+          return;
+        }
+
+        navigator.geolocation.watchPosition( // real-time GPS, if you want only position once, use getCurrentPosition
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            // update the position marker
+            const positionFeature = new Feature({
+              geometry: new Point(fromLonLat([longitude, latitude])),
+            });
+            positionFeature.setStyle(
+              new Style({
+                image: new CircleStyle({
+                  radius: 8,
+                  fill: new Fill({ color: 'red'}),
+                  stroke: new Stroke({ color: 'white', width: 2 }),
+                }),
+              })
+            );
+            // clear previous marker and add new one
+            positionSourceRef.current.clear();
+            positionSourceRef.current.addFeature(positionFeature);
+            // center and zoom map to position
+            const view = mapInstanceRef.current.getView();
+            view.setCenter(fromLonLat([longitude, latitude]));
+            view.setZoom(16);
+          },
+          (error) => {
+            console.error('Geolocation error:', error);
+          }
+        );
+      } else {
+        mapInstanceRef.current.getView().setCenter(firstPointCoords);
+        mapInstanceRef.current.getView().setZoom(16); // Adjust zoom as needed
+      }
     }
 
   }, [points, editable]);
 
-  return <div ref={mapRef} style={{ height: height, width: '100%'}}/>;
+  return <div ref={mapRef} style={{ height: height, width: '100%' }} />;
 };
 
 export default TrailMap;

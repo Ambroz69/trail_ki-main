@@ -108,7 +108,7 @@ const ShowTrail = () => {
                       <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
                     </div>
                     <div className='d-flex mt-3'>
-                      <img src={`${backendUrl}/${trail?.thumbnail}`} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
+                      <img src={trail?.thumbnail ? `${backendUrl}/${trail?.thumbnail}` : backup_trail_image} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
                       <h1 className={`${styles.trail_heading} ms-2`}>{trail?.name}</h1>
                     </div>
                     <p className={`${styles.trail_description} mt-3`} dangerouslySetInnerHTML={{ __html: trail?.description }}></p>
@@ -204,6 +204,7 @@ const ShowTrail = () => {
                   points={trail?.points}
                   height='30rem'
                   editable={false}
+                  useGPT={false}
                 />
               </div>
             </ReactCardFlip>
@@ -257,12 +258,14 @@ const ShowTrail = () => {
             </div>
             <div className={`${styles.show_trail_bg} d-flex justify-content-end pt-4`}>
               <div>
-                <button className={`${styles.start_button} btn d-flex ps-5 pe-3 align-items-center`} href='/'>
+                <form action={`/trails/certification/${trail?._id}`}>
+                <button className={`${styles.start_button} btn d-flex ps-5 pe-3 align-items-center`} href={`/trails/certification/${trail?._id}`} type='submit'>
                   START
                   <div>
                     <img src={trail_arrow_start} alt="trail_arrow_start" className='ps-2 pt-0' />
                   </div>
                 </button>
+                </form>
               </div>
             </div>
           </div>

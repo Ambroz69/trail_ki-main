@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import CreateTrail from './pages/CreateTrail';
 import DeleteTrail from './pages/DeleteTrail';
 import ShowTrail from './pages/ShowTrail';
+import CertificationTrail from './pages/CertificationTrail';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtectedRoute from "./ProtectedRoute";
@@ -21,6 +22,7 @@ const App = () => {
         <Route path='/trails/edit/:id' element={<CreateTrail />} />
         <Route path='/trails/remove/:id' element={<DeleteTrail />} />
         <Route path='/trails/create' element={<CreateTrail />} />
+        <Route path='/trails/certification/:id' element={<CertificationTrail />} />
         <Route path='/users' element={<Users />} />
         <Route path='/profile' element={<UserProfile />} />
       </Route>
