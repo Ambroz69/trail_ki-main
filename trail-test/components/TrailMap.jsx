@@ -14,13 +14,26 @@ import { fromLonLat, toLonLat } from 'ol/proj';
 import { Modify } from 'ol/interaction';
 import styles from '../src/css/TrailCreate.module.css';
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS }) => {
+const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => {} }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
   const modifyInteractionRef = useRef(null); // Store modify interaction to avoid adding multiple
   const pointsRef = useRef([]); // Keep track of points with useRef
   const positionSourceRef = useRef(new VectorSource()); // source for position marker
+
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const toRadians = (degrees) => degrees * Math.PI / 180;
+    const R = 6371e3; // Radius of Earth in meters
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in meters
+  }
 
   // Update pointsRef whenever points change
   useEffect(() => {
@@ -207,6 +220,13 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
             // clear previous marker and add new one
             positionSourceRef.current.clear();
             positionSourceRef.current.addFeature(positionFeature);
+            // check proximity to points
+            points.forEach((point) => {
+              const distance = haversineDistance(latitude, longitude, point.latitude, point.longitude);
+              if (distance <= 10) { // proximity radius in meters
+                onProximityTask(point); // trigger showing the task
+              }
+            });
             // center and zoom map to position
             const view = mapInstanceRef.current.getView();
             view.setCenter(fromLonLat([longitude, latitude]));
@@ -214,6 +234,9 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
           },
           (error) => {
             console.error('Geolocation error:', error);
+          },
+          {
+            enableHighAccuracy: true,
           }
         );
       } else {
@@ -222,7 +245,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
       }
     }
 
-  }, [points, editable]);
+  }, [points, editable, onProximityTask]);
 
   return <div ref={mapRef} style={{ height: height, width: '100%' }} />;
 };

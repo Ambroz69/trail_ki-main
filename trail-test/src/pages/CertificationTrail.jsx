@@ -36,6 +36,10 @@ const CertificationTrail = () => {
       });
   }, [id]);
 
+  const handleProximityTask = (point) => {
+    console.log(`You are near point: ${point.title}`);
+  }
+
   return (
     <div className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}>
       <div className='col-3 pe-4'>
@@ -49,6 +53,7 @@ const CertificationTrail = () => {
               height='30rem'
               editable={false}
               useGPS={true}
+              onProximityTask={handleProximityTask}
             />
           </div>
         </div>
