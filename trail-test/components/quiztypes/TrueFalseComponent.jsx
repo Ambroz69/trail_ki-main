@@ -3,6 +3,13 @@ import styles from '../../src/css/TrailCreate.module.css';
 
 const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => {
   const [tempAnswer, setTempAnswer] = useState([{ text: 'false', isCorrect: false }]);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  const handleChange = (isCorrect) => {
+    setSelectedAnswer(isCorrect);
+    handleChangeAnswer(isCorrect);
+  }
+
   return (
     <>
       {!quizMode ? (
@@ -24,13 +31,13 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
       ) : (
         <div className='mb-3'>
           <div className="form-check">
-            <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={tempAnswer.isCorrect} />
+            <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={selectedAnswer === true} onChange={() => handleChange(true)} />
             <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
               True
             </label>
           </div>
           <div className="form-check">
-            <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionFalse" value="false" readOnly checked={!tempAnswer.isCorrect} />
+            <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionFalse" value="false" readOnly checked={selectedAnswer === false} onChange={() => handleChange(false)} />
             <label className={`${styles.form_label} form-check-label`} htmlFor="optionFalse">
               False
             </label>

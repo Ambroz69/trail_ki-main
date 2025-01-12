@@ -25,6 +25,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const CertificationTrail = () => {
   const [trail, setTrail] = useState(null);
   const [point, setPoint] = useState(null);
+  const [score, setScore] = useState(0);
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [tempAnswer, setTempAnswer] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
@@ -57,6 +61,32 @@ const CertificationTrail = () => {
 
   const handleProximityTask = (pointProximity) => {
     setPoint(pointProximity);
+    setFeedback(null); // clear feedback on new point
+    setTempAnswer(null); // clear temp answer
+  }
+
+  const handleAnswerSubmit = () => {
+    if (!point || !point.quiz) return;
+
+    const isCorrect = tempAnswer === point.quiz.answers[0].isCorrect;
+
+    // add users answer to state
+    setUserAnswers((prev) => [
+      ...prev,
+      {
+        questionId: point.quiz._id,
+        providedAnswer: tempAnswer,
+        isCorrect,
+      },
+    ]);
+    console.log(isCorrect);
+    // update score
+    if (isCorrect) {
+      setScore((prev) => prev + point.quiz.points);
+      setFeedback(point.quiz.feedback.correct);
+    } else {
+      setFeedback(point.quiz.feedback.incorrect);
+    }
   }
 
   return (
@@ -116,23 +146,23 @@ const CertificationTrail = () => {
                 <p className={`${styles.accordion_text_gray}`}>{point?.content}</p>
                 {point?.quiz ? (
                   <>
-                  <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                    <p className={`${styles.accordion_text_gray} my-2`}>{point?.quiz.question}</p>
-                    {(() => {                      
-                      switch (point?.quiz.type) {
-                        case 'short-answer': return (
-                          <>
+                    <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                      <p className={`${styles.accordion_text_gray} my-2`}>{point?.quiz.question}</p>
+                      {(() => {
+                        switch (point?.quiz.type) {
+                          case 'short-answer': return (
+                            <>
                               <div className='my-1'>
                                 <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{point?.quiz.answers[0].text}</p>
                               </div>
-                            <ShortAnswerComponent
-                              value={point?.quiz.answers[0].text}
-                             // onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
-                            />
-                          </>);
-                        case 'single':
-                        case 'multiple': return (
-                          <>
+                              <ShortAnswerComponent
+                                value={point?.quiz.answers[0].text}
+                              // onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
+                              />
+                            </>);
+                          case 'single':
+                          case 'multiple': return (
+                            <>
                               {point?.quiz.answers.map((answer, index) => (
                                 <div className='d-flex my-1'>
                                   <div className='col-1 d-flex justify-content-start'>
@@ -144,9 +174,9 @@ const CertificationTrail = () => {
                                   </div>
                                 </div>
                               ))}
-                          </>);
-                        case 'slider': return (
-                          <>
+                            </>);
+                          case 'slider': return (
+                            <>
                               <div className='d-flex justify-content-between mt-2'>
                                 <p className={`${styles.accordion_text_gray} mb-0`}>{point?.quiz.answers[0].minValue}</p>
                                 <p className={`${styles.accordion_slider_value} mb-0`}>{point?.quiz.answers[0].text}</p>
@@ -162,9 +192,9 @@ const CertificationTrail = () => {
                                   className='form-range'
                                 />
                               </div>
-                          </>);
-                        case 'pairs': return (
-                          <>
+                            </>);
+                          case 'pairs': return (
+                            <>
                               {point?.quiz.answers.map((answer) => (
                                 <div className='d-flex my-1'>
                                   <div className='col-6 pe-2'>
@@ -175,43 +205,42 @@ const CertificationTrail = () => {
                                   </div>
                                 </div>
                               ))}
-                          </>);
-                        case 'order': return (
-                          <>
+                            </>);
+                          case 'order': return (
+                            <>
                               {point?.quiz.answers.map((answer) => (
                                 <div className='my-1'>
                                   <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
                                 </div>
                               ))}
-                          </>);
-                        case 'true-false': return (
-                          <>
-                            <TrueFalseComponent
-                              quizMode={true}
-                              value={point?.quiz.answers[0]?.isCorrect}
-                              answer={point?.quiz.answers[0]}
-                            />
-                          </>);
-                        default: return (<></>);
+                            </>);
+                          case 'true-false': return (
+                            <>
+                              <TrueFalseComponent
+                                quizMode={true}
+                                value={tempAnswer}
+                                answer={point?.quiz.answers[0]}
+                                handleChangeAnswer={setTempAnswer}
+                              />
+                            </>);
+                          default: return (<></>);
+                        }
+
                       }
-                      
-                    }
-                    )()}
+                      )()}
                     </div>
-                    {(point?.quiz.feedback && ((point?.quiz.feedback?.correct !== "" && point?.quiz.feedback?.correct !== null) || (point?.quiz.feedback?.incorrect !== "" && point?.quiz.feedback?.incorrect !== null))) ? (
-                      <>
-                        <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                          <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
-                          <div className={(point?.quiz.feedback.correct !== "" && point?.quiz.feedback.correct !== null) ? 'my-1' : 'my-1 d-none'}>
-                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point?.quiz.feedback.correct}</p>
-                          </div>
-                          <div className={(point?.quiz.feedback.incorrect !== "" && point?.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
-                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point?.quiz.feedback.incorrect}</p>
-                          </div>
+                    <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null}>Submit Answer</button>
+                    {feedback && (
+                      <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                        <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
+                        <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
+                          <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
                         </div>
-                      </>
-                    ) : (
-                      <></>
+                        <div className={feedback !== point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
+                          <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{feedback}</p>
+                        </div>
+                      </div>
+
                     )}
                   </>
                 ) : (
