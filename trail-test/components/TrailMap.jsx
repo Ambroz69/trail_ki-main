@@ -233,7 +233,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
             view.setZoom(16);
           },
           (error) => {
-            console.error('Geolocation error:', error);
+            //console.error('Geolocation error:', error);
           },
           {
             enableHighAccuracy: true,

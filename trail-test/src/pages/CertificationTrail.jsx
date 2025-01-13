@@ -67,8 +67,24 @@ const CertificationTrail = () => {
 
   const handleAnswerSubmit = () => {
     if (!point || !point.quiz) return;
-
-    const isCorrect = tempAnswer === point.quiz.answers[0].isCorrect;
+    let isCorrect = null;
+    switch (point?.quiz?.type) {
+      case 'short-answer': {
+        const correctAnswer = point.quiz.answers[0].text.trim().toLowerCase();
+        console.log(correctAnswer);
+        isCorrect = tempAnswer.trim().toLowerCase() === correctAnswer;
+      }
+      case 'single': break;
+      case 'multiple': break;
+      case 'slider': break;
+      case 'pairs': break;
+      case 'order': break;
+      case 'true-false': {
+        isCorrect = tempAnswer === point.quiz.answers[0].isCorrect; 
+        break;
+      }
+      default: break;
+    }
 
     // add users answer to state
     setUserAnswers((prev) => [
@@ -153,12 +169,12 @@ const CertificationTrail = () => {
                           case 'short-answer': return (
                             <>
                               <div className='my-1'>
-                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{point?.quiz.answers[0].text}</p>
+                                <ShortAnswerComponent
+                                  value={tempAnswer || ''}
+                                  quizMode={true}
+                                  handleAnswer={(userAnswer) => { setTempAnswer(userAnswer); }}
+                                />
                               </div>
-                              <ShortAnswerComponent
-                                value={point?.quiz.answers[0].text}
-                              // onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
-                              />
                             </>);
                           case 'single':
                           case 'multiple': return (
@@ -221,7 +237,7 @@ const CertificationTrail = () => {
                                 value={tempAnswer}
                                 answer={point?.quiz.answers[0]}
                                 handleChangeAnswer={setTempAnswer}
-                              />
+                              />                              
                             </>);
                           default: return (<></>);
                         }
