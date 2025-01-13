@@ -7,6 +7,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
   const handleSliderChange = (e) => {
     const newValue = e.target.value;
     setUserValue(newValue);
+    setCorrectValue(newValue);
   };
 
   return (

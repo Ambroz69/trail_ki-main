@@ -76,7 +76,10 @@ const CertificationTrail = () => {
       }
       case 'single': break;
       case 'multiple': break;
-      case 'slider': break;
+      case 'slider': {
+        isCorrect = tempAnswer === point.quiz.answers[0].text; 
+        break;
+      }
       case 'pairs': break;
       case 'order': break;
       case 'true-false': {
@@ -192,23 +195,14 @@ const CertificationTrail = () => {
                               ))}
                             </>);
                           case 'slider': return (
-                            <>
-                              <div className='d-flex justify-content-between mt-2'>
-                                <p className={`${styles.accordion_text_gray} mb-0`}>{point?.quiz.answers[0].minValue}</p>
-                                <p className={`${styles.accordion_slider_value} mb-0`}>{point?.quiz.answers[0].text}</p>
-                                <p className={`${styles.accordion_text_gray} mb-0`}>{point?.quiz.answers[0].maxValue}</p>
-                              </div>
-                              <div className='d-flex align-items-center justify-content-center'>
-                                <input
-                                  type="range"
-                                  min={point?.quiz.answers[0].minValue}
-                                  max={point?.quiz.answers[0].maxValue}
-                                  value={point?.quiz.answers[0].text}
-                                  readOnly
-                                  className='form-range'
-                                />
-                              </div>
-                            </>);
+                              <SliderComponent 
+                                correctValue={point?.quiz.answers[0].minValue}
+                                minValue={point?.quiz.answers[0].minValue}
+                                maxValue={point?.quiz.answers[0].maxValue}
+                                setCorrectValue={correctValue => setTempAnswer(correctValue)}
+                                quizMode={true}
+                              />
+                            );
                           case 'pairs': return (
                             <>
                               {point?.quiz.answers.map((answer) => (
