@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
 
-const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAnswer, quizMode }) => {
+const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, quizMode }) => {
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [selectedMultiAnswers, setSelectedMultiAnswers] = useState([]);
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
+  const [selectedQuizAnswers, setSelectedQuizAnswers] = useState([]);
 
   const handleSelectAnswer = (index) => {
-    if(quizType === 'multiple') {
+    if (quizType === 'multiple') {
       setSelectedMultiAnswers(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
     } else {
       setSelectedAnswer(index);
     }
-  };  
+  };
 
   const toLetters = (num) => {
     "use strict";
@@ -31,6 +32,31 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
     }
     return shuffledArray;
   };
+
+  // Handle selecting/deselecting answers
+  const handleSelectQuizAnswer = (index) => {
+    let newSelectedAnswers;
+    if (quizType === 'multiple') {
+      newSelectedAnswers = selectedQuizAnswers.includes(index)
+        ? selectedQuizAnswers.filter((i) => i !== index) // Remove if already selected
+        : [...selectedQuizAnswers, index]; // Add if not selected
+    } else {
+      newSelectedAnswers = [index]; // Only one answer can be selected
+    }
+    setSelectedQuizAnswers(newSelectedAnswers); // Update the state
+    //console.log(shuffledAnswers);
+    // Use the new state to get the selected answers
+    const selected = newSelectedAnswers.map((i) => shuffledAnswers[i]);
+    //console.log(selected);
+    //if (JSON.stringify(selectedQuizAnswers) !== JSON.stringify(newSelectedAnswers)) {
+      handleQuizAnswer(selected); // Pass updated answers to the parent
+    //}
+  };
+
+  const handleSubmit = () => {
+    const selected = selectedQuizAnswers.map((index) => shuffledAnswers[index]);
+    handleQuizAnswer(selected);
+  }
 
   useEffect(() => {
     if (quizMode) {
@@ -84,12 +110,12 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
         <div>
           <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? "Find the Correct Answers" : "Find the Correct Answer (one is correct)"}</label>
           {shuffledAnswers.map((answer, index) => (
-            <div className='d-flex justify-content-between align-items-center mb-3' key={index} onClick={() => handleSelectAnswer(index)} style={{ cursor: 'pointer' }}>
+            <div className='d-flex justify-content-between align-items-center mb-3' key={index} onClick={() => handleSelectQuizAnswer(index)} style={{ cursor: 'pointer' }}>
               <div className='col-1 d-flex justify-content-start'>
-                <p className={`${(selectedAnswer === index || selectedMultiAnswers.includes(index)) ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
+                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
               </div>
               <div className='col-11'>
-                <p className={`${(selectedAnswer === index || selectedMultiAnswers.includes(index)) ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer}</p>
+                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer}</p>
               </div>
             </div>
           ))}

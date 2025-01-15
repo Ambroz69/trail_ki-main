@@ -74,16 +74,28 @@ const CertificationTrail = () => {
         console.log(correctAnswer);
         isCorrect = tempAnswer.trim().toLowerCase() === correctAnswer;
       }
-      case 'single': break;
-      case 'multiple': break;
+      case 'single': {
+        const correcAnswer = point.quiz.answers.find((answer) => answer.isCorrect);
+        isCorrect = tempAnswer.length === 1 && tempAnswer[0] === correcAnswer.text;
+        break;
+      }
+      case 'multiple': {
+        const correctAnswers = point.quiz.answers
+          .filter((answer) => answer.isCorrect)
+          .map((answer) => answer.text);
+        isCorrect =
+          tempAnswer.length === correctAnswers.length &&
+          tempAnswer.every((index) => correctAnswers.includes(index));
+        break;
+      }
       case 'slider': {
-        isCorrect = tempAnswer === point.quiz.answers[0].text; 
+        isCorrect = tempAnswer === point.quiz.answers[0].text;
         break;
       }
       case 'pairs': break;
       case 'order': break;
       case 'true-false': {
-        isCorrect = tempAnswer === point.quiz.answers[0].isCorrect; 
+        isCorrect = tempAnswer === point.quiz.answers[0].isCorrect;
         break;
       }
       default: break;
@@ -182,6 +194,12 @@ const CertificationTrail = () => {
                           case 'single':
                           case 'multiple': return (
                             <>
+                              <ChoiceComponent
+                                quizType={point?.quiz?.type}
+                                answers={point?.quiz.answers}
+                                quizMode={true}
+                                handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                              />
                               {point?.quiz.answers.map((answer, index) => (
                                 <div className='d-flex my-1'>
                                   <div className='col-1 d-flex justify-content-start'>
@@ -195,14 +213,14 @@ const CertificationTrail = () => {
                               ))}
                             </>);
                           case 'slider': return (
-                              <SliderComponent 
-                                correctValue={point?.quiz.answers[0].minValue}
-                                minValue={point?.quiz.answers[0].minValue}
-                                maxValue={point?.quiz.answers[0].maxValue}
-                                setCorrectValue={correctValue => setTempAnswer(correctValue)}
-                                quizMode={true}
-                              />
-                            );
+                            <SliderComponent
+                              correctValue={point?.quiz.answers[0].minValue}
+                              minValue={point?.quiz.answers[0].minValue}
+                              maxValue={point?.quiz.answers[0].maxValue}
+                              setCorrectValue={correctValue => setTempAnswer(correctValue)}
+                              quizMode={true}
+                            />
+                          );
                           case 'pairs': return (
                             <>
                               {point?.quiz.answers.map((answer) => (
@@ -231,7 +249,7 @@ const CertificationTrail = () => {
                                 value={tempAnswer}
                                 answer={point?.quiz.answers[0]}
                                 handleChangeAnswer={setTempAnswer}
-                              />                              
+                              />
                             </>);
                           default: return (<></>);
                         }
