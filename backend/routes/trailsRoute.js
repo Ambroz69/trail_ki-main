@@ -20,13 +20,13 @@ const upload = multer({
 // Route to Save a new Trail
 router.post('/', auth, upload.single('thumbnail'), async (request, response) => {
   try {
-    const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
+    const { name, description, difficulty, locality, season, length, estimatedTime, language, points, creator } = request.body;
     const parsedPoints = JSON.parse(points);
     let thumbnail = null;
     if (request.file) {
       thumbnail = request.file.path;
     }
-    const newTrail = new Trail({ name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints });
+    const newTrail = new Trail({ name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints, creator: request.user.userId });
     await newTrail.save();
     return response.status(201).send(newTrail);
   } catch (error) {

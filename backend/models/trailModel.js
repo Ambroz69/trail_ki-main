@@ -113,6 +113,11 @@ const trailSchema = new mongoose.Schema(
             default: false,
         },
         points: [poiSchema],
+        creator: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        }
     }
 );
 

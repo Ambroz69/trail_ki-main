@@ -102,6 +102,21 @@ const CreateTrail = () => {
     return totalLength; // Length in kilometers
   }
 
+  const getUserIDFromToken = (token) => {
+    try {
+      const [header, payload, signature] = token.split('.');
+      if (!header || !payload || !signature) {
+        throw new Error('Invalid token structure');
+      }
+  
+      const tokenPayload = JSON.parse(atob(payload));
+      return tokenPayload?.userId || null; // Return the userID if available
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null; // Return null if the token is invalid or userID is not present
+    }
+  };
+
   const handleFileChange = (event) => {
     let file = event.target.files[0];
     if (!file) return;
@@ -112,6 +127,11 @@ const CreateTrail = () => {
 
   const handleSaveTrail = () => {
     let trailLength = calculateTrailLength(points);
+    const userId = getUserIDFromToken(token);
+    if(!userId) {
+      console.error('Invalid or missing user ID');
+      return;
+    }
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
@@ -123,6 +143,7 @@ const CreateTrail = () => {
     formData.append('estimatedTime', estimatedTime);
     formData.append('language', language);
     formData.append('points', JSON.stringify(points));
+    formData.append('creator', userId);
     const url = id
       ? `${backendUrl}/trails/${id}`
       : `${backendUrl}/trails`;
