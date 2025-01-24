@@ -143,7 +143,6 @@ const CreateTrail = () => {
     formData.append('estimatedTime', estimatedTime);
     formData.append('language', language);
     formData.append('points', JSON.stringify(points));
-    formData.append('creator', userId);
     const url = id
       ? `${backendUrl}/trails/${id}`
       : `${backendUrl}/trails`;

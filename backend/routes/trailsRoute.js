@@ -20,7 +20,7 @@ const upload = multer({
 // Route to Save a new Trail
 router.post('/', auth, upload.single('thumbnail'), async (request, response) => {
   try {
-    const { name, description, difficulty, locality, season, length, estimatedTime, language, points, creator } = request.body;
+    const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
     const parsedPoints = JSON.parse(points);
     let thumbnail = null;
     if (request.file) {
@@ -87,6 +87,10 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
         message: 'Trail not found',
       });
     }
+    
+    if (existingTrail.creator.toString() !== request.user.userId) {
+      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    }
 
     let newThumbnail = existingTrail.thumbnail; // if there is no change, keep the old one
     if (request.file) {
@@ -119,6 +123,10 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
 router.put('/publish/:id', auth, async (request, response) => {
   try {
     const { id } = request.params;
+    let existingTrail = await Trail.findById(id);
+    if (existingTrail.creator.toString() !== request.user.userId) {
+      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    }
     const { published } = request.body;
     const updatedTrail = await Trail.findByIdAndUpdate(
       id,
@@ -165,7 +173,8 @@ router.post('/clone/:id', auth, async (request, response) => {
       difficulty: trail.difficulty,
       estimatedTime: trail.estimatedTime,
       language: trail.language,
-      published: false // Set published to false for the cloned trail
+      published: false, // Set published to false for the cloned trail
+      creator: request.user.userId // new creator of the cloned trail
     });
 
     await clonedTrail.save();
@@ -184,6 +193,10 @@ router.post('/clone/:id', auth, async (request, response) => {
 router.delete('/:id', auth, async (request, response) => {
   try {
     const { id } = request.params;
+    let existingTrail = await Trail.findById(id);
+    if (existingTrail.creator.toString() !== request.user.userId) {
+      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    }
     const result = await Trail.findByIdAndDelete(id);
     if (!result) {
       return response.status(400).send({

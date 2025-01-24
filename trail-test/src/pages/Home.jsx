@@ -229,6 +229,18 @@ const Home = () => {
 
   const displayedTrails = getDisplayedTrails();
 
+  const getUserIdFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.userId || null;
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      return null;
+    }
+  };
+
+  const userId = getUserIdFromToken(token);
+
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
@@ -371,26 +383,34 @@ const Home = () => {
                             <Dropdown.Item href="#" onClick={() => handleCloneModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_duplicate} alt="duplicate" className='pe-2' />Duplicate
                             </Dropdown.Item>
-                            {trail.published ? ( // change icon
-                              <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish
-                              </Dropdown.Item>
-                            ) : (
-                              <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                <img src={table_action_publish} alt="publish" className='pe-2' />Publish
-                              </Dropdown.Item>
+                            {trail.creator === userId && (
+                              <>
+                                {trail.published ? ( // change icon
+                                  <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                    <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish
+                                  </Dropdown.Item>
+                                ) : (
+                                  <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                    <img src={table_action_publish} alt="publish" className='pe-2' />Publish
+                                  </Dropdown.Item>
+                                )}
+                              </>
                             )}
                             <Dropdown.Item href={`/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show Trail
                             </Dropdown.Item>
-                            {(!trail.published) && (
-                              <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
-                              </Dropdown.Item>
+                            {trail.creator === userId && (
+                              <>
+                                {(!trail.published) && (
+                                  <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                    <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
+                                  </Dropdown.Item>
+                                )}
+                                <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                  <img src={table_action_delete} alt="delete" className='pe-2' />Delete
+                                </Dropdown.Item>
+                              </>
                             )}
-                            <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_delete} alt="delete" className='pe-2' />Delete
-                            </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
                       </td>
