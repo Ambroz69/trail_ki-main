@@ -2,15 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styles from '../../src/css/TrailCreate.module.css';
 
-const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDragEnd, quizMode }) => {
+const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, onDragEnd, quizMode }) => {
 
   const [dragAnswers, setDragAnswers] = useState([{ text: '', isCorrect: true }]);
 
   useEffect(() => {
     if (answers) {
-      setDragAnswers(answers);
+      if (quizMode) {
+        setDragAnswers(shuffleArray(answers));
+      } else {
+        setDragAnswers(answers);
+      }
     }
   }, [answers]);
+
+  const shuffleArray = (array) => {
+    let shuffledArray = [...array]; 
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; 
+    }
+    return shuffledArray;
+  };
 
   const handleDragDrop = (result) => {
     const { source, destination, type } = result;
@@ -25,11 +38,12 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
       const destinationIndex = destination.index;
       const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
       reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      handleQuizAnswer(reorderedAnswers);
       return setDragAnswers(reorderedAnswers);
     }
   };
 
-  // evaluation of quiz will have to be here
+
 
 
   return (
@@ -59,10 +73,10 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={{
-                  background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
+                  background: snapshot.isDraggingOver ? 'white' : 'white',
                   padding: 8,
-                  width: '40%',
-                  minHeight: '100px',
+                  width: '100%',
+                  minHeight: '80px',
                 }}
               >
                 {dragAnswers.map((answer, index) => (
@@ -73,14 +87,15 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   >
                     {(provided, snapshot) => (
                       <div
+                        className={styles.accordion_point_answers_text}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         style={{
                           userSelect: 'none',
-                          padding: 16,
+                          padding: 2,
                           margin: `0 0 8px 0`,
-                          minHeight: '50px',
+                          maxHeight: '40px',
                           backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
                           color: 'white',
                           ...provided.draggableProps.style,

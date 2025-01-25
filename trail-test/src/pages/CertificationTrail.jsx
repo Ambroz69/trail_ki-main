@@ -93,7 +93,15 @@ const CertificationTrail = () => {
         break;
       }
       case 'pairs': break;
-      case 'order': break;
+      case 'order': {
+        const correctAnswers = point.quiz.answers
+          .map((answer) => answer.text);
+        const sentAnswers = tempAnswer.map((answer) => answer.text);
+        isCorrect =
+          sentAnswers.length === correctAnswers.length &&
+          sentAnswers.every((value, index) => value === correctAnswers[index]);
+        break;
+      }
       case 'true-false': {
         isCorrect = tempAnswer === point.quiz.answers[0].isCorrect;
         break;
@@ -200,17 +208,6 @@ const CertificationTrail = () => {
                                 quizMode={true}
                                 handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
                               />
-                              {point?.quiz.answers.map((answer, index) => (
-                                <div className='d-flex my-1'>
-                                  <div className='col-1 d-flex justify-content-start'>
-                                    <p className={`${answer.isCorrect ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
-                                  </div>
-                                  <div className='col-11'>
-                                    <p className={`${answer.isCorrect ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
-                                    {/*  <p className={answer.isCorrect? styles.test1 : styles.test2}>{answer.text}</p> */}
-                                  </div>
-                                </div>
-                              ))}
                             </>);
                           case 'slider': return (
                             <SliderComponent
@@ -236,11 +233,11 @@ const CertificationTrail = () => {
                             </>);
                           case 'order': return (
                             <>
-                              {point?.quiz.answers.map((answer) => (
-                                <div className='my-1'>
-                                  <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
-                                </div>
-                              ))}
+                              <OrderComponent
+                                answers={point?.quiz.answers}
+                                handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                                quizMode={true}
+                              />
                             </>);
                           case 'true-false': return (
                             <>
