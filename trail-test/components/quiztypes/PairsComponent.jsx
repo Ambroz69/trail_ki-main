@@ -11,7 +11,7 @@ const shuffleArray = (array) => {
   return shuffledArray;
 };
 
-const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDragEnd, quizMode }) => {
+const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, handleRightSideQuizAnswer, onDragEnd, quizMode }) => {
   const [shuffledLeft, setShuffledLeft] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
 
@@ -22,12 +22,16 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
 
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
+    handleQuizAnswer(shuffledLeft);
+    handleRightSideQuizAnswer(shuffledRight);
+
     if (type === 'leftGroup') {
       const reorderedAnswers = [...shuffledLeft];
       const sourceIndex = source.index;
       const destinationIndex = destination.index;
       const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
       reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      handleQuizAnswer(reorderedAnswers);
       return setShuffledLeft(reorderedAnswers);
     }
     if (type === 'rightGroup') {
@@ -36,6 +40,7 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
       const destinationIndex = destination.index;
       const [removedAnswer] = reorderedAnswers.splice(sourceIndex, 1);
       reorderedAnswers.splice(destinationIndex, 0, removedAnswer);
+      handleRightSideQuizAnswer(reorderedAnswers);
       return setShuffledRight(reorderedAnswers);
     }
   };
@@ -107,8 +112,8 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   style={{
                     background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
                     padding: 8,
-                    width: '40%',
-                    minHeight: '100px',
+                    width: '50%',
+                    minHeight: '60px',
                   }}
                 >
                   {shuffledLeft.map((text, index) => (
@@ -120,11 +125,12 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                           {...provided.dragHandleProps}
                           style={{
                             userSelect: 'none',
-                            padding: 16,
+                            padding: 2,
                             margin: `0 0 8px 0`,
-                            minHeight: '50px',
+                            maxHeight: '40px',
                             backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
                             color: 'white',
+                            borderRadius: '4px',
                             ...provided.draggableProps.style,
                           }}
                         >
@@ -145,8 +151,8 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                   style={{
                     background: snapshot.isDraggingOver ? 'lightblue' : '#F3F3F3',
                     padding: 8,
-                    width: '40%',
-                    minHeight: '100px',
+                    width: '50%',
+                    minHeight: '60px',
                   }}
                 >
                   {shuffledRight.map((pairText, index) => (
@@ -158,11 +164,12 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, onDra
                           {...provided.dragHandleProps}
                           style={{
                             userSelect: 'none',
-                            padding: 16,
+                            padding: 2,
                             margin: `0 0 8px 0`,
-                            minHeight: '50px',
+                            maxHeight: '40px',
                             backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
                             color: 'white',
+                            borderRadius: '4px',
                             ...provided.draggableProps.style,
                           }}
                         >

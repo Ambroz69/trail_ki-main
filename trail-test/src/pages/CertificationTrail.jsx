@@ -28,6 +28,7 @@ const CertificationTrail = () => {
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [tempAnswer, setTempAnswer] = useState(null);
+  const [rightPairAnswer, setRightPairAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { id } = useParams();
 
@@ -92,7 +93,18 @@ const CertificationTrail = () => {
         isCorrect = tempAnswer === point.quiz.answers[0].text;
         break;
       }
-      case 'pairs': break;
+      case 'pairs': {
+        const leftAnswers = point.quiz.answers
+          .map((answer) => answer.text);
+        const rightAnswers = point.quiz.answers
+          .map((answer) => answer.pairText);
+        isCorrect =
+          tempAnswer.length === leftAnswers.length &&
+          tempAnswer.every((value, index) => value === leftAnswers[index]) &&
+          rightPairAnswer.length === rightAnswers.length &&
+          rightPairAnswer.every((value, index) => value === rightAnswers[index]);
+        break;
+      }
       case 'order': {
         const correctAnswers = point.quiz.answers
           .map((answer) => answer.text);
@@ -220,16 +232,12 @@ const CertificationTrail = () => {
                           );
                           case 'pairs': return (
                             <>
-                              {point?.quiz.answers.map((answer) => (
-                                <div className='d-flex my-1'>
-                                  <div className='col-6 pe-2'>
-                                    <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
-                                  </div>
-                                  <div className='col-6 ps-2'>
-                                    <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.pairText}</p>
-                                  </div>
-                                </div>
-                              ))}
+                              <PairsComponent
+                                answers={point?.quiz.answers}
+                                handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                                handleRightSideQuizAnswer={(rightPair) => setRightPairAnswer(rightPair)}
+                                quizMode={true}
+                              />
                             </>);
                           case 'order': return (
                             <>
@@ -254,7 +262,7 @@ const CertificationTrail = () => {
                       }
                       )()}
                     </div>
-                    <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null}>Submit Answer</button>
+                    <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>Submit Answer</button>
                     {feedback && (
                       <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                         <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
