@@ -98,6 +98,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                           maxHeight: '40px',
                           backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
                           color: 'white',
+                          borderRadius: '4px',
                           ...provided.draggableProps.style,
                         }}
                       >
