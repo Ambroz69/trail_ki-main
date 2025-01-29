@@ -6,7 +6,7 @@ const auth = async (request, response, next) => {
     const token = await request.headers.authorization.split(" ")[1];
 
     //check if the token matches the supposed origin
-    const decodedToken = jwt.verify(token, "RANDOM-TOKEN");
+    const decodedToken = jwt.verify(token, process.env.LOGIN_SECRET);
 
     // retrieve the user details of the logged in user
     const user = decodedToken;

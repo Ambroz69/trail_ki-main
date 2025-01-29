@@ -273,7 +273,7 @@ router.post("/login", (request, response) => {
               userName: user.name,
               userVerified: user.verified,
             },
-            "RANDOM-TOKEN",
+            process.env.LOGIN_SECRET,
             { expiresIn: "24h" }
           );
 
