@@ -26,9 +26,19 @@ function Navbar() {
     return Math.floor(new Date().getTime() / 1000) >= tokenPayload?.sub;
   };
 
+  const getUserRole = () => {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      return tokenPayload?.userRole || "user";
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return "user"; // Default role
+    }
+  };
+
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
-
+  
   // adding the states 
   //const [isActive, setIsActive] = useState(false);
   //add the active class
@@ -49,18 +59,21 @@ function Navbar() {
 
   const [token, setToken] = useState(cookies.get("SESSION_TOKEN"));
 
+  const userRole = getUserRole();
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/user";
+
   useEffect(() => {
     isTokenExpired(token);
   }, [token]);
 
   return (
     <div className={`${styles.sidebar} d-flex flex-column flex-shrink-0 p-3 mx-0 px-0 pt-4`}>
-      <a href="/" className="d-flex justify-content-center pt-3 pb-4">
+      <a href={`${basePath}`} className="d-flex justify-content-center pt-3 pb-4">
         <img src={sidebar_logo} alt="sidebar_logo" />
       </a>
       <ul className="nav nav-pills flex-column mb-auto mx-4">
         <li className="nav-item pb-2">
-          <NavLink to="/" aria-current="page" className={({ isActive }) =>
+          <NavLink to='/' end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.sidebar_link}  nav-link d-flex` // add when created another home ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg}
               : `${styles.sidebar_link} nav-link d-flex`
           }>
@@ -69,7 +82,7 @@ function Navbar() {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/" className={({ isActive }) =>
+          <NavLink to={`${basePath}`} end className={({ isActive }) =>
             isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg} nav-link d-flex`
               : `${styles.sidebar_link} nav-link d-flex`
           }>
@@ -84,7 +97,7 @@ function Navbar() {
           <div >
             <ul className='px-0 pt-2'>
               <li className=''>
-                <NavLink to="/" className={({ isActive }) =>
+                <NavLink to="/" end className={({ isActive }) =>
                   isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
                     : `${styles.sidebar_link} nav-link ps-0`
                 }>
@@ -92,7 +105,7 @@ function Navbar() {
                 </NavLink>
               </li>
               <li className=''>
-                <NavLink to="/users" className={({ isActive }) =>
+                <NavLink to={`${basePath}/users`} className={({ isActive }) =>
                   isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
                     : `${styles.sidebar_link} nav-link ps-0`
                 }>
@@ -103,7 +116,7 @@ function Navbar() {
           </div>
         </div>
         {<li className="nav-item pb-2">
-          <NavLink to="/profile" className={({ isActive }) =>
+          <NavLink to={`${basePath}/profile`} className={({ isActive }) =>
             isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link d-flex`
               : `${styles.sidebar_link} nav-link d-flex`
           }>
@@ -122,7 +135,7 @@ function Navbar() {
         </li>
       </ul>
       <div className='ms-4 me-5 d-flex align-items-center justify-content-between'>
-        <a href="/profile" className="text-decoration-none ">
+        <a href={`${basePath}/profile`} className="text-decoration-none ">
           <div className={` d-flex align-items-center justify-content-start`}>
             <img src="https://liquipedia.net/commons/images/1/1a/Brawl_Hank.png" referrerPolicy="no-referrer" alt="" width="50" height="50" className="rounded-circle me-3" />
             <div className='d-flex flex-column'>

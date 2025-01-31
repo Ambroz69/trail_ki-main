@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     enum: ['Slovakia', 'Czech Republic', 'Spain', 'Other'],
   },
+  role: {
+    type: String,
+    required: true,
+    enum: ['user', 'trail creator', 'manager'],
+  },
   verified: {
     type: Boolean,
     default: false,

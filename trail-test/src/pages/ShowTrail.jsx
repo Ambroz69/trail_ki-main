@@ -42,6 +42,20 @@ const ShowTrail = () => {
   const { id } = useParams();
   const [cardFlipped, setCardFlipped] = useState(false);
 
+  const getUserRole = () => {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      return tokenPayload?.userRole || "user";
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return "user"; // Default role
+    }
+  };
+  
+  const userRole = getUserRole();
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/user";
+
+
   useEffect(() => {
     // set configurations for the API call here
     const configuration = {
@@ -258,8 +272,8 @@ const ShowTrail = () => {
             </div>
             <div className={`${styles.show_trail_bg} d-flex justify-content-end pt-4`}>
               <div>
-                <form action={`/trails/certification/${trail?._id}`}>
-                <button className={`${styles.start_button} btn d-flex ps-5 pe-3 align-items-center`} href={`/trails/certification/${trail?._id}`} type='submit'>
+                <form action={`${basePath}/trails/certification/${trail?._id}`}>
+                <button className={`${styles.start_button} btn d-flex ps-5 pe-3 align-items-center`} href={`${basePath}/trails/certification/${trail?._id}`} type='submit'>
                   START
                   <div>
                     <img src={trail_arrow_start} alt="trail_arrow_start" className='ps-2 pt-0' />

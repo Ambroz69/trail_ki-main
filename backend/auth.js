@@ -25,3 +25,14 @@ const auth = async (request, response, next) => {
 };
 
 export default auth;
+
+export const getUserRoleFromToken = (token) => {
+  try {
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+      return payload?.userRole || "user"; // Default role: 'user'
+  } catch (error) {
+      console.error("Error decoding token:", error);
+      return "user"; // Default role
+  }
+};

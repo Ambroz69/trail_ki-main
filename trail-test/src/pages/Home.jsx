@@ -42,6 +42,19 @@ const Home = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [alert, setAlert] = useState({message: '', type: ''});
 
+  const getUserRole = () => {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      return tokenPayload?.userRole || "user";
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return "user"; // Default role
+    }
+  };
+  
+  const userRole = getUserRole();
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/user";
+
   useEffect(() => {
     // set configurations for the API call here
     const configuration = {
@@ -270,7 +283,7 @@ const Home = () => {
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
             <h1 className='text-3xl my-8'>Trail Management</h1>
-            <a className={`${styles.new_trail_button} btn btn-primary d-flex pe-4 py-2`} href='/trails/create'>
+            <a className={`${styles.new_trail_button} btn btn-primary d-flex pe-4 py-2`} href={`${basePath}/trails/create`}>
               <img src={new_trail_button} alt="new_trail_button" className='pe-2' />
               New Trail
             </a>
@@ -419,13 +432,13 @@ const Home = () => {
                                 )}
                               </>
                             )}
-                            <Dropdown.Item href={`/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                            <Dropdown.Item href={`${basePath}/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show Trail
                             </Dropdown.Item>
                             {trail.creator === userId && (
                               <>
                                 {(!trail.published) && (
-                                  <Dropdown.Item href={`/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                                  <Dropdown.Item href={`${basePath}/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                                     <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
                                   </Dropdown.Item>
                                 )}
