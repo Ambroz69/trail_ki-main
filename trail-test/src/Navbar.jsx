@@ -39,17 +39,6 @@ function Navbar() {
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
   
-  // adding the states 
-  //const [isActive, setIsActive] = useState(false);
-  //add the active class
-  //const toggleActiveClass = () => {
-  //  setIsActive(!isActive);
-  //};
-  //clean up function to remove the active class
-  //const removeActive = () => {
-  //  setIsActive(false)
-  //}
-
   const logout = () => {
     // destroy the cookie
     cookies.remove("SESSION_TOKEN", { path: "/" });
@@ -72,8 +61,9 @@ function Navbar() {
         <img src={sidebar_logo} alt="sidebar_logo" />
       </a>
       <ul className="nav nav-pills flex-column mb-auto mx-4">
+        {/* Home Link (Dynamic for each role) */}
         <li className="nav-item pb-2">
-          <NavLink to='/' end aria-current="page" className={({ isActive }) =>
+          <NavLink to={basePath} end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.sidebar_link}  nav-link d-flex` // add when created another home ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg}
               : `${styles.sidebar_link} nav-link d-flex`
           }>
@@ -81,6 +71,10 @@ function Navbar() {
             Home
           </NavLink>
         </li>
+
+        {/* Dashboard (Only for creators & managers) */}
+        {(userRole === "trail creator" || userRole === "manager") && (
+          <>
         <li>
           <NavLink to={`${basePath}`} end className={({ isActive }) =>
             isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg} nav-link d-flex`
@@ -92,10 +86,10 @@ function Navbar() {
         </li>
         <div className='d-flex pb-2'>
           <div className={`${styles.sidebar_submenu}`}>
-            <img src={sidebar_submenu} alt='sidebar_submenu' className='pe-0' />
+            {/*<img src={sidebar_submenu} alt='sidebar_submenu' className='pe-0' />*/}
           </div>
           <div >
-            <ul className='px-0 pt-2'>
+            <ul className={`px-0 ${userRole === "manager" ? "pt-2" : "pt-1"}`}>
               <li className=''>
                 <NavLink to="/" end className={({ isActive }) =>
                   isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
@@ -104,6 +98,7 @@ function Navbar() {
                   Trail Management
                 </NavLink>
               </li>
+              {(userRole === "manager") && (
               <li className=''>
                 <NavLink to={`${basePath}/users`} className={({ isActive }) =>
                   isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link ps-0`
@@ -112,9 +107,12 @@ function Navbar() {
                   User Management
                 </NavLink>
               </li>
+              )}
             </ul>
           </div>
         </div>
+        </>
+        )}
         {<li className="nav-item pb-2">
           <NavLink to={`${basePath}/profile`} className={({ isActive }) =>
             isActive ? `${styles.sidebar_link} ${styles.sidebar_link_active} nav-link d-flex`
