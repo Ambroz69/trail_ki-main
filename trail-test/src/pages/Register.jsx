@@ -12,6 +12,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [country, setCountry] = useState("Slovakia");
   const [register, setRegister] = useState(false);
   const [name, setName] = useState("");
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -28,6 +29,7 @@ const Register = () => {
       data: {
         name,
         email,
+        country,
         password
       },
     };
@@ -101,6 +103,21 @@ const Register = () => {
                   placeholder="Password"
                   required
                 />
+              </Form.Group>
+              {/* country */}
+              <Form.Group controlId="formBasicCountry" className='mt-3'>
+                <Form.Select
+                  name="country"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="Select country"
+                  required
+                >
+                  <option value="Slovakia">Slovakia</option>
+                  <option value="Czech Republic">Czech Republic</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Other">Other</option>
+                </Form.Select>
               </Form.Group>
               <div className="d-flex flex-row justify-content-between mt-3">
                 <div className="form-check d-flex flex-row align-items-center justify-content-center">

@@ -30,6 +30,7 @@ router.post('/register', async (request, response) => {
     const user = new User({
       name: request.body.name,
       email: request.body.email,
+      country: request.body.country,
       password: hashedPassword,
       verified: false,
       verificationToken: null,
@@ -304,7 +305,7 @@ router.post("/login", (request, response) => {
 router.put('/profile', auth, async (request, response) => {
   try {
     const userId = request.user.userId;
-    const { name, password } = request.body;
+    const { name, password, country } = request.body;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -318,6 +319,9 @@ router.put('/profile', auth, async (request, response) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
     }
+    if (country) {
+      user.country = country;
+    }
     await user.save();
 
     return response.status(200).send({
@@ -326,6 +330,7 @@ router.put('/profile', auth, async (request, response) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        country: user.country,
       }
     });
   } catch (error) {
@@ -345,6 +350,7 @@ router.get('/me', auth, (request, response) => {
         user: {
           name: user.name,
           email: user.email,
+          country: user.country,
         }
       });
     });

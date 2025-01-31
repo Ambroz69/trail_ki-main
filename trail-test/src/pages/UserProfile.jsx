@@ -12,6 +12,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const UserProfile = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [country, setCountry] = useState('');
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
 
@@ -25,9 +26,10 @@ const UserProfile = () => {
     };
     api(configuration)
       .then((response) => {
-        const { name, email } = response.data.user || {};
+        const { name, email, country } = response.data.user || {};
         setName(name || '');
         setEmail(email || '');
+        setCountry(country || '');
       })
       .catch((error) => {
         setAlert({ message: 'Failed to load the profile.', type: 'error' });
@@ -41,6 +43,7 @@ const UserProfile = () => {
       const data = {};
       if (name) { data.name = name; }
       if (password) { data.password = password; }
+      if (country) { data.country = country; }
       await api.put(`${backendUrl}/users/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,6 +95,17 @@ const UserProfile = () => {
               <div className='col-9 pe-3'>
                 <label className={`${styles.form_label} form-label mb-1`}>New Password (leave empty to keep current password)</label>
                 <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} className={`${styles.form_input} form-control`}></input>
+              </div>
+            </div>
+            <div className='mb-3 d-flex'>
+              <div className='col-9 pe-3'>
+                <label className={`${styles.form_label} form-label mb-1`}>Country</label>
+                <select value={country} onChange={e => setCountry(e.target.value)} className={`${styles.form_input} form-select`}>
+                  <option value="Slovakia">Slovakia</option>
+                  <option value="Czech Republic">Czech Republic</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
             <div className='mb-3 d-flex'>

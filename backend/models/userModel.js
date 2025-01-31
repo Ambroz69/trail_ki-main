@@ -15,6 +15,11 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide a password!"],
     unique: false,
   },
+  country: {
+    type: String,
+    required: true,
+    enum: ['Slovakia', 'Czech Republic', 'Spain', 'Other'],
+  },
   verified: {
     type: Boolean,
     default: false,

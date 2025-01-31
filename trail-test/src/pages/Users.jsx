@@ -172,6 +172,7 @@ const Users = () => {
                     <th className='ps-4'>No.</th>
                     <th className=''>Name</th>
                     <th className=''>Email</th>
+                    <th className=''>Country</th>
                     <th className=''>Status</th>
                     <th className=''>Action</th>
                   </tr>
@@ -185,6 +186,9 @@ const Users = () => {
                       </td>
                       <td>
                         {user.email}
+                      </td>
+                      <td>
+                        {user.country}
                       </td>
                       <td>
                         {user.verified ? (
