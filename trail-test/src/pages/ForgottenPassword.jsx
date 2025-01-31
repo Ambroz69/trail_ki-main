@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
+import AlertComponent from '../../components/AlertComponent';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function ForgottenPassword() {
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [alert, setAlert] = useState({ message: '', type: '' });
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,17 +20,29 @@ function ForgottenPassword() {
       const response = await axios.post(`${backendUrl}/users/forgot-password`, {
         email,
       });
-      setMessage(response.data.message);
+      setAlert({message: response.data.message, type: 'success'});
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     } catch (error) {
       console.log(error);
-      setMessage(error.respone?.data?.message || 'Error reseting password.');
+      setAlert({message: error.respone?.data?.message || 'Error reseting password.', type: 'error'});
     }
   };
+
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 5000); // Hide alert after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
       <Row>
-        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
+        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
             <h2 className={`${styles.login_header}`}>Forgotten Password</h2>
@@ -43,6 +58,9 @@ function ForgottenPassword() {
                   required
                 />
               </Form.Group>
+              {alert.message && (
+                <AlertComponent message={alert.message} type={alert.type} />
+              )}
               {/* submit button */}
               <div className="d-grid mt-1">
                 <Button
@@ -57,7 +75,7 @@ function ForgottenPassword() {
         </Col>
       </Row>
       <Row className={`${styles.footer_width}`}>
-        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`}/>
+        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`} />
       </Row>
     </Container>
   )

@@ -1,9 +1,11 @@
-import React, { useState, } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
+import AlertComponent from '../../components/AlertComponent';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,6 +14,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [register, setRegister] = useState(false);
   const [name, setName] = useState("");
+  const [alert, setAlert] = useState({ message: '', type: '' });
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -31,14 +35,26 @@ const Register = () => {
     axios(configuration)
       .then((result) => {
         setRegister(true);
-        alert("Registration successful! Please check your email for verification.");
+        setAlert({ message: 'Registration successful! Please check your email for verification.', type: 'success' });
         // redirect user to the login page
-        window.location.href = "/users/login";
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       })
       .catch((error) => {
         error = new Error();
+        setAlert({ message: error.respone?.data?.message || 'There has been an error with the registration.', type: 'error' });
       });
   }
+
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 5000); // Hide alert after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
@@ -97,7 +113,9 @@ const Register = () => {
                   </a>
                 </div>
               </div>
-
+              {alert.message && (
+                <AlertComponent message={alert.message} type={alert.type} />
+              )}
               {/* submit button */}
               <div className="d-grid mt-1">
                 <Button

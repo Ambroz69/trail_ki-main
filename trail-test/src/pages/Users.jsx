@@ -6,6 +6,7 @@ import styles from '../css/TrailList.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import AlertComponent from '../../components/AlertComponent';
 
 //svg import
 import search_button from '../assets/search_button.svg';
@@ -28,6 +29,7 @@ const Users = () => {
   const [sortOption, setSortOption] = useState('');
   const [userToProcess, setUserToProcess] = useState(null);
   const [verifyModalShow, setVerifyModalShow] = useState(false);
+  const [alert, setAlert] = useState({message: '', type: ''});
 
   useEffect(() => {
     const configuration = {
@@ -42,6 +44,7 @@ const Users = () => {
         setUsers(response.data.data);
       })
       .catch((error) => {
+        setAlert({message: 'Failed to load the users.', type: 'error'});
         console.log(error);
       })
   }, []);
@@ -84,10 +87,12 @@ const Users = () => {
     api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, verified: true } : user));
+        setAlert({message: 'The user was verified.', type: 'success'});
         handleVerifyModalClose();
       })
       .catch(error => {
         console.log(error);
+        setAlert({message: 'Failed to verify the user.', type: 'error'});
         handleVerifyModalClose();
       });
   };
@@ -102,6 +107,15 @@ const Users = () => {
     setVerifyModalShow(false);
   };
 
+  useEffect(() => {
+      if (alert.message) {
+        const timer = setTimeout(() => {
+          setAlert({ message: '', type: '' });
+        }, 3000); // Hide alert after 3 seconds
+        return () => clearTimeout(timer);
+      }
+    }, [alert.message]);
+
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
@@ -112,6 +126,9 @@ const Users = () => {
           <div className='flex justify-between items-center'>
             <h1 className='text-3xl my-8'>User Management</h1>
           </div>
+          {alert.message && (
+            <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+          )}
           <div className={`${styles.table_div}`}>
             <div className='d-flex justify-content-between'>
               <div className="input-group mb-3 mt-4 ms-4">

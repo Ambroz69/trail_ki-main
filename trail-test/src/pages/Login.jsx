@@ -1,10 +1,11 @@
-import React, { useState, } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
+import AlertComponent from '../../components/AlertComponent';
 
 const cookies = new Cookies();
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -13,6 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
+  const [alert, setAlert] = useState({ message: '', type: '' });
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -39,14 +41,24 @@ const Login = () => {
         window.location.href = "/";
       })
       .catch((error) => {
+        setAlert({ message: 'The username or password are not correct.', type: 'error' });
         error = new Error();
       });
   }
 
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 3000); // Hide alert after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
+
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
       <Row>
-        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
+        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
             <h2 className={`${styles.login_header}`}>Log in</h2>
@@ -89,6 +101,9 @@ const Login = () => {
                   </a>
                 </div>
               </div>
+              {alert.message && (
+                <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+              )}
 
               {/* submit button */}
               <div className="d-grid mt-1">
@@ -122,7 +137,7 @@ const Login = () => {
         </Col>
       </Row>
       <Row className={`${styles.footer_width}`}>
-        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`}/>
+        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`} />
       </Row>
     </Container>
   );

@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
+import AlertComponent from '../../components/AlertComponent';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function ResetPassword() {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [alert, setAlert] = useState({message: '', type: ''});
+  const navigate = useNavigate();
 
   const handleReset = async (event) => {
     event.preventDefault();
@@ -20,12 +22,24 @@ function ResetPassword() {
         token,
         newPassword,
       });
-      setMessage(response.data.message);
+      setAlert({message: response.data.message || 'Password changed successfully.', type: 'success'});
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     } catch (error) {
       console.log(error);
-      setMessage(error.respone?.data?.message || 'Error reseting password.');
+      setAlert({message: error.respone?.data?.message || 'Error reseting password.', type: 'error'});
     }
   };
+
+  useEffect(() => {
+      if (alert.message) {
+        const timer = setTimeout(() => {
+          setAlert({ message: '', type: '' });
+        }, 5000); // Hide alert after 5 seconds
+        return () => clearTimeout(timer);
+      }
+    }, [alert.message]);
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
@@ -47,6 +61,9 @@ function ResetPassword() {
                   required
                 />
               </Form.Group>
+              {alert.message && (
+                <AlertComponent message={alert.message} type={alert.type} />
+              )}
               {/* submit button */}
               <div className="d-grid mt-1">
                 <Button

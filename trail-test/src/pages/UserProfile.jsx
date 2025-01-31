@@ -3,6 +3,7 @@ import api from '../axiosConfig';
 import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
+import AlertComponent from '../../components/AlertComponent';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -12,6 +13,7 @@ const UserProfile = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [alert, setAlert] = useState({ message: '', type: '' });
 
   useEffect(() => {
     const configuration = {
@@ -28,6 +30,7 @@ const UserProfile = () => {
         setEmail(email || '');
       })
       .catch((error) => {
+        setAlert({ message: 'Failed to load the profile.', type: 'error' });
         console.error(error);
       });
   }, []);
@@ -41,10 +44,21 @@ const UserProfile = () => {
       await api.put(`${backendUrl}/users/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      setAlert({ message: 'The profile was updated.', type: 'success' });
     } catch (error) {
+      setAlert({ message: 'Failed to update the profile.', type: 'error' });
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 3000); // Hide alert after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
@@ -57,6 +71,9 @@ const UserProfile = () => {
             <h1 className='text-3xl my-8'>User Profile</h1>
           </div>
         </div>
+        {alert.message && (
+          <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
+        )}
         <div className={`${styles.tabs_bg} p-4`}>
           <form onSubmit={handleUpdateProfile}>
             <div className='mb-3 d-flex'>

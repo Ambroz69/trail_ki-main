@@ -6,6 +6,7 @@ import styles from '../css/TrailList.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import AlertComponent from '../../components/AlertComponent';
 
 //svg import
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -39,6 +40,7 @@ const Home = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('');
   const [localityFilter, setLocalityFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [alert, setAlert] = useState({message: '', type: ''});
 
   useEffect(() => {
     // set configurations for the API call here
@@ -56,6 +58,7 @@ const Home = () => {
         setTrail(response.data.data);
       })
       .catch((error) => {
+        setAlert({message: 'Failed to load the trails.', type: 'error'});
         console.log(error);
       });
   }, []);
@@ -72,10 +75,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: true } : trail));
+        setAlert({message: 'Trail was published.', type: 'success'});
         handlePublishModalClose();
       })
       .catch(error => {
         console.log(error);
+        setAlert({message: 'There was an issue with publishing the trail.', type: 'error'});
         handlePublishModalClose();
       });
   };
@@ -92,10 +97,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: false } : trail));
+        setAlert({message: 'Trail was returned to the draft.', type: 'success'});
         handleUnpublishModalClose();
       })
       .catch(error => {
         console.log(error);
+        setAlert({message: 'There was an error with unpublishing the trail.', type: 'error'});
         handleUnpublishModalClose();
       });
   };
@@ -111,10 +118,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail([...trails, response.data.trail]);
+        setAlert({message: 'Trail was cloned successfully.', type: 'success'});
         handleCloneModalClose();
       })
       .catch(error => {
         console.log(error);
+        setAlert({message: 'There was an error with trail cloning.', type: 'error'});
         handleCloneModalClose();
       });
   };
@@ -132,10 +141,12 @@ const Home = () => {
     api(configuration)
       .then((response) => {
         setTrail(trails.filter(trail => trail._id !== trailToProcess));
+        setAlert({message: 'Trail was deleted.', type: 'success'});
         handleDeleteModalClose();
       })
       .catch((error) => {
         console.log(error);
+        setAlert({message: 'There was an error with trail deletion.', type: 'error'});
         handleDeleteModalClose();
       });
   };
@@ -241,6 +252,15 @@ const Home = () => {
 
   const userId = getUserIdFromToken(token);
 
+  useEffect(() => {
+      if (alert.message) {
+        const timer = setTimeout(() => {
+          setAlert({ message: '', type: '' });
+        }, 3000); // Hide alert after 3 seconds
+        return () => clearTimeout(timer);
+      }
+    }, [alert.message]);
+
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
@@ -255,6 +275,9 @@ const Home = () => {
               New Trail
             </a>
           </div>
+          {alert.message && (
+            <AlertComponent message={alert.message} type={alert.type} />
+          )}
           <div className={`${styles.table_div}`}>
             <div className='d-flex justify-content-between'>
               <div className="input-group mb-3 mt-4 ms-4">

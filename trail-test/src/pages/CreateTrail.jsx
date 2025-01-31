@@ -14,6 +14,7 @@ import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
 import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
 import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
+import AlertComponent from '../../components/AlertComponent';
 import TrailMap from '../../components/TrailMap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -75,6 +76,7 @@ const CreateTrail = () => {
   const [pointToProcess, setPointToProcess] = useState(null);
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [alert, setAlert] = useState({ message: '', type: '' });
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -108,7 +110,7 @@ const CreateTrail = () => {
       if (!header || !payload || !signature) {
         throw new Error('Invalid token structure');
       }
-  
+
       const tokenPayload = JSON.parse(atob(payload));
       return tokenPayload?.userId || null; // Return the userID if available
     } catch (error) {
@@ -128,8 +130,16 @@ const CreateTrail = () => {
   const handleSaveTrail = () => {
     let trailLength = calculateTrailLength(points);
     const userId = getUserIDFromToken(token);
-    if(!userId) {
-      console.error('Invalid or missing user ID');
+    if (!userId) {
+      setAlert({message: 'Invalid or missing User ID.', type: 'error'});
+      return;
+    }
+    if (!name.trim()) {
+      setAlert({message: 'Please fill in the Trail name is required.', type: 'error'});
+      return;
+    }
+    if (!description.trim()) {
+      setAlert({message: 'Please fill in the Trail description.', type: 'error'});
       return;
     }
     const formData = new FormData();
@@ -159,13 +169,14 @@ const CreateTrail = () => {
     api(configuration)
       .then((response) => {
         console.log(id ? 'Trail updated.' : 'Trail created.');
+        setAlert({message: id ? "Trail updated successfully!" : "Trail created successfully!", type: 'success'});
         setTimeout(() => {
           navigate('/');
-        }, 1000);
+        }, 1500);
       })
       .catch((error) => {
         console.log(error);
-        alert('An error occured.');
+        setAlert({message: 'An error occurred while saving the trail.', type: 'error'});
       });
   };
 
@@ -287,7 +298,7 @@ const CreateTrail = () => {
 
       if (quizChecked) {
         if (!question || (!answers[0].text && quizType !== 'slider')) {
-          alert('Please fill all quiz fields.');
+          setAlert({message: 'Please fill all quiz fields.', type: 'error'});
           return;
         }
 
@@ -308,7 +319,7 @@ const CreateTrail = () => {
       resetContent();
       //onClose();
     } else {
-      alert('Please fill the title.');
+      setAlert({message: 'Please fill the point title.', type: 'error'});
     }
   }
 
@@ -428,6 +439,15 @@ const CreateTrail = () => {
     }
   };
 
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 3000); // Hide alert after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
+
   return (
     <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
       <div className='col-3 pe-4'>
@@ -444,6 +464,9 @@ const CreateTrail = () => {
               <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>Save as Draft</button>
             </div>
           </div>
+          {alert.message && (
+            <AlertComponent message={alert.message} type={alert.type} />
+          )}
           <div>
             <Tabs
               defaultActiveKey="general"
