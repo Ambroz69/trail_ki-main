@@ -30,6 +30,8 @@ const Users = () => {
   const [userToProcess, setUserToProcess] = useState(null);
   const [verifyModalShow, setVerifyModalShow] = useState(false);
   const [alert, setAlert] = useState({message: '', type: ''});
+  const [newRole, setNewRole] = useState('user');
+  const [updateRoleModalShow, setUpdateRoleModalShow] = useState(false);
 
   useEffect(() => {
     const configuration = {
@@ -97,6 +99,28 @@ const Users = () => {
       });
   };
 
+  const handleConfirmUpdateRole = () => {
+    const configuration = {
+      method: "put",
+      url: `${backendUrl}/users/updateRole/${userToProcess}`,
+      data: { role: newRole },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    api(configuration)
+      .then(response => {
+        setUsers(users.map(user => user._id === userToProcess ? { ...user, role: newRole } : user));
+        setAlert({message: 'The user role was updated.', type: 'success'});
+        handleUpdateRoleModalClose();
+      })
+      .catch(error => {
+        console.log(error);
+        setAlert({message: 'Failed to update the user role.', type: 'error'});
+        handleUpdateRoleModalClose();
+      });
+  };
+
   const handleVerifyModalShow = (user_id) => {
     setUserToProcess(user_id);
     setVerifyModalShow(true);
@@ -105,6 +129,16 @@ const Users = () => {
   const handleVerifyModalClose = () => {
     setUserToProcess(null);
     setVerifyModalShow(false);
+  };
+
+  const handleUpdateRoleModalShow = (user_id) => {
+    setUserToProcess(user_id);
+    setUpdateRoleModalShow(true);
+  };
+
+  const handleUpdateRoleModalClose = () => {
+    setUserToProcess(null);
+    setUpdateRoleModalShow(false);
   };
 
   useEffect(() => {
@@ -173,6 +207,7 @@ const Users = () => {
                     <th className=''>Name</th>
                     <th className=''>Email</th>
                     <th className=''>Country</th>
+                    <th className=''>Role</th>
                     <th className=''>Status</th>
                     <th className=''>Action</th>
                   </tr>
@@ -189,6 +224,9 @@ const Users = () => {
                       </td>
                       <td>
                         {user.country}
+                      </td>
+                      <td>
+                        {user.role}
                       </td>
                       <td>
                         {user.verified ? (
@@ -211,8 +249,8 @@ const Users = () => {
                             <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />Show User
                             </Dropdown.Item>
-                            <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_edit} alt="edit" className='pe-2' />Edit User
+                            <Dropdown.Item href="#" onClick={() => handleUpdateRoleModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
+                              <img src={table_action_edit} alt="edit" className='pe-2' />Edit Role
                             </Dropdown.Item>
                             <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_delete} alt="delete" className='pe-2' />Delete
@@ -247,6 +285,38 @@ const Users = () => {
               </Button>
               <Button variant="primary" onClick={() => handleConfirmVerify()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
                 Verify
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={updateRoleModalShow}
+            onHide={handleUpdateRoleModalClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Body className='d-flex flex-column align-items-center p-4'>
+              <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
+              <h1 className={`${styles.modal_heading}`}>Change User Role</h1>
+              <p className={`${styles.modal_text} mb-0`}>You can change the role of the user:</p>
+              <select
+                  name="userrole"
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  placeholder="Select new role"
+                  className={`${styles.modal_text} `} // please make me beautiful
+                  required
+                >
+                  <option value="user">User</option>
+                  <option value="trail creator">Trail Creator</option>
+                  <option value="manager">Manager</option>
+                </select>
+            </Modal.Body>
+            <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+              <Button variant="secondary" onClick={() => handleUpdateRoleModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleConfirmUpdateRole()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
+                Confirm
               </Button>
             </Modal.Footer>
           </Modal>

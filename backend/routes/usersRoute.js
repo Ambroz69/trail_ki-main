@@ -386,4 +386,31 @@ router.put('/verify/:id', auth, async (request, response) => {
   }
 });
 
+// Route for role updating by manager
+router.put('/updateRole/:id', auth, async (request, response) => {
+  try {
+    const { id } = request.params;
+    const { role } = request.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { role: role },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return response.status(404).send({
+        message: 'User not found',
+      });
+    }
+
+    response.status(200).send({
+      message: 'User role updated.',
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
+
 export default router;
