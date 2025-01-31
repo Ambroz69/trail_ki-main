@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -12,15 +12,19 @@ import LineString from 'ol/geom/LineString';
 import { Style, Stroke, Fill, Circle as CircleStyle, Text as TextStyle } from 'ol/style';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Modify } from 'ol/interaction';
-import styles from '../src/css/TrailCreate.module.css';
+import Cookies from "universal-cookie";
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => {} }) => {
+const cookies = new Cookies();
+const token = cookies.get("SESSION_TOKEN");
+
+const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => { } }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
   const modifyInteractionRef = useRef(null); // Store modify interaction to avoid adding multiple
   const pointsRef = useRef([]); // Keep track of points with useRef
   const positionSourceRef = useRef(new VectorSource()); // source for position marker
+  const [userLocation, setUserLocation] = useState(null);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -35,12 +39,56 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     return R * c; // Distance in meters
   }
 
+  // Country Coordinates Mapping
+  const countryCoordinates = {
+    "Slovakia": [19.699, 48.669],
+    "Czech Republic": [15.473, 49.817],
+    "Spain": [-3.749, 40.463],
+    "Other": [0, 0] // Default for unknown country
+  };
+
+  const getUserCountryFromToken = (token) => {
+    try {
+      const [header, payload, signature] = token.split('.');
+      if (!header || !payload || !signature) {
+        throw new Error('Invalid token structure');
+      }
+
+      const tokenPayload = JSON.parse(atob(payload));
+      return tokenPayload?.userCountry || null; // Return the userID if available
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null; // Return null if the token is invalid or userID is not present
+    }
+  };
+
   // Update pointsRef whenever points change
   useEffect(() => {
     if (Array.isArray(points)) {
       pointsRef.current = points; // Ensure it's an array before updating
     }
   }, [points]);
+
+  useEffect(() => {
+    const userCountry = getUserCountryFromToken(token);
+
+    // Get user geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([longitude, latitude]); // Store user location
+        },
+        () => {
+          console.warn("User denied Geolocation. Using country-based location.");
+          setUserLocation(countryCoordinates[userCountry] || countryCoordinates["Other"]);
+        }
+      );
+    } else {
+      console.warn("Geolocation is not supported. Using country-based location.");
+      setUserLocation(countryCoordinates[userCountry] || countryCoordinates["Other"]);
+    }
+  }, []);
 
   useEffect(() => {
     // Initialize the map once
@@ -64,8 +112,8 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
         positionLayer,
       ],
       view: new View({
-        center: fromLonLat([0, 0]), // Default location, adjust as needed
-        zoom: 2,
+        center: fromLonLat(userLocation||[0,0]), // Location based on GPS or Country in profile
+        zoom: 12,
       }),
     });
 
@@ -84,7 +132,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     return () => {
       map.setTarget(null);
     };
-  }, [editable]);
+  }, [userLocation, editable]);
 
   // Update map points when points change
   useEffect(() => {
@@ -212,7 +260,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
               new Style({
                 image: new CircleStyle({
                   radius: 8,
-                  fill: new Fill({ color: 'red'}),
+                  fill: new Fill({ color: 'red' }),
                   stroke: new Stroke({ color: 'white', width: 2 }),
                 }),
               })

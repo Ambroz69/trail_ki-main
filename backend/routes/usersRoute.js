@@ -272,6 +272,7 @@ router.post("/login", (request, response) => {
               userId: user._id,
               userEmail: user.email,
               userName: user.name,
+              userCountry: user.country,
               userVerified: user.verified,
             },
             process.env.LOGIN_SECRET,
