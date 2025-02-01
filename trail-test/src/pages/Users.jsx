@@ -7,6 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 //svg import
 import search_button from '../assets/search_button.svg';
@@ -32,6 +33,7 @@ const Users = () => {
   const [alert, setAlert] = useState({message: '', type: ''});
   const [newRole, setNewRole] = useState('user');
   const [updateRoleModalShow, setUpdateRoleModalShow] = useState(false);
+  const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
     const configuration = {
@@ -46,7 +48,7 @@ const Users = () => {
         setUsers(response.data.data);
       })
       .catch((error) => {
-        setAlert({message: 'Failed to load the users.', type: 'error'});
+        setAlert({message: `${t('error_load_users')}`, type: 'error'});
         console.log(error);
       })
   }, []);
@@ -89,12 +91,12 @@ const Users = () => {
     api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, verified: true } : user));
-        setAlert({message: 'The user was verified.', type: 'success'});
+        setAlert({message: `${t('success_verify_user')}`, type: 'success'});
         handleVerifyModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: 'Failed to verify the user.', type: 'error'});
+        setAlert({message: `${t('error_verify_user')}`, type: 'error'});
         handleVerifyModalClose();
       });
   };
@@ -111,12 +113,12 @@ const Users = () => {
     api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, role: newRole } : user));
-        setAlert({message: 'The user role was updated.', type: 'success'});
+        setAlert({message: `${t('success_role_update')}`, type: 'success'});
         handleUpdateRoleModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: 'Failed to update the user role.', type: 'error'});
+        setAlert({message: `${t('error_role_update')}`, type: 'error'});
         handleUpdateRoleModalClose();
       });
   };
@@ -158,7 +160,7 @@ const Users = () => {
       <div className='col-9 col-9 px-5'>
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
-            <h1 className='text-3xl my-8'>User Management</h1>
+            <h1 className='text-3xl my-8'>{t('user_management')}</h1>
           </div>
           {alert.message && (
             <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
@@ -174,26 +176,26 @@ const Users = () => {
               <div className='d-flex align-items-center'>
                 <a className={`${styles.filter_button} btn btn-secondary pe-4 py-1 me-2`} href='#'>
                   <div className='d-flex'>
-                    Filters
+                    {t('filters')}
                     <img src={filter_button} alt="filter_button" className='px-2' />
                   </div>
                 </a>
                 <Dropdown className='btn-secondary py-1 me-2' >
                   <Dropdown.Toggle variant="secondary" id="dropdown-sort" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
-                    Sort <img src={sort_button} alt="sort_button" className='px-2' />
+                    {t('sort')} <img src={sort_button} alt="sort_button" className='px-2' />
                   </Dropdown.Toggle>
                   <Dropdown.Menu className=''>
                     <Dropdown.Item onClick={() => setSortOption('name-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Name (A → Z)
+                      {t('name')} (A → Z)
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('name-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Name (Z → A)
+                      {t('name')} (Z → A)
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('email-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Length (from shortest)
+                      {t('length')} ({t('from_shortest')})
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('email-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Length (from longest)
+                      {t('length')} ({t('from_longest')})
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -203,13 +205,13 @@ const Users = () => {
               <table className='table table-striped table-hover align-middle'>
                 <thead>
                   <tr className={`${styles.table_header}`}>
-                    <th className='ps-4'>No.</th>
-                    <th className=''>Name</th>
-                    <th className=''>Email</th>
-                    <th className=''>Country</th>
-                    <th className=''>Role</th>
-                    <th className=''>Status</th>
-                    <th className=''>Action</th>
+                    <th className='ps-4'>{t('no.')}</th>
+                    <th className=''>{t('name')}</th>
+                    <th className=''>E-mail</th>
+                    <th className=''>{t('country')}</th>
+                    <th className=''>{t('role')}</th>
+                    <th className=''>{t('status')}</th>
+                    <th className=''>{t('action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -230,9 +232,9 @@ const Users = () => {
                       </td>
                       <td>
                         {user.verified ? (
-                          <button className={`${styles.status_published} btn disabled`}>Verified</button>
+                          <button className={`${styles.status_published} btn disabled`}>{t('verified')}</button>
                         ) : (
-                          <button className={`${styles.status_unverified} btn disabled`}>Not Verified</button>
+                          <button className={`${styles.status_unverified} btn disabled`}>{t('not_verified')}</button>
                         )}
                       </td>
                       <td className='ps-3'>
@@ -243,17 +245,17 @@ const Users = () => {
                           <Dropdown.Menu className=''>
                             {!user.verified ? (
                               <Dropdown.Item href="#" onClick={() => handleVerifyModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                <img src={table_action_publish} alt="show" className='pe-2' />Verify User
+                                <img src={table_action_publish} alt="show" className='pe-2' />{t('verify_user')}
                               </Dropdown.Item>
                             ) : (<></>)}
                             <Dropdown.Item href="#" className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_show} alt="show" className='pe-2' />Show User
+                              <img src={table_action_show} alt="show" className='pe-2' />{t('show_user')}
                             </Dropdown.Item>
                             <Dropdown.Item href="#" onClick={() => handleUpdateRoleModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_edit} alt="edit" className='pe-2' />Edit Role
+                              <img src={table_action_edit} alt="edit" className='pe-2' />{t('edit_role')}
                             </Dropdown.Item>
                             <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(user._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_delete} alt="delete" className='pe-2' />Delete
+                              <img src={table_action_delete} alt="delete" className='pe-2' />{t('delete')}
                             </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
@@ -264,7 +266,7 @@ const Users = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              Showing 1 to {Object.keys(displayedUsers).length} of {Object.keys(displayedUsers).length} entries
+              {t('showing')} 1 {t('to')} {Object.keys(displayedUsers).length} {t('of')} {Object.keys(displayedUsers).length} {t('entries')}
             </div>
           </div>
           <Modal
@@ -275,16 +277,16 @@ const Users = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Verify User</h1>
-              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to verify this user?</p>
-              <p className={`${styles.modal_text} `}>Once verified, he/she will be able to login to the system.</p>
+              <h1 className={`${styles.modal_heading}`}>{t('verify_user')}</h1>
+              <p className={`${styles.modal_text} mb-0`}>{t('verify_user_text1')}</p>
+              <p className={`${styles.modal_text} `}>{t('verify_user_text2')}</p>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleVerifyModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmVerify()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
-                Verify
+                {t('verify')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -296,27 +298,27 @@ const Users = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Change User Role</h1>
-              <p className={`${styles.modal_text} mb-0`}>You can change the role of the user:</p>
+              <h1 className={`${styles.modal_heading}`}>{t('change_user_role')}</h1>
+              <p className={`${styles.modal_text} mb-0`}>{t('change_user_role_text')}:</p>
               <select
                   name="userrole"
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  placeholder="Select new role"
+                  placeholder={t('user_role')}
                   className={`${styles.modal_text} `} // please make me beautiful
                   required
                 >
-                  <option value="user">User</option>
-                  <option value="trail creator">Trail Creator</option>
-                  <option value="manager">Manager</option>
+                  <option value="user">{t('user')}</option>
+                  <option value="trail creator">{t('trail_creator')}</option>
+                  <option value="manager">{t('manager')}</option>
                 </select>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleUpdateRoleModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmUpdateRole()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
-                Confirm
+                {t('confirm')}
               </Button>
             </Modal.Footer>
           </Modal>

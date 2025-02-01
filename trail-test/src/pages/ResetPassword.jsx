@@ -6,6 +6,7 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -14,6 +15,7 @@ function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [alert, setAlert] = useState({message: '', type: ''});
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleReset = async (event) => {
     event.preventDefault();
@@ -22,13 +24,13 @@ function ResetPassword() {
         token,
         newPassword,
       });
-      setAlert({message: response.data.message || 'Password changed successfully.', type: 'success'});
+      setAlert({message: `${t('success_reset')}`, type: 'success'});
       setTimeout(() => {
         navigate('/');
       }, 3000);
     } catch (error) {
       console.log(error);
-      setAlert({message: error.respone?.data?.message || 'Error reseting password.', type: 'error'});
+      setAlert({message: `${t('error_reset')}`, type: 'error'});
     }
   };
 
@@ -47,7 +49,7 @@ function ResetPassword() {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
-            <h2 className={`${styles.login_header}`}>Reset Password</h2>
+            <h2 className={`${styles.login_header}`}>{t('reset_password')}</h2>
             <Form onSubmit={handleReset} className={`${styles.form_width}`}>
               {/* new password */}
               <Form.Group controlId="formBasicPassword" className='mt-3'>
@@ -57,7 +59,7 @@ function ResetPassword() {
                   name="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Set a new Password"
+                  placeholder={t('new_password')}
                   required
                 />
               </Form.Group>
@@ -70,7 +72,7 @@ function ResetPassword() {
                   type="submit"
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                 >
-                  Save Password
+                  {t('save_password')}
                 </Button>
               </div>
             </Form>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styles from '../../src/css/TrailCreate.module.css';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, onDragEnd, quizMode }) => {
 
   const [dragAnswers, setDragAnswers] = useState([{ text: '', isCorrect: true }]);
+  const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
     if (answers) {
@@ -43,12 +45,9 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
     }
   };
 
-
-
-
   return (
     <div>
-      <label className={`${styles.form_label} form-label mb-1`}>Answers in correct order</label>
+      <label className={`${styles.form_label} form-label mb-1`}>{t('order_answers')}</label>
       {!quizMode ? (
         answers.map((answer, index) => (
           <div className='d-flex justify-content-between align-items-center mb-3' key={index}>

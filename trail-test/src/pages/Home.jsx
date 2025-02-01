@@ -7,6 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 //svg import
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -41,6 +42,7 @@ const Home = () => {
   const [localityFilter, setLocalityFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [alert, setAlert] = useState({message: '', type: ''});
+  const { t } = useTranslation(); // Hook to access translations
 
   const getUserRole = () => {
     try {
@@ -71,7 +73,7 @@ const Home = () => {
         setTrail(response.data.data);
       })
       .catch((error) => {
-        setAlert({message: 'Failed to load the trails.', type: 'error'});
+        setAlert({message: `${t('error_trail')}`, type: 'error'});
         console.log(error);
       });
   }, []);
@@ -88,12 +90,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: true } : trail));
-        setAlert({message: 'Trail was published.', type: 'success'});
+        setAlert({message: `${t('success_publish')}`, type: 'success'});
         handlePublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: 'There was an issue with publishing the trail.', type: 'error'});
+        setAlert({message: `${t('error_publish')}`, type: 'error'});
         handlePublishModalClose();
       });
   };
@@ -110,12 +112,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: false } : trail));
-        setAlert({message: 'Trail was returned to the draft.', type: 'success'});
+        setAlert({message: `${t('success_unpublish')}`, type: 'success'});
         handleUnpublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: 'There was an error with unpublishing the trail.', type: 'error'});
+        setAlert({message: `${t('error_unpublish')}`, type: 'error'});
         handleUnpublishModalClose();
       });
   };
@@ -131,12 +133,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail([...trails, response.data.trail]);
-        setAlert({message: 'Trail was cloned successfully.', type: 'success'});
+        setAlert({message: `${t('success_duplicate')}`, type: 'success'});
         handleCloneModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: 'There was an error with trail cloning.', type: 'error'});
+        setAlert({message: `${t('error_duplicate')}`, type: 'error'});
         handleCloneModalClose();
       });
   };
@@ -154,12 +156,12 @@ const Home = () => {
     api(configuration)
       .then((response) => {
         setTrail(trails.filter(trail => trail._id !== trailToProcess));
-        setAlert({message: 'Trail was deleted.', type: 'success'});
+        setAlert({message: `${t('success_delete')}`, type: 'success'});
         handleDeleteModalClose();
       })
       .catch((error) => {
         console.log(error);
-        setAlert({message: 'There was an error with trail deletion.', type: 'error'});
+        setAlert({message: `${t('error_delete')}`, type: 'error'});
         handleDeleteModalClose();
       });
   };
@@ -282,10 +284,10 @@ const Home = () => {
       <div className='col-9 col-9 px-5'>
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
-            <h1 className='text-3xl my-8'>Trail Management</h1>
+            <h1 className='text-3xl my-8'>{t('trail_management')}</h1>
             <a className={`${styles.new_trail_button} btn btn-primary d-flex pe-4 py-2`} href={`${basePath}/trails/create`}>
               <img src={new_trail_button} alt="new_trail_button" className='pe-2' />
-              New Trail
+              {t('new_trail')}
             </a>
           </div>
           {alert.message && (
@@ -297,75 +299,75 @@ const Home = () => {
                 <span className={`${styles.search_icon} input-group-text`} id="basic-addon1">
                   <img src={search_button} alt="search_button" className='pe-2' />
                 </span>
-                <input type="text" className={`${styles.search_input} form-control`} placeholder="Search trails..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <input type="text" className={`${styles.search_input} form-control`} placeholder={t('search_trails')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
               <div className='d-flex align-items-center'>
                 <Dropdown className="btn-secondary pe-4 py-1 me-2" >
                   <Dropdown.Toggle variant="secondary" id="dropdown-filters" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
                     {difficultyFilter || localityFilter || statusFilter
-                      ? `Filters (${difficultyFilter || ''} ${localityFilter || ''} ${statusFilter || ''})`
-                      : 'Filters'
+                      ? `${t('filters')} (${difficultyFilter || ''} ${localityFilter || ''} ${statusFilter || ''})`
+                      : `${t('filters')}`
                     }
                     <img src={filter_button} alt="filter_button" className='px-2' />
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Header>Difficulty</Dropdown.Header>
+                    <Dropdown.Header>{t('difficulty')}</Dropdown.Header>
                     <Dropdown.Item key='All difficulties' onClick={() => setDifficultyFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      All Difficulties
+                      {t('all_difficulties')}
                     </Dropdown.Item>
                     {trailDifficulties.map((trailDifficulty) => {
                       return (
                         <Dropdown.Item key={trailDifficulty} onClick={() => setDifficultyFilter(trailDifficulty)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                          {trailDifficulty}
+                          {t(`trail_difficulty.${trailDifficulty.toLowerCase()}`)}
                         </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
-                    <Dropdown.Header>Location</Dropdown.Header>
+                    <Dropdown.Header>{t('location')}</Dropdown.Header>
                     <Dropdown.Item key='All localities' onClick={() => setLocalityFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      All Localities
+                      {t('all_localities')}
                     </Dropdown.Item>
                     {trailLocalities.map((trailLocation) => {
                       return (
                         <Dropdown.Item key={trailLocation} onClick={() => setLocalityFilter(trailLocation)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                          {trailLocation}
+                          {t(`trail_location.${trailLocation.toLowerCase()}`)}
                         </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
-                    <Dropdown.Header>Status</Dropdown.Header>
+                    <Dropdown.Header>{t('status')}</Dropdown.Header>
                     <Dropdown.Item key='All statuses' onClick={() => setStatusFilter('')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      All Statuses
+                      {t('all_statuses')}
                     </Dropdown.Item>
                     {trailStatuses.map((trailStatus) => {
                       return (
                         <Dropdown.Item key={trailStatus} onClick={() => setStatusFilter(trailStatus)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                          {trailStatus}
+                          {t(`trail_status.${trailStatus.toLowerCase()}`)}
                         </Dropdown.Item>
                       )
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item key="reset" onClick={() => { setStatusFilter(''); setDifficultyFilter(''); setLocalityFilter(''); }} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Reset Filter
+                    {t('reset_filter')}
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
                 <Dropdown className='btn-secondary py-1 me-2' >
                   <Dropdown.Toggle variant="secondary" id="dropdown-sort" className={`${styles.dropdown_toggle_sort} pe-3 me-3 d-flex`}>
-                    Sort <img src={sort_button} alt="sort_button" className='px-2' />
+                    {t('sort')} <img src={sort_button} alt="sort_button" className='px-2' />
                   </Dropdown.Toggle>
                   <Dropdown.Menu className=''>
                     <Dropdown.Item onClick={() => setSortOption('name-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Name (A → Z)
+                      {t('name')} (A → Z)
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('name-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Name (Z → A)
+                      {t('name')} (Z → A)
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('length-asc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Length (from shortest)
+                      {t('length')} ({t('from_shortest')})
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setSortOption('length-desc')} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                      Length (from longest)
+                      {t('length')} ({t('from_longest')})
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -375,13 +377,13 @@ const Home = () => {
               <table className='table table-striped table-hover align-middle'>
                 <thead>
                   <tr className={`${styles.table_header}`}>
-                    <th className='ps-4'>No.</th>
-                    <th className=''>Trail</th>
-                    <th className=''>Length</th>
-                    <th className=''>Difficulty</th>
-                    <th className=''>Location</th>
-                    <th className=''>Status</th>
-                    <th className=''>Action</th>
+                    <th className='ps-4'>{t('no.')}</th>
+                    <th className=''>{t('trail')}</th>
+                    <th className=''>{t('length')}</th>
+                    <th className=''>{t('difficulty')}</th>
+                    <th className=''>{t('location')}</th>
+                    <th className=''>{t('status')}</th>
+                    <th className=''>{t('action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -398,16 +400,16 @@ const Home = () => {
                         {trail.length.toFixed(2)} km
                       </td>
                       <td>
-                        {trail.difficulty}
+                        {t(`trail_difficulty.${trail.difficulty.toLowerCase()}`)}
                       </td>
                       <td>
-                        {trail.locality}
+                        {t(`trail_location.${trail.locality.toLowerCase()}`)}
                       </td>
                       <td>
                         {trail.published ? (
-                          <button className={`${styles.status_published} btn disabled`}>Published</button>
+                          <button className={`${styles.status_published} btn disabled`}>{t('published')}</button>
                         ) : (
-                          <button className={`${styles.status_draft} btn disabled`}>Draft</button>
+                          <button className={`${styles.status_draft} btn disabled`}>{t('draft')}</button>
                         )}
                       </td>
                       <td className='ps-3'>
@@ -417,33 +419,33 @@ const Home = () => {
                           </Dropdown.Toggle>
                           <Dropdown.Menu className=''>
                             <Dropdown.Item href="#" onClick={() => handleCloneModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_duplicate} alt="duplicate" className='pe-2' />Duplicate
+                              <img src={table_action_duplicate} alt="duplicate" className='pe-2' />{t('duplicate')}
                             </Dropdown.Item>
                             {trail.creator === userId && (
                               <>
                                 {trail.published ? ( // change icon
                                   <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                    <img src={table_action_publish} alt="unpublish" className='pe-2' />Unpublish
+                                    <img src={table_action_publish} alt="unpublish" className='pe-2' />{t('unpublish')}
                                   </Dropdown.Item>
                                 ) : (
                                   <Dropdown.Item href="#" onClick={() => handlePublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                    <img src={table_action_publish} alt="publish" className='pe-2' />Publish
+                                    <img src={table_action_publish} alt="publish" className='pe-2' />{t('publish')}
                                   </Dropdown.Item>
                                 )}
                               </>
                             )}
                             <Dropdown.Item href={`${basePath}/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                              <img src={table_action_show} alt="show" className='pe-2' />Show Trail
+                              <img src={table_action_show} alt="show" className='pe-2' />{t('show_trail')}
                             </Dropdown.Item>
                             {trail.creator === userId && (
                               <>
                                 {(!trail.published) && (
                                   <Dropdown.Item href={`${basePath}/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                    <img src={table_action_edit} alt="edit" className='pe-2' />Edit Trail
+                                    <img src={table_action_edit} alt="edit" className='pe-2' />{t('edit_trail')}
                                   </Dropdown.Item>
                                 )}
                                 <Dropdown.Item href="#" onClick={() => handleDeleteModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                                  <img src={table_action_delete} alt="delete" className='pe-2' />Delete
+                                  <img src={table_action_delete} alt="delete" className='pe-2' />{t('delete')}
                                 </Dropdown.Item>
                               </>
                             )}
@@ -456,7 +458,7 @@ const Home = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              Showing 1 to {Object.keys(displayedTrails).length} of {Object.keys(displayedTrails).length} entries
+              {t('showing')} 1 {t('to')} {Object.keys(displayedTrails).length} {t('of')} {Object.keys(displayedTrails).length} {t('entries')}
             </div>
           </div>
 
@@ -468,15 +470,15 @@ const Home = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_clone} alt="modal_clone" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Duplicate Trail</h1>
-              <p className={`${styles.modal_text}`}>Are you sure you want to create a duplicate of this trail?</p>
+              <h1 className={`${styles.modal_heading}`}>{t('duplicate_trail')}</h1>
+              <p className={`${styles.modal_text}`}>{t('duplicate_text')}</p>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleCloneModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmClone()} className={`${styles.modal_clone_button} flex-fill ms-2 me-5`}>
-                Duplicate
+                {t('duplicate')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -488,16 +490,16 @@ const Home = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Publish Trail</h1>
-              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to publish this trail?</p>
-              <p className={`${styles.modal_text} `}>Once published, it will be available to the public.</p>
+              <h1 className={`${styles.modal_heading}`}>{t('publish_trail')}</h1>
+              <p className={`${styles.modal_text} mb-0`}>{t('publish_text1')}</p>
+              <p className={`${styles.modal_text} `}>{t('publish_text2')}</p>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handlePublishModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmPublish()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
-                Publish
+                {t('publish')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -509,16 +511,16 @@ const Home = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_publish} alt="modal_publish" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Unpublish Trail</h1>
-              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to return this trail to draft?</p>
-              <p className={`${styles.modal_text} `}>Once unpublished, it will not be available to the public anymore.</p>
+              <h1 className={`${styles.modal_heading}`}>{t('unpublish_trail')}</h1>
+              <p className={`${styles.modal_text} mb-0`}>{t('unpublish_text1')}</p>
+              <p className={`${styles.modal_text} `}>{t('unpublish_text2')}</p>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleUnpublishModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmUnpublish()} className={`${styles.modal_publish_button} flex-fill ms-2 me-5`}>
-                Unpublish
+                {t('unpublish')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -530,16 +532,16 @@ const Home = () => {
           >
             <Modal.Body className='d-flex flex-column align-items-center p-4'>
               <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
-              <h1 className={`${styles.modal_heading}`}>Delete Trail</h1>
-              <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this trail?</p>
-              <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
+              <h1 className={`${styles.modal_heading}`}>{t('delete_trail')}</h1>
+              <p className={`${styles.modal_text} mb-0`}>{t('delete_text1')}</p>
+              <p className={`${styles.modal_text} `}>{t('delete_text2')}</p>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
-                Delete
+                {t('delete')}
               </Button>
             </Modal.Footer>
           </Modal>

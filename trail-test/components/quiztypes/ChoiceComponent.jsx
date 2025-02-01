@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, quizMode }) => {
 
@@ -7,6 +8,7 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
   const [selectedMultiAnswers, setSelectedMultiAnswers] = useState([]);
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
   const [selectedQuizAnswers, setSelectedQuizAnswers] = useState([]);
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleSelectAnswer = (index) => {
     if (quizType === 'multiple') {
@@ -68,7 +70,7 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
     <>
       {!quizMode ? (
         <div>
-          <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? "Create Answers (check the correct asnwers)" : "Create Answers (first is correct)"}</label>
+          <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? `${t('choice_create_correct_answers')}` : `${t('choice_create_first_answers')}`}</label>
           {answers.map((answer, index) => (
             <div className='d-flex justify-content-between align-items-center mb-3' key={index}>
               {index === 0 ? (
@@ -108,7 +110,7 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
         </div>
       ) : ( // quizMode true
         <div>
-          <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? "Find the Correct Answers" : "Find the Correct Answer (one is correct)"}</label>
+          <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? `${t('choice_find_correct_answers')}` : `${t('choice_find_correct_answer')}`}</label>
           {shuffledAnswers.map((answer, index) => (
             <div className='d-flex justify-content-between align-items-center mb-3' key={index} onClick={() => handleSelectQuizAnswer(index)} style={{ cursor: 'pointer' }}>
               <div className='col-1 d-flex justify-content-start'>

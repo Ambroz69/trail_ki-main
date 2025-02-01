@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styles from '../../src/css/TrailCreate.module.css';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -14,6 +15,7 @@ const shuffleArray = (array) => {
 const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, handleRightSideQuizAnswer, onDragEnd, quizMode }) => {
   const [shuffledLeft, setShuffledLeft] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleDragDrop = (result) => {
     const { source, destination, type } = result;
@@ -55,27 +57,8 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
 
   return (
     <div>
-      <label className={`${styles.form_label} form-label mb-1`}>Insert Correct Pairings</label>
+      <label className={`${styles.form_label} form-label mb-1`}>{t('pairs_answers')}</label>
       {!quizMode ? (
-        /* answers.map((answer, index) => (
-          <div className='my-4' key={index}>
-            <input
-              type="text"
-              placeholder={`Left Side`}
-              value={answer.text}
-              onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
-              className='border-2 border-gray-500 px-4 mr-4'
-            />
-            <input
-              type="text"
-              placeholder={`Right Side`}
-              value={answer.pairText || ''}
-              onChange={e => handleChangeAnswer(index, 'pairText', e.target.value)}
-              className='border-2 border-gray-500 px-4 mr-4'
-            />
-            <span className="close mr-4" onClick={() => handleRemoveAnswer(index)} >&times;</span>
-          </div>
-        )) */
         answers.map((answer, index) => (
           <div className='d-flex justify-content-between align-items-center mb-3' key={index}>
             <div className='d-flex col-11'>

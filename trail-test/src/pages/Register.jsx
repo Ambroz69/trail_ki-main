@@ -6,6 +6,7 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -17,6 +18,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -37,7 +39,7 @@ const Register = () => {
     axios(configuration)
       .then((result) => {
         setRegister(true);
-        setAlert({ message: 'Registration successful! Please check your email for verification.', type: 'success' });
+        setAlert({ message: `${t('success_registration')}`, type: 'success' });
         // redirect user to the login page
         setTimeout(() => {
           navigate('/');
@@ -45,7 +47,7 @@ const Register = () => {
       })
       .catch((error) => {
         error = new Error();
-        setAlert({ message: error.respone?.data?.message || 'There has been an error with the registration.', type: 'error' });
+        setAlert({ message: `${t('error_registration')}`, type: 'error' });
       });
   }
 
@@ -64,7 +66,7 @@ const Register = () => {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
-            <h2 className={`${styles.login_header}`}>Sign up</h2>
+            <h2 className={`${styles.login_header}`}>{t('sing_up')}</h2>
             <Form onSubmit={(e) => handleSubmit(e)} className={`${styles.form_width}`}>
               {/* name */}
               <Form.Group controlId="formBasicName" className='mt-1'>
@@ -74,7 +76,7 @@ const Register = () => {
                   name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Display name"
+                  placeholder={t('display_name')}
                   required
                 />
               </Form.Group>
@@ -100,7 +102,7 @@ const Register = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
+                  placeholder={t('password')}
                   required
                 />
               </Form.Group>
@@ -110,23 +112,23 @@ const Register = () => {
                   name="country"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  placeholder="Select country"
+                  placeholder={t('select_country')}
                   required
                 >
-                  <option value="Slovakia">Slovakia</option>
-                  <option value="Czech Republic">Czech Republic</option>
-                  <option value="Spain">Spain</option>
-                  <option value="Other">Other</option>
+                  <option value="Slovakia">{t('slovakia')}</option>
+                  <option value="Czech Republic">{t('czech')}</option>
+                  <option value="Spain">{t('spain')}</option>
+                  <option value="Other">{t('other')}</option>
                 </Form.Select>
               </Form.Group>
               <div className="d-flex flex-row justify-content-between mt-3">
                 <div className="form-check d-flex flex-row align-items-center justify-content-center">
                   <input className="form-check-input" type="checkbox" value="" id="checkbox1" required />
                   <label className='form-check-label ms-2 me-1' htmlFor="flexCheckDefault">
-                    I agree with
+                    {t('agree_with')}
                   </label>
                   <a href='#' className={`${styles.forgot_pass_link} ${styles.fix_align}`}>
-                    terms and conditions.
+                    {t('terms')}
                   </a>
                 </div>
               </div>
@@ -140,17 +142,17 @@ const Register = () => {
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                   onClick={(e) => handleSubmit(e)}
                 >
-                  Create account
+                  {t('create_account')}
                 </Button>
               </div>
 
               <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
                 <div>
-                  Already have an account?
+                  {t('account_exist')}
                 </div>
                 <div>
                   <a href='/users/login' className={`${styles.forgot_pass_link} ms-1`}>
-                    Log in
+                    {t('login')}
                   </a>
                 </div>
               </div>

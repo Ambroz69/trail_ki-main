@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, setMinValue, setMaxValue, quizMode }) => {
   const [userValue, setUserValue] = useState(0);
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleSliderChange = (e) => {
     const newValue = e.target.value;
@@ -16,7 +18,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
         <>
           <div className='mb-3 d-flex'>
             <div className='col-6 pe-3'>
-              <label className={`${styles.form_label} form-label mb-1`}>Minimum value</label>
+              <label className={`${styles.form_label} form-label mb-1`}>{t('slider_minimum_value')}</label>
               <input
                 type="number"
                 value={minValue}
@@ -25,7 +27,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
               />
             </div>
             <div className='col-6 ps-3'>
-              <label className={`${styles.form_label} form-label mb-1`}>Maximum value</label>
+              <label className={`${styles.form_label} form-label mb-1`}>{t('slider_maximum_value')}</label>
               <input
                 type="number"
                 value={maxValue}
@@ -36,7 +38,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
           </div>
           <div className='mb-3 d-flex'>
             <div className='col-6 pe-3'>
-              <label className={`${styles.form_label} form-label mb-1`}>Correct Value</label>
+              <label className={`${styles.form_label} form-label mb-1`}>{t('slider_correct_value')}</label>
               <input
                 type="number"
                 value={correctValue}

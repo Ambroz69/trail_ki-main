@@ -4,6 +4,7 @@ import Cookies from "universal-cookie";
 import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -15,6 +16,7 @@ const UserProfile = () => {
   const [country, setCountry] = useState('');
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
     const configuration = {
@@ -32,7 +34,7 @@ const UserProfile = () => {
         setCountry(country || '');
       })
       .catch((error) => {
-        setAlert({ message: 'Failed to load the profile.', type: 'error' });
+        setAlert({ message: `${t('error_profile')}`, type: 'error' });
         console.error(error);
       });
   }, []);
@@ -47,9 +49,9 @@ const UserProfile = () => {
       await api.put(`${backendUrl}/users/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAlert({ message: 'The profile was updated.', type: 'success' });
+      setAlert({ message: `${t('success_profile_update')}`, type: 'success' });
     } catch (error) {
-      setAlert({ message: 'Failed to update the profile.', type: 'error' });
+      setAlert({ message: `${t('error_profile_update')}`, type: 'error' });
       console.error(error);
     }
   };
@@ -71,7 +73,7 @@ const UserProfile = () => {
       <div className='col-9 px-5'>
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
-            <h1 className='text-3xl my-8'>User Profile</h1>
+            <h1 className='text-3xl my-8'>{t('user_profile')}</h1>
           </div>
         </div>
         {alert.message && (
@@ -81,36 +83,36 @@ const UserProfile = () => {
           <form onSubmit={handleUpdateProfile}>
             <div className='mb-3 d-flex'>
               <div className='col-9 pe-3'>
-                <label className={`${styles.form_label} form-label mb-1`}>Name</label>
+                <label className={`${styles.form_label} form-label mb-1`}>{t('name')}</label>
                 <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
               </div>
             </div>
             <div className='mb-3 d-flex'>
               <div className='col-9 pe-3'>
-                <label className={`${styles.form_label} form-label mb-1`}>Email</label>
+                <label className={`${styles.form_label} form-label mb-1`}>E-mail</label>
                 <input type='text' value={email} disabled className={`${styles.form_input} form-control`}></input>
               </div>
             </div>
             <div className='mb-3 d-flex'>
               <div className='col-9 pe-3'>
-                <label className={`${styles.form_label} form-label mb-1`}>New Password (leave empty to keep current password)</label>
+                <label className={`${styles.form_label} form-label mb-1`}>{t('new_password_profile')}</label>
                 <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} className={`${styles.form_input} form-control`}></input>
               </div>
             </div>
             <div className='mb-3 d-flex'>
               <div className='col-9 pe-3'>
-                <label className={`${styles.form_label} form-label mb-1`}>Country</label>
+                <label className={`${styles.form_label} form-label mb-1`}>{t('country')}</label>
                 <select value={country} onChange={e => setCountry(e.target.value)} className={`${styles.form_input} form-select`}>
-                  <option value="Slovakia">Slovakia</option>
-                  <option value="Czech Republic">Czech Republic</option>
-                  <option value="Spain">Spain</option>
-                  <option value="Other">Other</option>
+                  <option value="Slovakia">{t('slovakia')}</option>
+                  <option value="Czech Republic">{t('czech')}</option>
+                  <option value="Spain">{t('spain')}</option>
+                  <option value="Other">{t('other')}</option>
                 </select>
               </div>
             </div>
             <div className='mb-3 d-flex'>
               <div className='col-9 pe-3'>
-                <button className={`${styles.save_button} btn btn-secondary`} type="submit">Update Profile</button>
+                <button className={`${styles.save_button} btn btn-secondary`} type="submit">{t('update_profile')}</button>
               </div>
             </div>
           </form>

@@ -18,6 +18,7 @@ import AlertComponent from '../../components/AlertComponent';
 import TrailMap from '../../components/TrailMap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 import Cookies from "universal-cookie";
 
@@ -77,6 +78,7 @@ const CreateTrail = () => {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const { t } = useTranslation(); // Hook to access translations
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -131,15 +133,15 @@ const CreateTrail = () => {
     let trailLength = calculateTrailLength(points);
     const userId = getUserIDFromToken(token);
     if (!userId) {
-      setAlert({message: 'Invalid or missing User ID.', type: 'error'});
+      setAlert({message: `${t('error_userid')}`, type: 'error'});
       return;
     }
     if (!name.trim()) {
-      setAlert({message: 'Please fill in the Trail name is required.', type: 'error'});
+      setAlert({message: `${t('missing_trail_name')}`, type: 'error'});
       return;
     }
     if (!description.trim()) {
-      setAlert({message: 'Please fill in the Trail description.', type: 'error'});
+      setAlert({message: `${t('missint_trail_description')}`, type: 'error'});
       return;
     }
     const formData = new FormData();
@@ -169,14 +171,14 @@ const CreateTrail = () => {
     api(configuration)
       .then((response) => {
         console.log(id ? 'Trail updated.' : 'Trail created.');
-        setAlert({message: id ? "Trail updated successfully!" : "Trail created successfully!", type: 'success'});
+        setAlert({message: id ? `${t('trail_updated')}` : `${t('trail_created')}`, type: 'success'});
         setTimeout(() => {
           navigate('/');
         }, 1500);
       })
       .catch((error) => {
         console.log(error);
-        setAlert({message: 'An error occurred while saving the trail.', type: 'error'});
+        setAlert({message: `${t('error_trail_save')}`, type: 'error'});
       });
   };
 
@@ -298,7 +300,7 @@ const CreateTrail = () => {
 
       if (quizChecked) {
         if (!question || (!answers[0].text && quizType !== 'slider')) {
-          setAlert({message: 'Please fill all quiz fields.', type: 'error'});
+          setAlert({message: `${t('missing_quiz_fields')}`, type: 'error'});
           return;
         }
 
@@ -319,7 +321,7 @@ const CreateTrail = () => {
       resetContent();
       //onClose();
     } else {
-      setAlert({message: 'Please fill the point title.', type: 'error'});
+      setAlert({message: `${t('missing_point_title')}`, type: 'error'});
     }
   }
 
@@ -457,11 +459,11 @@ const CreateTrail = () => {
         <div className='py-5 ps-0'>
           <div className='d-flex justify-content-between'>
             <div>
-              <h1 className='text-3xl'>{id ? 'Edit the Trail' : 'Add a New Trail'}</h1>
-              <p className={`${styles.new_trail_text}`}>Please fill in all the details of your trail.</p>
+              <h1 className='text-3xl'>{id ? `${t('edit_new_trail')}` : `${t('add_new_trail')}`}</h1>
+              <p className={`${styles.new_trail_text}`}>{t('new_trail_text')}</p>
             </div>
             <div className='d-flex align-items-center pb-4'>
-              <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>Save as Draft</button>
+              <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>{t('save_draft')}</button>
             </div>
           </div>
           {alert.message && (
@@ -474,7 +476,7 @@ const CreateTrail = () => {
               className="mb-3"
               justify
             >
-              <Tab eventKey="general" title="General Information">
+              <Tab eventKey="general" title={t('general_information')}>
                 <div className={`${styles.tabs_bg} p-4`}>
                   <div className={`${styles.file_upload} d-flex flex-column align-items-center mb-3 w-100`} onClick={handleAreaClick} onDragOver={handleAreaDragOver} onDragLeave={handleAreaDragLeave} onDrop={handleAreaDrop}>
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} accept="image/*" />
@@ -486,127 +488,127 @@ const CreateTrail = () => {
                       <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
                     )}
                     <div className='d-flex'>
-                      <div className={`${styles.upload_text_black} pe-1`}>Drag and drop or</div>
-                      <div className={`${styles.upload_text_blue} pe-1`}>Choose File</div>
-                      <div className={`${styles.upload_text_black}`}>to upload</div>
+                      <div className={`${styles.upload_text_black} pe-1`}>{t('drag_drop')}</div>
+                      <div className={`${styles.upload_text_blue} pe-1`}>{t('choose_file')}</div>
+                      <div className={`${styles.upload_text_black}`}>{t('to_upload')}</div>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
                     <div className='col-9 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Trail Name</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('trail_name')}</label>
                       <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
                     </div>
                     <div className='col-3 ps-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Estimated Time (min.)</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('estimated_time')}</label>
                       <input type='number' value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} min="0" className={`${styles.form_input} form-control`}></input>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
                     <div className='col-6 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Location</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('locality')}</label>
                       <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`}>
-                        <option value="Slovakia">Slovakia</option>
-                        <option value="Czech Republic">Czech Republic</option>
-                        <option value="Spain">Spain</option>
-                        <option value="Other">Other</option>
+                        <option value="Slovakia">{t('slovakia')}</option>
+                        <option value="Czech Republic">{t('czech')}</option>
+                        <option value="Spain">{t('spain')}</option>
+                        <option value="Other">{t('other')}</option>
                       </select>
                     </div>
                     <div className='col-6 ps-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Language</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('language')}</label>
                       <select value={language} onChange={e => setLanguage(e.target.value)} className={`${styles.form_input} form-select`} >
-                        <option value="English">English</option>
-                        <option value="Slovak">Slovak</option>
-                        <option value="Spanish">Spanish</option>
-                        <option value="Other">Other</option>
+                        <option value="English">{t('lang_en')}</option>
+                        <option value="Slovak">{t('lang_sk')}</option>
+                        <option value="Spanish">{t('lang_es')}</option>
+                        <option value="Other">{t('other')}</option>
                       </select>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
                     <div className='col-6 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Season</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('season')}</label>
                       <select value={season} onChange={e => setSeason(e.target.value)} className={`${styles.form_input} form-select`} >
-                        <option value="All Seasons">All Seasons</option>
-                        <option value="Spring">Spring</option>
-                        <option value="Summer">Summer</option>
-                        <option value="Autumn">Autumn</option>
-                        <option value="Winter">Winter</option>
+                        <option value="All Seasons">{t('all_seasons')}</option>
+                        <option value="Spring">{t('spring')}</option>
+                        <option value="Summer">{t('summer')}</option>
+                        <option value="Autumn">{t('autumn')}</option>
+                        <option value="Winter">{t('winter')}</option>
                       </select>
                     </div>
                     <div className='col-6 ps-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>Difficulty</label>
+                      <label className={`${styles.form_label} form-label mb-1`}>{t('difficulty')}</label>
                       <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className={`${styles.form_input} form-select`}>
-                        <option value="Easy">Easy</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Challenging">Challenging</option>
-                        <option value="Difficult">Difficult</option>
+                        <option value="Easy">{t('diff_easy')}</option>
+                        <option value="Moderate">{t('diff_mod')}</option>
+                        <option value="Challenging">{t('diff_chal')}</option>
+                        <option value="Difficult">{t('diff_dif')}</option>
                       </select>
                     </div>
                   </div>
                   <div className='mb-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>Description</label>
+                    <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
                     <div>
                       <div ref={quillRef} className={`${styles.description_input}`} />
                     </div>
                   </div>
                 </div>
               </Tab>
-              <Tab eventKey="points" title="Trail Content">
+              <Tab eventKey="points" title={t('trail_content')}>
                 <div className={`${styles.tabs_bg} p-0 d-flex`}>
                   <div className='col-6 p-4'>
                     {pointCreated ? (
                       <>
                         <div className='mb-3'>
-                          <label className={`${styles.form_label} form-label mb-1`}>Interaction Title</label>
+                          <label className={`${styles.form_label} form-label mb-1`}>{t('interaction_title')}</label>
                           <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
                         </div>
                         <div className='mb-3 d-flex'>
                           <div className='col-6 pe-3'>
-                            <label className={`${styles.form_label} form-label mb-1`}>Longitude</label>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('longitude')}</label>
                             <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
                           </div>
                           <div className='col-6 ps-3'>
-                            <label className={`${styles.form_label} form-label mb-1`}>Latitude</label>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('latitude')}</label>
                             <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
                           </div>
                         </div>
                         <div className='mb-3'>
-                          <label className={`${styles.form_label} form-label mb-1`}>Content</label>
+                          <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
                           <textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>
                         </div>
                         <div className="d-flex flex-row justify-content-between mt-3">
                           <div className=" form-check col-8">
                             <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
                             <label className={`${styles.form_label} form-check-label`} htmlFor="quiz_included" >
-                              Do you want to include quiz?
+                              {t('quiz_text')}
                             </label>
                           </div>
                           <div className="col-4 text-end">
                             <button className='btn btn-primary' onClick={handleSave}>
-                              Save Point
+                              {t('save_point')}
                             </button>
                           </div>
                         </div>
                         {quizChecked ? (
                           <>
                             <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>Question</label>
+                              <label className={`${styles.form_label} form-label mb-1`}>{t('question')}</label>
                               <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}></input>
                             </div>
                             <div className='mb-3 d-flex'>
                               <div className='col-4 pe-3'>
-                                <label className={`${styles.form_label} form-label mb-1`}>Points</label>
+                                <label className={`${styles.form_label} form-label mb-1`}>{t('points')}</label>
                                 <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`}></input>
                               </div>
                               <div className='col-8 ps-3'>
-                                <label className={`${styles.form_label} form-label mb-1`}>Question Type</label>
+                                <label className={`${styles.form_label} form-label mb-1`}>{t('question_type')}</label>
                                 <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`}>
-                                  <option value="single">Single Correct Answer</option>
-                                  <option value="multiple">Multiple Correct Answers</option>
-                                  <option value="short-answer">Short Answer</option>
-                                  <option value="slider">Slider</option>
-                                  <option value="pairs">Pairs</option>
-                                  <option value="order">Ordering</option>
-                                  <option value="true-false">True/False</option>
+                                  <option value="single">{t('single')}</option>
+                                  <option value="multiple">{t('multiple')}</option>
+                                  <option value="short-answer">{t('short_answer')}</option>
+                                  <option value="slider">{t('slider')}</option>
+                                  <option value="pairs">{t('pairs')}</option>
+                                  <option value="order">{t('order')}</option>
+                                  <option value="true-false">{t('true_false')}</option>
                                 </select>
                               </div>
                             </div>
@@ -629,7 +631,7 @@ const CreateTrail = () => {
                                         handleChangeAnswer={handleChangeAnswer}
                                         handleRemoveAnswer={handleRemoveAnswer}
                                       />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
                                     </>
                                   );
                                 case 'slider':
@@ -651,7 +653,7 @@ const CreateTrail = () => {
                                         handleChangeAnswer={handleChangeAnswer}
                                         handleRemoveAnswer={handleRemoveAnswer}
                                       />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
                                     </>
                                   );
                                 case 'order':
@@ -662,7 +664,7 @@ const CreateTrail = () => {
                                         handleChangeAnswer={handleChangeAnswer}
                                         handleRemoveAnswer={handleRemoveAnswer}
                                       />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>Add Answer</button>
+                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
                                     </>
                                   );
                                 case 'true-false':
@@ -678,11 +680,11 @@ const CreateTrail = () => {
                               }
                             })()}
                             <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>Correct Answer Feedback</label>
+                              <label className={`${styles.form_label} form-label mb-1`}>{t('correct_answer_feedback')}</label>
                               <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
                             </div>
                             <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>Incorrect Answer Feedback</label>
+                              <label className={`${styles.form_label} form-label mb-1`}>{t('incorrect_answer_feedback')}</label>
                               <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
                             </div>
                           </>
@@ -693,7 +695,7 @@ const CreateTrail = () => {
                     ) : (
                       <>
                         <div className={`${styles.map_container}  d-flex justify-content-center align-items-center`}>
-                          <p className={`${styles.map_left_text} text-center`}>Create new Interactive Point by clicking on the map.</p>
+                          <p className={`${styles.map_left_text} text-center`}>{t('map_text_left')}</p>
                         </div>
                       </>
                     )}
@@ -710,10 +712,10 @@ const CreateTrail = () => {
                   </div>
                 </div>
               </Tab>
-              <Tab eventKey="overview" title="Overview">
+              <Tab eventKey="overview" title={t('overview')}>
 
                 <div className={`${styles.tabs_bg} p-0`}>
-                  <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>Points of Interest</p>
+                  <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('points_of_interest')}</p>
                   <div className='d-flex'>
                     <div className={`col-6 p-4 pt-0`}>
                       <Accordion defaultActiveKey={['0']} alwaysOpen>
@@ -733,13 +735,13 @@ const CreateTrail = () => {
                                         <p className={`${styles.accordion_point_question_type} m-0`}>
                                           {(() => {
                                             switch (point.quiz?.type) {
-                                              case 'short-answer': return ("Short Written Answer");
-                                              case 'single': return ("Single Correct Answer");
-                                              case 'multiple': return ("Multiple Correct Answers");
-                                              case 'slider': return ("Slider");
-                                              case 'pairs': return ("Matching Pairs");
-                                              case 'order': return ("Ordering");
-                                              case 'true-false': return ("True/False");
+                                              case 'short-answer': return (`${t('short_answer')}`);
+                                              case 'single': return (`${t('single')}`);
+                                              case 'multiple': return (`${t('multiple')}`);
+                                              case 'slider': return (`${t('slider')}`);
+                                              case 'pairs': return (`${t('pairs')}`);
+                                              case 'order': return (`${t('order')}`);
+                                              case 'true-false': return (`${t('true_false')}`);
                                               default: return (<></>);
                                             }
                                           })()}
@@ -747,12 +749,12 @@ const CreateTrail = () => {
                                       </div>
                                       <div className='col-6 d-flex'>
                                         <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
-                                        <p className={`${styles.accordion_point_question_type} m-0`}>{point.quiz.points} {point.quiz.points === 1 ? " point" : " points"}</p>
+                                        <p className={`${styles.accordion_point_question_type} m-0`}>{point.quiz.points} {point.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : `${t('points').toLowerCase()}`}</p>
                                       </div>
                                     </>
                                   ) : (
                                     <>
-                                      <p className={`${styles.accordion_point_question_type} m-0`}>No Quiz</p>
+                                      <p className={`${styles.accordion_point_question_type} m-0`}>{t('no_quiz')}</p>
                                     </>
                                   )}
                                 </div>
@@ -764,7 +766,7 @@ const CreateTrail = () => {
                                   <div className='col-9'>
                                     <div className='d-flex'>
                                       <div className='col-3'>
-                                        <p className={`${styles.accordion_point_coords} m-0`}>Latitude:</p>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>{t('latitude')}:</p>
                                       </div>
                                       <div className='col-9'>
                                         <p className={`${styles.accordion_point_coords} m-0`}>{point.latitude}</p>
@@ -772,7 +774,7 @@ const CreateTrail = () => {
                                     </div>
                                     <div className='d-flex'>
                                       <div className='col-3'>
-                                        <p className={`${styles.accordion_point_coords} m-0`}>Longitude:</p>
+                                        <p className={`${styles.accordion_point_coords} m-0`}>{t('longitude')}:</p>
                                       </div>
                                       <div className='col-9'>
                                         <p className={`${styles.accordion_point_coords} m-0`}>{point.longitude}</p>
@@ -795,7 +797,7 @@ const CreateTrail = () => {
                                     checked={showPointContent}
                                     onChange={e => setShowPointContent(e.target.checked)}
                                     id="show_content_checkbox" />
-                                  <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? "Hide Content" : "Show Content"}</label>
+                                  <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? `${t('hide_content')}` : `${t('show_content')}`}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
                                   <p className={`${styles.accordion_text_gray}`}>{point.content}</p>
@@ -886,13 +888,13 @@ const CreateTrail = () => {
                                               <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={point.quiz.answers[0]?.isCorrect} />
                                                 <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
-                                                  True
+                                                  {t('true')}
                                                 </label>
                                               </div>
                                               <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionFalse" value="false" readOnly checked={!point.quiz.answers[0]?.isCorrect} />
                                                 <label className={`${styles.form_label} form-check-label`} htmlFor="optionFalse">
-                                                  False
+                                                  {t('false')}
                                                 </label>
                                               </div>
                                             </div>
@@ -903,7 +905,7 @@ const CreateTrail = () => {
                                     {(point.quiz.feedback && ((point.quiz.feedback?.correct !== "" && point.quiz.feedback?.correct !== null) || (point.quiz.feedback?.incorrect !== "" && point.quiz.feedback?.incorrect !== null))) ? (
                                       <>
                                         <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                          <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
+                                          <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                                           <div className={(point.quiz.feedback.correct !== "" && point.quiz.feedback.correct !== null) ? 'my-1' : 'my-1 d-none'}>
                                             <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.correct}</p>
                                           </div>
@@ -948,16 +950,16 @@ const CreateTrail = () => {
       >
         <Modal.Body className='d-flex flex-column align-items-center p-4'>
           <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
-          <h1 className={`${styles.modal_heading}`}>Delete Point</h1>
-          <p className={`${styles.modal_text} mb-0`}>Are you sure you want to delete this point?</p>
-          <p className={`${styles.modal_text} `}>This action cannot be undone.</p>
+          <h1 className={`${styles.modal_heading}`}>{t('delete_point')}</h1>
+          <p className={`${styles.modal_text} mb-0`}>{t('delete_point_text1')}</p>
+          <p className={`${styles.modal_text} `}>{t('delete_point_text2')}</p>
         </Modal.Body>
         <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
           <Button variant="secondary" onClick={() => handleDeleteModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button variant="primary" onClick={() => handleConfirmDelete()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
-            Delete
+            {t('delete')}
           </Button>
         </Modal.Footer>
       </Modal>

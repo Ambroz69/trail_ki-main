@@ -6,6 +6,7 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -13,6 +14,7 @@ function ForgottenPassword() {
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,13 +22,13 @@ function ForgottenPassword() {
       const response = await axios.post(`${backendUrl}/users/forgot-password`, {
         email,
       });
-      setAlert({message: response.data.message, type: 'success'});
+      setAlert({message: `${t('success_reset_password')}`, type: 'success'});
       setTimeout(() => {
         navigate('/');
       }, 3000);
     } catch (error) {
       console.log(error);
-      setAlert({message: error.respone?.data?.message || 'Error reseting password.', type: 'error'});
+      setAlert({message: `${t('error_reset_password')}`, type: 'error'});
     }
   };
 
@@ -45,7 +47,7 @@ function ForgottenPassword() {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
-            <h2 className={`${styles.login_header}`}>Forgotten Password</h2>
+            <h2 className={`${styles.login_header}`}>{t('forgotten_password')}</h2>
             <Form onSubmit={handleSubmit} className={`${styles.form_width}`}>
               {/* email */}
               <Form.Group controlId="formBasicPassword" className='mt-3'>
@@ -67,7 +69,7 @@ function ForgottenPassword() {
                   type="submit"
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                 >
-                  Send Reset Link
+                  {t('send_reset_link')}
                 </Button>
               </div>
             </Form>

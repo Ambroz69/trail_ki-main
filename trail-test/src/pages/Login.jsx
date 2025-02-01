@@ -6,6 +6,7 @@ import styles from '../css/Main.module.css';
 import logo from "../assets/logo.svg";
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const cookies = new Cookies();
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -15,6 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const { t } = useTranslation(); // Hook to access translations
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -41,7 +43,7 @@ const Login = () => {
         window.location.href = "/";
       })
       .catch((error) => {
-        setAlert({ message: 'The username or password are not correct.', type: 'error' });
+        setAlert({ message: `${t('error_login')}`, type: 'error' });
         error = new Error();
       });
   }
@@ -61,7 +63,7 @@ const Login = () => {
         <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
-            <h2 className={`${styles.login_header}`}>Log in</h2>
+            <h2 className={`${styles.login_header}`}>{t('login')}</h2>
             <Form onSubmit={(e) => handleSubmit(e)} className={`${styles.form_width}`}>
               {/* email */}
               <Form.Group controlId="formBasicEmail" className='mt-1'>
@@ -84,7 +86,7 @@ const Login = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
+                  placeholder={t('password')}
                   required
                 />
               </Form.Group>
@@ -92,12 +94,12 @@ const Login = () => {
                 <div className=" form-check col-6">
                   <input className="form-check-input" type="checkbox" value="" id="checkbox1" />
                   <label className='form-check-label' htmlFor="flexCheckDefault">
-                    Stay logged in
+                    {t('stay_logged_in')}
                   </label>
                 </div>
                 <div className="col-6 text-end">
                   <a href='/forgot-password' className={`${styles.forgot_pass_link}`}>
-                    Forgot password?
+                    {t('forgot_password')}
                   </a>
                 </div>
               </div>
@@ -112,17 +114,17 @@ const Login = () => {
                   className={`${styles.login_button} mt-3 btn-block rounded-3`}
                   onClick={(e) => handleSubmit(e)}
                 >
-                  Log in
+                  {t('login')}
                 </Button>
               </div>
 
               <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
                 <div>
-                  Don't have an account?
+                  {t('login_register_text')}
                 </div>
                 <div>
                   <a href='/users/register' className={`${styles.forgot_pass_link} ms-1`}>
-                    Sign up
+                    {t('sing_up')}
                   </a>
                 </div>
               </div>

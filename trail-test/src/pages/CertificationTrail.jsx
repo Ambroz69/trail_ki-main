@@ -3,6 +3,7 @@ import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 import Cookies from "universal-cookie";
 
@@ -31,6 +32,7 @@ const CertificationTrail = () => {
   const [rightPairAnswer, setRightPairAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { id } = useParams();
+  const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
     // set configurations for the API call here
@@ -156,7 +158,7 @@ const CertificationTrail = () => {
               onProximityTask={handleProximityTask}
             />
           </div>
-          <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>Points of Interest</p>
+          <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('points_of_interest')}</p>
           <div className={`col-12 p-4 pt-0`}>
             <div className='d-flex flex-column w-100 p-2'>
               <p className={`${styles.accordion_point_title} mb-2`}>{point?.title}</p>
@@ -170,13 +172,13 @@ const CertificationTrail = () => {
                       <p className={`${styles.accordion_point_question_type} m-0`}>
                         {(() => {
                           switch (point?.quiz?.type) {
-                            case 'short-answer': return ("Short Written Answer");
-                            case 'single': return ("Single Correct Answer");
-                            case 'multiple': return ("Multiple Correct Answers");
-                            case 'slider': return ("Slider");
-                            case 'pairs': return ("Matching Pairs");
-                            case 'order': return ("Ordering");
-                            case 'true-false': return ("True/False");
+                            case 'short-answer': return (`${t('short_answer')}`);
+                            case 'single': return (`${t('sinlge')}`);
+                            case 'multiple': return (`${t('multiple')}`);
+                            case 'slider': return (`${t('slider')}`);
+                            case 'pairs': return (`${t('pairs')}`);
+                            case 'order': return (`${t('order')}`);
+                            case 'true-false': return (`${t('true_false')}`);
                             default: return (<></>);
                           }
                         })()}
@@ -184,12 +186,12 @@ const CertificationTrail = () => {
                     </div>
                     <div className='col-6 d-flex'>
                       <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
-                      <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? " point" : " points"}</p>
+                      <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : ` ${t('points').toLowerCase()}`}</p>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p className={`${styles.accordion_point_question_type} m-0`}>Keep looking for points of interest</p>
+                    <p className={`${styles.accordion_point_question_type} m-0`}>{t('certification_look')}</p>
                   </>
                 )}
               </div>
@@ -262,10 +264,10 @@ const CertificationTrail = () => {
                       }
                       )()}
                     </div>
-                    <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>Submit Answer</button>
+                    <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>{t('submit_answer')}</button>
                     {feedback && (
                       <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                        <p className={`${styles.accordion_text_gray} my-2`}>Answer Feedback</p>
+                        <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                         <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
                           <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
                         </div>
