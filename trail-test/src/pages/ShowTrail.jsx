@@ -55,7 +55,7 @@ const ShowTrail = () => {
   };
   
   const userRole = getUserRole();
-  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/user";
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
 
   useEffect(() => {

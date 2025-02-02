@@ -228,7 +228,7 @@ const Users = () => {
                         {user.country}
                       </td>
                       <td>
-                        {user.role}
+                        {t(user.role)}
                       </td>
                       <td>
                         {user.verified ? (
@@ -308,7 +308,7 @@ const Users = () => {
                   className={`${styles.modal_text} `} // please make me beautiful
                   required
                 >
-                  <option value="user">{t('user')}</option>
+                  <option value="explorer">{t('explorer')}</option>
                   <option value="trail creator">{t('trail_creator')}</option>
                   <option value="manager">{t('manager')}</option>
                 </select>

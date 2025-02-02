@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ['user', 'trail creator', 'manager'],
+    enum: ['explorer', 'trail creator', 'manager'],
   },
   verified: {
     type: Boolean,

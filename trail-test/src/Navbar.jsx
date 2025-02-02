@@ -67,7 +67,7 @@ function Navbar() {
   const [token, setToken] = useState(cookies.get("SESSION_TOKEN"));
 
   const userRole = getUserRole();
-  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/user";
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
   useEffect(() => {
     isTokenExpired(token);

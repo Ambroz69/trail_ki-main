@@ -15,7 +15,7 @@ const ProtectedRoute = ({ requiredRole }) => {
     }
     const arrayToken = token.split('.');
     const tokenPayload = JSON.parse(atob(arrayToken[1]));
-    const userRole = tokenPayload?.userRole || 'user';
+    const userRole = tokenPayload?.userRole || 'explorer';
     const verified = (tokenPayload?.userVerified || false);
     console.log(userRole);
 
@@ -42,7 +42,7 @@ const ProtectedRoute = ({ requiredRole }) => {
 
     // **If no requiredRole is specified, redirect user based on role**
     if (!requiredRole) {
-      if (userRole === "user") return <Navigate to="/user" replace />;
+      if (userRole === "explorer") return <Navigate to="/explorer" replace />;
       if (userRole === "trail creator") return <Navigate to="/creator" replace />;
       if (userRole === "manager") return <Navigate to="/manager" replace />;
     }
@@ -53,7 +53,7 @@ const ProtectedRoute = ({ requiredRole }) => {
     }
 
     // **Redirect users to their allowed home pages if they try to access an unauthorized page**
-    if (userRole === "user") return <Navigate to="/user" replace />;
+    if (userRole === "explorer") return <Navigate to="/explorer" replace />;
     if (userRole === "trail creator") return <Navigate to="/creator" replace />;
     if (userRole === "manager") return <Navigate to="/manager" replace />;
 

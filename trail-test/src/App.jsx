@@ -28,7 +28,7 @@ const App = () => {
       <Route path='/' element={<ProtectedRoute />} />
 
       {/* User Routes */}
-      <Route path='user' element={<ProtectedRoute requiredRole="user" />}>
+      <Route path='explorer' element={<ProtectedRoute requiredRole="explorer" />}>
         <Route index element={<HomeUser />} />
         <Route path='trails/details/:id' element={<ShowTrail />} />
         <Route path='trails/certification/:id' element={<CertificationTrail />} />
