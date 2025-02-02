@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
+import TitlePage from "./pages/TitlePage";
 
 // receives component and any other props represented by ...rest
 const ProtectedRoute = ({ requiredRole }) => {
@@ -9,6 +10,9 @@ const ProtectedRoute = ({ requiredRole }) => {
   const token = cookies.get("SESSION_TOKEN");
 
   try {
+    if (!token) {
+      return <TitlePage />; // Show the title page if no token is found
+    }
     const arrayToken = token.split('.');
     const tokenPayload = JSON.parse(atob(arrayToken[1]));
     const userRole = tokenPayload?.userRole || 'user';
@@ -17,7 +21,7 @@ const ProtectedRoute = ({ requiredRole }) => {
 
     // returns route if there is a valid token set in the cookie or the landing page if there is no valid token set
     if (!verified) {
-      return <Navigate to="/users/login" replace />;
+      return <TitlePage />; // Show the title page if the user is not verified
     }
 
     // **Redirect users to their correct home pages based on role**
@@ -57,7 +61,7 @@ const ProtectedRoute = ({ requiredRole }) => {
 
   } catch (error) {
     console.error(error);
-    return <Navigate to="/users/login" replace />; // send to login if issues with token
+    return <TitlePage />; // If there's an error, show the title page
   }
 }
 

@@ -13,6 +13,7 @@ import UserProfile from "./pages/UserProfile";
 import ResetPassword from "./pages/ResetPassword";
 import ForgottenPassword from './pages/ForgottenPassword';
 import HomeUser from './pages/HomeUser';
+import TitlePage from './pages/TitlePage';
 
 const App = () => {
   return (
@@ -60,7 +61,7 @@ const App = () => {
       </Route>
 
       {/* Default Redirect */}
-      {/*<Route path='*' element={<Navigate to="/users/login" replace />} />*/}
+      <Route path='*' element={<TitlePage />} />
       
     </Routes>
   )
