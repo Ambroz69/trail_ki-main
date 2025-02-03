@@ -252,5 +252,10 @@
   "testimonial_author_2": "David Klein Environmental Science Teacher",
   "testimonial_author_3": "Lucas Fontaine Weekend Explorer",
   "footer_description": "A smart way to explore trails with real-time QR scanning.",
-  "university_name": "Constantine the Philosopher University in Nitra"
+  "university_name": "Constantine the Philosopher University in Nitra",
+  "already_answered": "You have already answered this question. Keep looking for next points of interest.",
+  "passed": "Passed",
+  "failed": "Failed",
+  "certification_results": "Certification Results",
+  "total_score": "Total Score"
 }

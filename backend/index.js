@@ -3,6 +3,7 @@ import { PORT, mongoDBRUL } from "./config.js";
 import mongoose from 'mongoose';
 import trailsRoute from './routes/trailsRoute.js';
 import usersRoute from './routes/usersRoute.js';
+import certificationRoute from './routes/certificationRoute.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -28,6 +29,7 @@ app.get('/', (request, response)=>{
 
 app.use('/trails', trailsRoute);
 app.use('/users', usersRoute);
+app.use('/certifications', certificationRoute);
 app.use('/uploads', express.static('uploads'));
 
 mongoose.connect(mongoDBRUL)
