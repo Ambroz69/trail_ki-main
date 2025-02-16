@@ -1,0 +1,85 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Import translation hook
+import i18n from '../src/i18n'; // Import i18n config
+import Modal from 'react-bootstrap/Modal';
+import styles from '../src/css/Hamburger.module.css';
+
+import hamburger_close from '../src/assets/hamburger_close.svg';
+import hamburger_logo from '../src/assets/hamburger_logo.svg';
+import hamburger_logout from '../src/assets/hamburger_logout.svg';
+
+function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
+  const { t } = useTranslation();
+
+  return (
+    <Modal
+      show={menuModalShow}
+      onHide={closeMenuModalShow}
+      backdrop="static"
+      keyboard={false}
+      className={`${styles.hamburger_modal} modal-fullscreen`}
+    >
+      <Modal.Body className={`d-flex flex-column`}>
+        <div className='d-flex justify-content-between p-3'>
+          <img src={hamburger_logo} alt="hamburger_logo" className='' />
+          <button className={`${styles.hamburger_close_button} px-3 py-0`} onClick={closeMenuModalShow}>
+            <img src={hamburger_close} alt="hamburger_close" className='' />
+          </button>
+        </div>
+        <ul className="d-flex flex-column px-3 mb-0">
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#home">Home</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#explore">Explore Trails</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#about">About</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#community" >Community</a>
+          </li>
+        </ul>
+      </Modal.Body>
+      <Modal.Footer className={`d-flex flex-column p-3 pt-2 align-items-start`}>
+        <ul className={`${userLoggedIn ? "" : styles.hidden} d-flex flex-column px-3 m-0`}>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#my_journey">My Journey</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#hall_of_fame">Hall ofFame</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#certificates">Certificates</a>
+          </li>
+          <li className="py-2 mt-1">
+            <a className={`${styles.hamburger_link}`} href="#profile" >Profile</a>
+          </li>
+        </ul>
+      </Modal.Footer>
+      <div className='px-3'>
+        {userLoggedIn ? (
+          <Modal.Footer className={`d-flex justify-content-start p-3`}>
+            <Link to="/users/login" className='col-5 d-flex text-decoration-none m-0'>
+              <button className={`${styles.hamburger_logout_button} flex-fill d-flex`}>
+                <img src={hamburger_logout} alt="hamburger_logout" className='pe-3' />
+                Log Out
+              </button>
+            </Link>
+          </Modal.Footer>
+        ) : (
+          <Modal.Footer className={`d-flex justify-content-between p-3`}>
+            <Link to="/users/login" className='col-5 d-flex text-decoration-none m-0'>
+              <button className={`${styles.hamburger_login_button} flex-fill`}>Log In</button>
+            </Link>
+            <Link to="/users/register" className='col-5 d-flex text-decoration-none m-0'>
+              <button className={`${styles.hamburger_get_started_button} flex-fill`}>Get Started</button>
+            </Link>
+          </Modal.Footer>
+        )}
+      </div>
+    </Modal>
+  );
+}
+export default Hamburger;

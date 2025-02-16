@@ -78,27 +78,6 @@ const ShowTrail = () => {
       });
   }, [id]);
 
-  /*const handleChangeAnswer = (index, field, value) => {
-    const updatedAnswers = answers.map((answer, i) => {
-      if (i === index) {
-        if (quizType === 'true-false') { // transform the true/false into the text as there will be the correct answer
-          answers[0].text = String(!answers[0].isCorrect);
-        }
-        //console.log("isCorrect? <" + answers[0].isCorrect + ">");
-        return { ...answer, [field]: value };
-      }
-      //console.log("i !== index..." + answer);
-      return answer;
-    });
-    //setAnswers(updatedAnswers);
-    // Store the updated answers to preserve them when switching types
-    //setPreviousAnswers((prev) => ({ ...prev, [quizType]: updatedAnswers }));
-  };*/
-
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
-
   const addDefaultImg = event => {
     event.target.src = backup_trail_image;
   };

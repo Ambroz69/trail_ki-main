@@ -1,0 +1,109 @@
+.hamburger_modal {
+  min-width: 100% !important;
+  width: 100% !important;
+}
+
+.hamburger_close_button,
+.hamburger_close_button:visited {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #F4F4F4;
+  border-radius: 0.35rem;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_close_button:hover,
+.hamburger_close_button:focus,
+.hamburger_close_button:not(:disabled):not(:disabled):active {
+  background-color: #bdbdbd;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_link {
+  color: #102A43BF !important;
+  text-decoration: none !important;
+  font-size: 1.25rem;
+  font-weight: 100;
+}
+
+.hamburger_link_disabled {
+  color: #102A4366 !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.hamburger_get_started_button,
+.hamburger_get_started_button:visited {
+  color: #FFF;
+  background-color: #416A65;
+  border: 1px solid #FFF;
+  border-radius: 0.35rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 100;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_get_started_button:hover,
+.hamburger_get_started_button:focus,
+.hamburger_get_started_button:not(:disabled):not(:disabled):active {
+  background-color: #355753;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_login_button,
+.hamburger_login_button:visited {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 0.35rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 100;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_login_button:hover,
+.hamburger_login_button:focus,
+.hamburger_login_button:not(:disabled):not(:disabled):active {
+  background-color: #bdbdbd;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_logout_button,
+.hamburger_logout_button:visited {
+  color: #000;
+  background-color: #fff;
+  border: none;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 100;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.hamburger_logout_button:hover,
+.hamburger_logout_button:focus,
+.hamburger_logout_button:not(:disabled):not(:disabled):active {
+  background-color: #bdbdbd;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+

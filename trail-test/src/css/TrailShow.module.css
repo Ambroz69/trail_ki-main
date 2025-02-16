@@ -108,3 +108,13 @@ button.start_button:not(:disabled):not(:disabled):active {
   background-color: #125292;
   border: none;
 }
+
+.nav_2_item {
+  text-decoration: none;
+  color: #00000099;
+}
+
+.nav_2_item_current {
+  text-decoration: none;
+  color: #000;
+}
