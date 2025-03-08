@@ -17,7 +17,7 @@ const ProtectedRoute = ({ requiredRole }) => {
     const tokenPayload = JSON.parse(atob(arrayToken[1]));
     const userRole = tokenPayload?.userRole || 'explorer';
     const verified = (tokenPayload?.userVerified || false);
-    console.log(userRole);
+    //console.log(userRole);
 
     // returns route if there is a valid token set in the cookie or the landing page if there is no valid token set
     if (!verified) {

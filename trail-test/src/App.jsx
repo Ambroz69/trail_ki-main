@@ -14,7 +14,8 @@ import ResetPassword from "./pages/ResetPassword";
 import ForgottenPassword from './pages/ForgottenPassword';
 import HomeUser from './pages/HomeUser';
 import TitlePage from './pages/TitlePage';
-import ShowTrailUser from './pages/ShowTrailUser'
+import ShowTrailUser from './pages/ShowTrailUser';
+import ExplorerJourney from './pages/ExplorerJourney';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
         <Route path='trails/details/:id' element={<ShowTrailUser />} />
         <Route path='trails/certification/:id' element={<CertificationTrail />} />
         <Route path='profile' element={<UserProfile />} />
+        <Route path='journey' element={<ExplorerJourney />} />
       </Route>
 
       {/* Trail Creator Routes */}
