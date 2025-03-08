@@ -38,6 +38,10 @@
   background: #FAFBFF;
 }
 
+.footer_bg {
+  background-color: #116F64BF;
+}
+
 input.form_input,
 select.form_input,
 textarea.form_input {
