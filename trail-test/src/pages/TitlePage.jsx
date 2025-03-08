@@ -7,6 +7,7 @@ import sk_flag from '../assets/flag-sk.svg';
 import gb_flag from '../assets/flag-gb.svg';
 import styles from '../css/TitlePage.module.css';
 import Hamburger from '../../components/Hamburger';
+import i18n from '../i18n'; // Import i18n config
 
 //svg+png import
 import title_page_logo from '../../src/assets/title_page_logo.svg';
@@ -36,6 +37,12 @@ const TitlePage = () => {
 
   const getFlag = (lang) => {
     return lang === 'en' ? gb_flag : sk_flag;
+  };
+
+  const handleLanguageChange = (lang) => {
+    setSelectedLanguage(lang);
+    i18n.changeLanguage(lang);
+    localStorage.setItem("language", lang); // Store user preference
   };
 
   const closeMenuModalShow = () => {
