@@ -18,7 +18,7 @@ router.post('/', auth, async(request, response) => {
 })
 
 // Route to get all certifications from DB
-router.get('/', auth, async (request, response) => {
+/*router.get('/', auth, async (request, response) => {
   try {
     const certifications = await Certification.find({});
     return response.status(201).send({
@@ -29,7 +29,27 @@ router.get('/', auth, async (request, response) => {
     console.log(error.message);
     response.status(500).send({ message: error.message });
   }
-});
+});*/
+
+// Route to get certifications for the logged-in user where status is not null
+router.get('/', auth, async(request, response) => {
+  try {
+    const userId = request.user.userId;
+    
+    const certifications = await Certification.find({
+      userId: userId,
+      status: { $ne: null}
+    }).populate('trail');
+    
+    return response.status(201).send({
+      count: certifications.length,
+      data: certifications
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+})
 
 // Route to get one certification from DB by ID
 router.get('/:id', auth, async (request, response) => {
