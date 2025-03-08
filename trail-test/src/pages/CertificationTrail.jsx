@@ -14,10 +14,12 @@ import TrueFalseComponent from '../../components/quiztypes/TrueFalseComponent';
 import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
 import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
+import NavbarExplorer from '../NavbarExplorer';
 
 // svg import
 import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
+import title_page_logo from '../../src/assets/title_page_logo.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -191,182 +193,196 @@ const CertificationTrail = () => {
   };
 
   return (
-    <div className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}>
-      <div className='col-3 pe-4'>
-        <Navbar />
-      </div>
-      <div className={`col-9 ps-4 pe-5 mt-5`}>
-        <div className={`${styles.white_bg} p-0`}>
-          <div className='mb-5'>
-            <TrailMap
-              points={trail?.points}
-              height='30rem'
-              editable={false}
-              useGPS={true}
-              onProximityTask={handleProximityTask}
-            />
-          </div>
-          <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('points_of_interest')}</p>
-          <div className={`col-12 p-4 pt-0`}>
-            <div className='d-flex flex-column w-100 p-2'>
-              {showSummary ? (
-                <>
-                <div className='d-flex'>
-                  <h2>{t('certification_results')}</h2>
-                  <ul>
-                    {trail.points.map((p, index) => (
-                      <li key={p._id} className='d-flex justify-content-between'>
-                        <span>{p.title}</span>
-                        <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  </div>
-                  <div className='p-2'>
-                  <p><strong>{t('total_score')}:</strong> {score} / {trail.points.length}</p>
-                  <p><strong>{t('status')}:</strong> {score >= trail.points.length * 0.7 ? t('passed') : t('failed')}</p>
-                </div>
-                </>
-              ) : (
-                <>
-                  <p className={`${styles.accordion_point_title} mb-2`}>{point?.title}</p>
-                  <div className='d-flex'>
-                    {point?.quiz ? (
-                      <>
-                        <div className='col-6 d-flex'>
-                          <div>
-                            <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' style={{ width: '1.3rem', height: '1.3rem' }} />
-                          </div>
-                          <p className={`${styles.accordion_point_question_type} m-0`}>
-                            {(() => {
-                              switch (point?.quiz?.type) {
-                                case 'short-answer': return (`${t('short_answer')}`);
-                                case 'single': return (`${t('sinlge')}`);
-                                case 'multiple': return (`${t('multiple')}`);
-                                case 'slider': return (`${t('slider')}`);
-                                case 'pairs': return (`${t('pairs')}`);
-                                case 'order': return (`${t('order')}`);
-                                case 'true-false': return (`${t('true_false')}`);
-                                default: return (<></>);
-                              }
-                            })()}
-                          </p>
-                        </div>
-                        <div className='col-6 d-flex'>
-                          <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
-                          <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : ` ${t('points').toLowerCase()}`}</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p className={`${styles.accordion_point_question_type} m-0`}>{t('certification_look')}</p>
-                      </>
-                    )}
-                  </div>
-                  <div className='p-2 pt-0'>
-                    <p className={`${styles.accordion_text_gray}`}>{point?.content}</p>
-                    {answeredQuestions.has(point?.quiz?._id) ? (
-                      <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                        <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>
-                          {t('already_answered')}
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        {point?.quiz ? (
-                          <>
-                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                              <p className={`${styles.accordion_text_gray} my-2`}>{point?.quiz.question}</p>
+    <>
+      <NavbarExplorer />
+      <div className={`${styles.show_trail_bg} py-3 px-0 offset-lg-2 col-lg-8`}>
+        <div className={`col-12 ps-4 pe-5 mt-5`}>
+          <div className={`${styles.white_bg} p-0`}>
+            <div className='mb-5'>
+              <TrailMap
+                points={trail?.points}
+                height='30rem'
+                editable={false}
+                useGPS={true}
+                onProximityTask={handleProximityTask}
+              />
+            </div>
+            <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('points_of_interest')}</p>
+            <div className={`col-12 p-4 pt-0`}>
+              <div className='d-flex flex-column w-100 p-2'>
+                {showSummary ? (
+                  <>
+                    <div className='d-flex'>
+                      <h2>{t('certification_results')}</h2>
+                      <ul>
+                        {trail.points.map((p, index) => (
+                          <li key={p._id} className='d-flex justify-content-between'>
+                            <span>{p.title}</span>
+                            <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className='p-2'>
+                      <p><strong>{t('total_score')}:</strong> {score} / {trail.points.length}</p>
+                      <p><strong>{t('status')}:</strong> {score >= trail.points.length * 0.7 ? t('passed') : t('failed')}</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className={`${styles.accordion_point_title} mb-2`}>{point?.title}</p>
+                    <div className='d-flex'>
+                      {point?.quiz ? (
+                        <>
+                          <div className='col-6 d-flex'>
+                            <div>
+                              <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' style={{ width: '1.3rem', height: '1.3rem' }} />
+                            </div>
+                            <p className={`${styles.accordion_point_question_type} m-0`}>
                               {(() => {
-                                switch (point?.quiz.type) {
-                                  case 'short-answer': return (
-                                    <>
-                                      <div className='my-1'>
-                                        <ShortAnswerComponent
-                                          value={tempAnswer || ''}
-                                          quizMode={true}
-                                          handleAnswer={(userAnswer) => { setTempAnswer(userAnswer); }}
-                                        />
-                                      </div>
-                                    </>);
-                                  case 'single':
-                                  case 'multiple': return (
-                                    <>
-                                      <ChoiceComponent
-                                        quizType={point?.quiz?.type}
-                                        answers={point?.quiz.answers}
-                                        quizMode={true}
-                                        handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
-                                      />
-                                    </>);
-                                  case 'slider': return (
-                                    <SliderComponent
-                                      correctValue={point?.quiz.answers[0].minValue}
-                                      minValue={point?.quiz.answers[0].minValue}
-                                      maxValue={point?.quiz.answers[0].maxValue}
-                                      setCorrectValue={correctValue => setTempAnswer(correctValue)}
-                                      quizMode={true}
-                                    />
-                                  );
-                                  case 'pairs': return (
-                                    <>
-                                      <PairsComponent
-                                        answers={point?.quiz.answers}
-                                        handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
-                                        handleRightSideQuizAnswer={(rightPair) => setRightPairAnswer(rightPair)}
-                                        quizMode={true}
-                                      />
-                                    </>);
-                                  case 'order': return (
-                                    <>
-                                      <OrderComponent
-                                        answers={point?.quiz.answers}
-                                        handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
-                                        quizMode={true}
-                                      />
-                                    </>);
-                                  case 'true-false': return (
-                                    <>
-                                      <TrueFalseComponent
-                                        quizMode={true}
-                                        value={tempAnswer}
-                                        answer={point?.quiz.answers[0]}
-                                        handleChangeAnswer={setTempAnswer}
-                                      />
-                                    </>);
+                                switch (point?.quiz?.type) {
+                                  case 'short-answer': return (`${t('short_answer')}`);
+                                  case 'single': return (`${t('sinlge')}`);
+                                  case 'multiple': return (`${t('multiple')}`);
+                                  case 'slider': return (`${t('slider')}`);
+                                  case 'pairs': return (`${t('pairs')}`);
+                                  case 'order': return (`${t('order')}`);
+                                  case 'true-false': return (`${t('true_false')}`);
                                   default: return (<></>);
                                 }
-
-                              }
-                              )()}
-                            </div>
-                            {showFeedback ? (
+                              })()}
+                            </p>
+                          </div>
+                          <div className='col-6 d-flex'>
+                            <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
+                            <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : ` ${t('points').toLowerCase()}`}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className={`${styles.accordion_point_question_type} m-0`}>{t('certification_look')}</p>
+                        </>
+                      )}
+                    </div>
+                    <div className='p-2 pt-0'>
+                      <p className={`${styles.accordion_text_gray}`}>{point?.content}</p>
+                      {answeredQuestions.has(point?.quiz?._id) ? (
+                        <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                          <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>
+                            {t('already_answered')}
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          {point?.quiz ? (
+                            <>
                               <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
-                                <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
-                                  <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
-                                </div>
-                                <div className={feedback !== point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
-                                  <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{feedback}</p>
-                                </div>
+                                <p className={`${styles.accordion_text_gray} my-2`}>{point?.quiz.question}</p>
+                                {(() => {
+                                  switch (point?.quiz.type) {
+                                    case 'short-answer': return (
+                                      <>
+                                        <div className='my-1'>
+                                          <ShortAnswerComponent
+                                            value={tempAnswer || ''}
+                                            quizMode={true}
+                                            handleAnswer={(userAnswer) => { setTempAnswer(userAnswer); }}
+                                          />
+                                        </div>
+                                      </>);
+                                    case 'single':
+                                    case 'multiple': return (
+                                      <>
+                                        <ChoiceComponent
+                                          quizType={point?.quiz?.type}
+                                          answers={point?.quiz.answers}
+                                          quizMode={true}
+                                          handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                                        />
+                                      </>);
+                                    case 'slider': return (
+                                      <SliderComponent
+                                        correctValue={point?.quiz.answers[0].minValue}
+                                        minValue={point?.quiz.answers[0].minValue}
+                                        maxValue={point?.quiz.answers[0].maxValue}
+                                        setCorrectValue={correctValue => setTempAnswer(correctValue)}
+                                        quizMode={true}
+                                      />
+                                    );
+                                    case 'pairs': return (
+                                      <>
+                                        <PairsComponent
+                                          answers={point?.quiz.answers}
+                                          handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                                          handleRightSideQuizAnswer={(rightPair) => setRightPairAnswer(rightPair)}
+                                          quizMode={true}
+                                        />
+                                      </>);
+                                    case 'order': return (
+                                      <>
+                                        <OrderComponent
+                                          answers={point?.quiz.answers}
+                                          handleQuizAnswer={(userAnswer) => setTempAnswer(userAnswer)}
+                                          quizMode={true}
+                                        />
+                                      </>);
+                                    case 'true-false': return (
+                                      <>
+                                        <TrueFalseComponent
+                                          quizMode={true}
+                                          value={tempAnswer}
+                                          answer={point?.quiz.answers[0]}
+                                          handleChangeAnswer={setTempAnswer}
+                                        />
+                                      </>);
+                                    default: return (<></>);
+                                  }
+
+                                }
+                                )()}
                               </div>
-                            ) : (
-                              <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>{t('submit_answer')}</button>
-                            )}                            
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
+                              {showFeedback ? (
+                                <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                                  <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
+                                  <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
+                                    <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
+                                  </div>
+                                  <div className={feedback !== point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
+                                    <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{feedback}</p>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>{t('submit_answer')}</button>
+                              )}
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      {/* Footer */}
+      <footer className={`bg-white px-0`}>
+        <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
+          <div className={`offset-lg-2`}>
+            <div className="d-flex">
+              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
+              <div className="col-lg-3 pe-5">
+                <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
+              </div>
+            </div>
+            <p className="mt-5 mb-0 text-white">© 2024 AVA Trail | {t("university_name")}</p>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 };
 
