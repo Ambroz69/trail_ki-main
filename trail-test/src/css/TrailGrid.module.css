@@ -40,6 +40,10 @@
   width: 100%;
 }
 
+.show_trail_bg {
+  background: #FAFBFF;
+}
+
 span.search_icon {
   background-color: #fff;
   color: #5E6B78;

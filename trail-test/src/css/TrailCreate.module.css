@@ -34,6 +34,10 @@
   font-weight: 800;
 }
 
+.show_trail_bg {
+  background: #FAFBFF;
+}
+
 input.form_input,
 select.form_input,
 textarea.form_input {
