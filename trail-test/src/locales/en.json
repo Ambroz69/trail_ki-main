@@ -268,5 +268,21 @@
   "explore_nav_about": "About",
   "explore_nav_community": "Community",
   "explore_nav_my_journey": "My Journey",
-  "explore_trail_list": "Discover New Trails and Adventures"
+  "explore_trail_list": "Discover New Trails and Adventures",
+  "explore_nav_certificates": "Certificates",
+  "explore_nav_hall_of_fame": "Hall of Fame",
+  "your_journey": "Your AVA Trail Journey",
+  "hall_of_fame": "Hall of Fame",
+  "celebrate_achievements": "Celebrate your achievments and see who made it to TOP 10!",
+  "leaderboard": "Leaderboard",
+  "keep_up_the_great_work": "Keep Up the Great Work!",
+  "prepare_for_certification": "Prepare for Certification",
+  "keep_making_progress": "Keep Making Progress",
+  "mission_accomplished": "Mission Accomplished",
+  "complete": "Complete",
+  "get_certificate": "Get Certificate",
+  "see_all_library": "See All in My Library",
+  "logout": "Logout",
+  "see_all_in_my_library": "See All in My Library",
+  "trail_upper": "TRAIL"
 }
