@@ -43,10 +43,10 @@ function Navbar() {
   const getUserRole = () => {
     try {
       const tokenPayload = JSON.parse(atob(token.split(".")[1]));
-      return tokenPayload?.userRole || "user";
+      return tokenPayload?.userRole || "explorer";
     } catch (error) {
       console.error("Error decoding token:", error);
-      return "user"; // Default role
+      return "explorer"; // Default role
     }
   };
 
