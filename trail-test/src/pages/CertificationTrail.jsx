@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
+import Button from 'react-bootstrap/Button';
 import styles from '../css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
@@ -38,6 +39,8 @@ const CertificationTrail = () => {
   const [showSummary, setShowSummary] = useState(false);
   const { id } = useParams();
   const { t } = useTranslation(); // Hook to access translations
+  const [certificationId, setCertificationId] = useState(null); // store id if exists
+  const [totalPoints, setTotalPoints] = useState(0);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -53,10 +56,41 @@ const CertificationTrail = () => {
     api(configuration)
       .then((response) => {
         setTrail(response.data);
+        setTotalPoints(response.data.points.reduce((sum, point) => sum + (point.quiz?.points || 0), 0));
       })
       .catch((error) => {
         console.log(error);
       });
+    
+    // check if a certification already exists for this user and trail
+    const configurationC = {
+      method: "get",
+      url: `${backendUrl}/certifications/user/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    
+    api(configurationC)
+      .then((response) => {
+        if(response.data) {
+          if(response.data.status === null) {
+            setCertificationId(response.data._id);
+            setUserAnswers(response.data.answers || []);
+            setScore(response.data.score || 0);
+            setAnsweredQuestions(new Set(response.data.answers.map(ans => ans.questionId)));
+          } else {
+            setCertificationId(null);
+            setUserAnswers([]);
+            setScore(0);
+            setAnsweredQuestions(new Set());
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("No existing certification found, starting new.");
+      })
   }, [id]);
 
   const toLetters = (num) => {
@@ -136,6 +170,7 @@ const CertificationTrail = () => {
     }
 
     // add users answer to state
+    const updatedAnswer = { questionId, providedAnswer: tempAnswer, isCorrect, };
     setUserAnswers((prev) => [
       ...prev,
       {
@@ -145,6 +180,7 @@ const CertificationTrail = () => {
       },
     ]);
     // update score
+    const newScore = isCorrect ? score + point.quiz.points : score;
     if (isCorrect) {
       setScore((prev) => prev + point.quiz.points);
       setFeedback(point.quiz.feedback.correct);
@@ -156,17 +192,63 @@ const CertificationTrail = () => {
       // save answered question in state
       setAnsweredQuestions((prev) => new Set(prev).add(questionId));
       setShowFeedback(false);
-      // check if user already has all questions answered
+      // check if user already has all questions answered, if not, save progress
       if (userAnswers.length + 1 === trail.points.length) {
         submitCertificationResults();
+      } else {
+        saveAnswerToDatabase(updatedAnswer, newScore);
       }
     }, 1000); // 10 seconds
+  };
+
+  const saveAnswerToDatabase = async (updatedAnswer, newScore) => {
+    const certificationData = {
+      userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
+      trail: id,
+      score: newScore,
+      status: null,
+      answers: [...userAnswers, updatedAnswer],
+    };
+
+    try {
+      if (certificationId) {
+        const configuration = {
+          method: "put",
+          url: `${backendUrl}/certifications/${certificationId}`,
+          data: certificationData,
+          headers: { Authorization: `Bearer ${token}` },
+        };
+
+        api(configuration)
+          .then()
+          .catch((error) => {
+            console.error("Error saving answer:", error);
+          });
+      } else {
+        const configuration = {
+          method: "post",
+          url: `${backendUrl}/certifications`,
+          data: certificationData,
+          headers: { Authorization: `Bearer ${token}` },
+        };
+
+        api(configuration)
+          .then((response) => {
+            setCertificationId(response.data._id);
+          })
+          .catch((error) => {
+            console.error("Error saving answer:", error);
+          });
+      }
+    } catch (error) {
+      console.error("Error saving answer:", error);
+    }
   };
 
   const submitCertificationResults = () => {
     const totalQuestions = trail.points.length;
     const correctAnswers = userAnswers.filter((answer) => answer.isCorrect).length;
-    const status = correctAnswers >= totalQuestions * 0.7 ? 'Passed' : 'Failed' // 70% treba zmenit na body :D
+    const status = score >= totalPoints * 0.7 ? 'Passed' : 'Failed';
 
     const certificationData = {
       userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
@@ -223,9 +305,14 @@ const CertificationTrail = () => {
                         ))}
                       </ul>
                     </div>
-                    <div className='p-2'>
-                      <p><strong>{t('total_score')}:</strong> {score} / {trail.points.length}</p>
-                      <p><strong>{t('status')}:</strong> {score >= trail.points.length * 0.7 ? t('passed') : t('failed')}</p>
+                    <div className='d-flex'>
+                      <div className='col-9 p-2'>
+                        <p><strong>{t('total_score')}:</strong> {score} / {totalPoints}</p>
+                        <p><strong>{t('status')}:</strong> {score >= totalPoints * 0.7 ? t('passed') : t('failed')}</p>
+                      </div>
+                      <div className='p-2'>
+                        <Button variant="outline-dark">{t("get_certificate")}</Button>
+                      </div>
                     </div>
                   </>
                 ) : (

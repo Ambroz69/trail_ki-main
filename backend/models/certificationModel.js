@@ -36,8 +36,8 @@ const certificationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Passed', 'Failed'],
-    required: true,
+    enum: ['Passed', 'Failed', null],
+    default: null,
   },
   answers: [answerSchema],
 });
