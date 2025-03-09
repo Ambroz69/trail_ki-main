@@ -143,7 +143,7 @@ const ExplorerJourney = () => {
                 <h6 className="text-uppercase text-muted fw-bold mb-1">{t("practice")}</h6>
                 <p className="mb-0 text-dark">{t("practice_text")}</p>
               </div>
-              <span className="text-muted fs-4">➝</span> {/* Arrow icon */}
+              <span className="text-muted fs-4"><a href={`${basePath}/practice`}>➝</a></span> {/* Arrow icon */}
             </div>
           </div>
         </div>
