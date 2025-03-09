@@ -97,7 +97,7 @@ const ExplorerJourney = () => {
               </h5>
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <p>{t("celebrate_achievements")}</p>
-                <Button variant="danger">{t("leaderboard")}</Button>
+                <Button variant="danger" href={`${basePath}/leaderboard`}>{t("leaderboard")}</Button>
               </div>
             </div>
           </div>

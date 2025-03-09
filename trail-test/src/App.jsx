@@ -16,6 +16,7 @@ import HomeUser from './pages/HomeUser';
 import TitlePage from './pages/TitlePage';
 import ShowTrailUser from './pages/ShowTrailUser';
 import ExplorerJourney from './pages/ExplorerJourney';
+import Leaderboard from './pages/Leaderboard';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
         <Route path='trails/certification/:id' element={<CertificationTrail />} />
         <Route path='profile' element={<UserProfile />} />
         <Route path='journey' element={<ExplorerJourney />} />
+        <Route path='leaderboard' element={<Leaderboard />} />
       </Route>
 
       {/* Trail Creator Routes */}
