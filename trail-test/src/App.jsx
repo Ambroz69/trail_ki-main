@@ -17,6 +17,7 @@ import TitlePage from './pages/TitlePage';
 import ShowTrailUser from './pages/ShowTrailUser';
 import ExplorerJourney from './pages/ExplorerJourney';
 import Leaderboard from './pages/Leaderboard';
+import Practice from './pages/Practice';
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
         <Route path='profile' element={<UserProfile />} />
         <Route path='journey' element={<ExplorerJourney />} />
         <Route path='leaderboard' element={<Leaderboard />} />
+        <Route path='practice' element={<Practice />} />
       </Route>
 
       {/* Trail Creator Routes */}
