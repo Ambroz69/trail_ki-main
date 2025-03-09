@@ -15,15 +15,13 @@ import sort_button from '../assets/sort_button.svg';
 import explore_page_logo from '../../src/assets/explore_page_logo.svg';
 import sk_flag from '../assets/flag-sk.svg';
 import gb_flag from '../assets/flag-gb.svg';
-import hamburger from '../../src/assets/hamburger.svg';
-import ava2 from '../../src/assets/ava2.png';
-import ava2m from '../../src/assets/ava2m.png';
 import profile_photo_placeholder from '../../src/assets/profile_photo_placeholder.svg';
 import trail_card_icon from '../../src/assets/trail_card_icon.svg';
 import trail_card_time from '../../src/assets/trail_card_time.svg';
 import trail_card_location from '../../src/assets/trail_card_location.svg';
 import trail_card_arrow_right from '../../src/assets/trail_card_arrow_right.svg';
 import title_page_logo from '../../src/assets/title_page_logo.svg';
+import svabatar from '../../src/assets/svabatar.png';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -138,11 +136,11 @@ const HomeUser = () => {
           </div>
           <div className={`${styles.div_ava_parent} col-6 d-none d-lg-block`}>
             <div className={`${styles.div_ava}`}>
-              <img src={ava2} alt="ava2" className='' />
+              <img src={svabatar} alt="svabatar" className='' />
             </div>
           </div>
           <div className={`col-6 d-block d-lg-none`}>
-            <img src={ava2m} alt="ava2m" className='w-100' />
+            <img src={svabatar} alt="svabatar" className='w-100' />
           </div>
         </div>
       </section>
@@ -269,7 +267,7 @@ const HomeUser = () => {
         <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
           <div className={`offset-lg-2`}>
             <div className="d-flex">
-              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
+              <img src={title_page_logo} alt="title_page_logo" className='ps-2' width={110} />
               <div className="col-lg-3 pe-5">
                 <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
               </div>

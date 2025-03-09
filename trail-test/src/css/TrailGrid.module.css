@@ -101,7 +101,7 @@ button.dropdown_toggle_sort::after {
 }
 
 .section_ava_bg {
-  background-image: linear-gradient(to right, #A089B9, #80D0C7, #416A65);
+  background-color: #416A65;
   height: 25rem;
 }
 
@@ -115,7 +115,7 @@ button.dropdown_toggle_sort::after {
 .div_ava {
   position: absolute;
   width: 100%;
-  top: -11rem;
+  top: -6rem;
   left: 5rem;
 }
 
@@ -250,7 +250,6 @@ button.trail_card_button_start:visited {
 
 @media (max-width: 767.98px) {
   .section_ava_bg {
-    background-image: linear-gradient(to right, #A089B9, #80D0C7, #416A65);
     height: 20rem;
   }
 }

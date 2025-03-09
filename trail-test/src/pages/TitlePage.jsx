@@ -10,9 +10,9 @@ import Hamburger from '../../components/Hamburger';
 import i18n from '../i18n'; // Import i18n config
 
 //svg+png import
-import title_page_logo from '../../src/assets/title_page_logo.svg';
+import avatar_white from '../../src/assets/avatar_white.png';
 import desc_bullet_point from '../../src/assets/desc_bullet_point.svg';
-import ava from '../../src/assets/ava.png';
+import svabatar from '../../src/assets/svabatar.png';
 import title_page_boxes_left from '../../src/assets/title_page_boxes_left.svg';
 import title_page_boxes_right from '../../src/assets/title_page_boxes_right.svg';
 import title_page_progress_1 from '../../src/assets/title_page_progress_1.svg';
@@ -58,13 +58,13 @@ const TitlePage = () => {
   };
 
   return (
-    <div className="bg-[#416A65] text-white pt-lg-5 px-lg-0">
+    <div className="bg-[#416A65] text-white pt-lg-4 px-lg-0">
       {/* Navbar */}
       <nav className="d-flex justify-content-between mt-lg-1 pt-3 px-3 p-lg-0 bg-transparent offset-lg-2 col-lg-8">
         <div className="">
-          <img src={title_page_logo} alt="title_page_logo" className='ps-lg-2' />
+          <img src={avatar_white} alt="avatar_white" className='' width={110} />
         </div>
-        <div className="d-flex align-items-start space-x-3">
+        <div className="d-flex align-items-start space-x-3 pt-2">
           {/* Language Dropdown */}
           <Dropdown className="bg-[#416A65]">
             <Dropdown.Toggle variant="" size="sm" className="d-flex align-items-center text-white pt-2">
@@ -106,8 +106,8 @@ const TitlePage = () => {
             </div>
           </div>
           <div className="d-none d-lg-block col-lg-6">
-            <div className="rounded-full h-80 mx-auto ps-5">
-              <img src={ava} alt="ava" className='pe-2 pt-2' width={410} />
+            <div className="rounded-full h-80 mx-auto ps-5 pt-5">
+              <img src={svabatar} alt="svabatar" className='pe-2 pt-5' width={410} />
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ const TitlePage = () => {
 
       {/* Trusted By Section */}
       <section className={`${styles.trusted_by_section} text-center px-lg-0 px-4 py-lg-5 pt-5 pb-3`}>
-        <h1 className="fs-5 fs-lg-1 pb-4">{t("trusted_by")}</h1>
+        <h1 className="fs-3 fs-lg-1 pb-4">{t("trusted_by")}</h1>
         {/* DESKTOP */}
         <div className="d-none d-lg-flex offset-lg-3 col-12 col-lg-6 flex-column flex-lg-row justify-content-between">
           <img src={title_page_trusted_by_logo_1} alt="title_page_trusted_by_logo_1" className='' />
@@ -258,12 +258,12 @@ const TitlePage = () => {
         <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
           <div className={`offset-lg-2`}>
             <div className="d-flex">
-              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
+              <img src={avatar_white} alt="avatar_white" className='ps-2' width={110} />
               <div className="col-lg-3 pe-5">
                 <p className={`${styles.footer_text} pt-3 ps-4`}>{t("footer_description")}</p>
               </div>
             </div>
-            <p className="mt-5 mb-0">© 2024 AVA Trail | {t("university_name")}</p>
+            <p className="mt-5 mb-0">© 2024 AVAtar | {t("university_name")}</p>
           </div>
         </div>
       </footer>

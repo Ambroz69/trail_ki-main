@@ -3,7 +3,7 @@ import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../css/Main.module.css';
-import logo from "../assets/logo.svg";
+import logo from "../assets/avatar_color.png";
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
@@ -79,9 +79,9 @@ function ResetPassword() {
           </div>
         </Col>
       </Row>
-      <Row className={`${styles.footer_width}`}>
-        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`}/>
-      </Row>
+      {/*<Row className={`${styles.footer_width}`}>
+        <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`} />
+      </Row>*/}
     </Container>
   )
 }

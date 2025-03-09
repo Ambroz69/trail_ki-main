@@ -13,6 +13,7 @@ import hamburger from '../src/assets/hamburger.svg';
 import profile_photo_placeholder from '../src/assets/profile_photo_placeholder.svg';
 import sk_flag from './assets/flag-sk.svg';
 import gb_flag from './assets/flag-gb.svg';
+import avatar_white from '../src/assets/avatar_white.png';
 
 const cookies = new Cookies();
 //const token = cookies.get("SESSION_TOKEN");
@@ -83,7 +84,7 @@ function NavbarExplorer() {
       <div className='bg-[#416A65] px-0 py-3 py-lg-0'>
         <nav className="d-flex justify-content-between align-items-center px-3 px-lg-0 py-lg-0 offset-lg-2 col-lg-8">
           <div className="py-0 py-lg-3">
-            <img src={explore_page_logo} alt="explore_page_logo" className='' />
+            <img src={avatar_white} alt="avatar_white" className='' width={80} />
           </div>
           <div className="d-flex align-items-center">
             {/* Language Dropdown */}

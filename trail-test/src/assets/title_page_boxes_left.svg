@@ -3,18 +3,18 @@
     <path d="M0 23.3906H293.109V80.2656H0V23.3906Z" fill="white" />
   </mask>
   <g mask="url(#mask0_0_1)">
-    <path d="M0 23.3906H293.036V80.2656H0V23.3906Z" fill="#8264A3" />
+    <path d="M0 23.3906H293.036V80.2656H0V23.3906Z" fill="#9465A9" />
   </g>
   <mask id="mask1_0_1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="81" y="0" width="276" height="58">
     <path d="M81.3438 0H356.943V57.1875H81.3438V0Z" fill="white" />
   </mask>
   <g mask="url(#mask1_0_1)">
-    <path d="M81.3438 0H357.01V57.1875H81.3438V0Z" fill="#57BACD" />
+    <path d="M81.3438 0H357.01V57.1875H81.3438V0Z" fill="#4783B5" />
   </g>
   <mask id="mask2_0_1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="81" y="30" width="213" height="28">
-    <path d="M81.3438 30.5209H293.109V57.1875H81.3438V30.5209Z" fill="white" />
+    <path d="M81.3438 30.521H293.109V57.1877H81.3438V30.521Z" fill="white" />
   </mask>
   <g mask="url(#mask2_0_1)">
-    <path d="M81.3438 30.5209H293.109V57.1875H81.3438V30.5209Z" fill="#80D0C7" />
+    <path d="M81.3438 30.521H293.109V57.1877H81.3438V30.521Z" fill="#67C4A7" />
   </g>
 </svg>
