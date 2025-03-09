@@ -17,9 +17,9 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ExplorerJourney = () => {
   const [certifications, setCertifications] = useState([]);
+  const [inProgressCertifications, setInProgressCertifications] = useState([]);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook for translations
-  const [progress, setProgress] = useState(58);
 
   // Dummy certificates data
   const dummyCertificates = [
@@ -56,7 +56,19 @@ const ExplorerJourney = () => {
 
     api(configuration)
       .then((response) => {
-        setCertifications(response.data.data);
+        const allCertifications = response.data.data;
+        const completedCertifications = allCertifications
+          .filter(cert => cert.status === "Passed")
+          .reduce((unique, cert) => {
+            const existing = unique.find(item => item.trail._id === cert.trail._id);
+            if (!existing || cert.score > existing.score) {
+              return unique.filter(item => item.trail._id !== cert.trail._id).concat(cert);
+            }
+            return unique;
+          }, []);
+        const inProgress = allCertifications.filter(cert => cert.status === null); // filter certifications in progress
+        setCertifications(completedCertifications);
+        setInProgressCertifications(inProgress);
       })
       .catch((error) => {
         setAlert({ message: `${t('error_trail')}`, type: 'error' });
@@ -145,19 +157,25 @@ const ExplorerJourney = () => {
           <div>
             <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
           </div>
-          {(certifications.length > 0 ? certifications : dummyProgress).map((certificate) => (
+          {(inProgressCertifications.length > 0 ? inProgressCertifications : dummyProgress).map((certificate) => {
+            const totalQuest = certificate?.trail?.points?.length || 1; 
+            const answeredQuest = certificate?.answers?.length;
+            const progress = Math.round((answeredQuest / totalQuest) * 100);
+            return (
             <>
               <div className='d-flex mt-3'>
                 <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
-                <h2 className={`${styles.trail_heading} ms-2`}>{certifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
+                <h2 className={`${styles.trail_heading} ms-2`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
               </div>
               <p><strong>{t("overall_progress")}</strong></p>
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <ProgressBar now={progress} label={`${progress}%`} className="col-md-8 mb-3" />
-                <Button variant="danger">{t("keep_making_progress")}</Button>
+                <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-md-8 mb-3" />
+                <Button variant="danger" href={`${basePath}/trails/certification/${certificate?.trail?._id}`}>
+                  {t("keep_making_progress")}
+                </Button>
               </div>
             </>
-          ))}
+          )})}
         </div>
 
         {/* Completed Trails & Certificates */}
