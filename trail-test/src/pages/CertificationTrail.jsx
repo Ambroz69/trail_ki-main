@@ -329,7 +329,7 @@ const CertificationTrail = () => {
                               {(() => {
                                 switch (point?.quiz?.type) {
                                   case 'short-answer': return (`${t('short_answer')}`);
-                                  case 'single': return (`${t('sinlge')}`);
+                                  case 'single': return (`${t('single')}`);
                                   case 'multiple': return (`${t('multiple')}`);
                                   case 'slider': return (`${t('slider')}`);
                                   case 'pairs': return (`${t('pairs')}`);
