@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import styles from '../src/css/Hamburger.module.css';
 
 import hamburger_close from '../src/assets/hamburger_close.svg';
-import hamburger_logo from '../src/assets/hamburger_logo.svg';
+import hamburger_logo from '../src/assets/avatar_color.png';
 import hamburger_logout from '../src/assets/hamburger_logout.svg';
 
 function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
@@ -22,7 +22,7 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
     >
       <Modal.Body className={`d-flex flex-column`}>
         <div className='d-flex justify-content-between p-3'>
-          <img src={hamburger_logo} alt="hamburger_logo" className='' />
+          <img src={hamburger_logo} alt="hamburger_logo" className='' width={100} />
           <button className={`${styles.hamburger_close_button} px-3 py-0`} onClick={closeMenuModalShow}>
             <img src={hamburger_close} alt="hamburger_close" className='' />
           </button>

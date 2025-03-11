@@ -35,48 +35,64 @@ const Leaderboard = () => {
     <div className='row d-flex mx-0 px-0'>
       {/* Navbar */}
       <NavbarExplorer />
-      <div className={`${styles.show_trail_bg} py-3 px-0 offset-lg-2 col-lg-8`}>
-        <h2 className="mb-4">Leaderboard</h2>
-        <div className={`card ${styles.leaderboardCard}`}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>XP</th>
-              </tr >
-            </thead >
-            <tbody>
-              {dummyLeaderboard.map((user, index) => (
-                <tr key={index}>
-                  <td>
-                    {user.rank}
-                  </td>
-                  <td className="d-flex align-items-center">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center me-3 bg-dark"
-                      style={{ width: "25px", height: "25px" }}> 
-                      {/* Placeholder for icon */}
-                    </div>
-                    <span className="ms-2">{user.name}</span>
-                  </td>
-                  <td>{user.xp} XP</td>
-                </tr>
-              ))}
-            </tbody>
-          </table >
+      <div className={`${styles.show_trail_bg}`}>
+        <div className={`py-4 px-0 offset-lg-2 col-lg-8`}>
+          <h2 className="fs-4 pb-3">Leaderboard</h2>
+          <div className={`${styles.leaderboard_card}`}>
+            <table className="table table-borderless">
+              <thead>
+                <tr className={`${styles.leaderboard_header}`}>
+                  <th className='col-2 ps-4'>RANK</th>
+                  <th className='col-8'>NAME</th>
+                  <th className='col-2 text-end pe-5'>XP</th>
+                </tr >
+              </thead>
+              <tbody className='align-middle'>
+                {dummyLeaderboard.map((user, index) => {
+                  let rowClass;
+                  if (index === 0) {
+                    rowClass = `${styles.leaderboard_first}`;
+                  } else if (index === 1) {
+                    rowClass = `${styles.leaderboard_second}`;
+                  } else if (index === 2) {
+                    rowClass = `${styles.leaderboard_third}`;
+                  } else if (index === 6){
+                    rowClass = `${styles.leaderboard_highlighted}`;
+                  } else {
+                    rowClass = `${styles.leaderboard_data_row}`;
+                  }
+                  return (
+                    <tr key={index} className={rowClass}>
+                      <td className={`${styles.leaderboard_data} ${styles.leaderboard_data_rank} ps-5`}>
+                        {user.rank}
+                      </td>
+                      <td className={`${styles.leaderboard_data} d-flex align-items-center`}>
+                        <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                          style={{ width: "40px", height: "40px", backgroundColor: "#7FCEC6" }}>
+                          {/* Placeholder for icon */}
+                        </div>
+                        <span className="ms-2">{user.name}</span>
+                      </td>
+                      <td className={`${styles.leaderboard_data} ${styles.leaderboard_data_xp}`}>{user.xp} XP</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table >
+          </div >
         </div >
-      </div >
+      </div>
       {/* Footer */}
       <footer className={`bg-white px-0`}>
         <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
           <div className={`offset-lg-2`}>
             <div className="d-flex">
-              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
+              <img src={title_page_logo} alt="title_page_logo" className='ps-2' width={110} />
               <div className="col-lg-3 pe-5">
                 <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
               </div>
             </div>
-            <p className="mt-5 mb-0 text-white">© 2024 AVA Trail | {t("university_name")}</p>
+            <p className="mt-5 mb-0 text-white">© 2024 AVAtar | {t("university_name")}</p>
           </div>
         </div>
       </footer>

@@ -10,6 +10,17 @@ import NavbarExplorer from '../NavbarExplorer';
 // SVG imports
 import title_page_logo from '../../src/assets/title_page_logo.svg';
 import trail_prepare_certification from '../../src/assets/trail_prepare_certification.svg';
+import my_journey_apply from '../../src/assets/my_journey_apply.svg';
+import my_journey_arrow from '../../src/assets/my_journey_arrow.svg';
+import my_journey_ava_trail from '../../src/assets/my_journey_ava_trail.svg';
+import my_journey_complete from '../../src/assets/my_journey_complete.svg';
+import my_journey_hall_of_fame from '../../src/assets/my_journey_hall_of_fame.svg';
+import my_journey_keep_up from '../../src/assets/my_journey_keep_up.svg';
+import my_journey_mission from '../../src/assets/my_journey_mission.svg';
+import my_journey_practice from '../../src/assets/my_journey_practice.svg';
+import my_journey_rating from '../../src/assets/my_journey_rating.svg';
+import my_journey_trail_star from '../../src/assets/my_journey_trail_star.svg';
+import my_journey_certification from '../../src/assets/my_journey_certification.png';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -80,143 +91,198 @@ const ExplorerJourney = () => {
     <div className='row d-flex mx-0 px-0'>
       {/* Navbar */}
       <NavbarExplorer />
-
-      <div className={`${styles.show_trail_bg} py-3 px-0 offset-lg-2 col-lg-8`}>
-        <h2 className="mb-4">
-          <span className="me-2"></span> {/* Placeholder for your journey icon */}
-          {t("your_journey")}
-        </h2>
-
-        {/* Trail Journey Highlights */}
-        <div className="row mb-4">
-          <div className="col-md-12">
-            <div className="card p-3">
-              <h5>
-                <span className="me-2"></span> {/* Placeholder for hall of fame icon */}
+      <div className={`${styles.show_trail_bg} py-4 px-0`}>
+        <div className={`offset-lg-2 col-lg-8 px-3 px-lg-0`}>
+          <h2 className="d-flex flex-row fs-5 pb-2">
+            <img src={my_journey_ava_trail} alt="my_journey_ava_trail" className='me-3' width={16}></img>
+            {t("your_journey")}
+          </h2>
+          {/* Trail Journey Highlights */}
+          <div className={`${styles.my_journey_card} card d-none d-lg-flex flex-row p-4 mb-3`}>
+            <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+              style={{ minWidth: "50px", height: "50px", backgroundColor: "#00A6CF" }}>
+              <img className="text-white fs-5" src={my_journey_hall_of_fame} placeholder="my_journey_hall_of_fame"></img>
+            </div>
+            <div className='d-flex flex-column justify-content-center'>
+              <h5 className={`${styles.my_journey_header_text}`}>
                 {t("hall_of_fame")}
               </h5>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <p>{t("celebrate_achievements")}</p>
-                <Button variant="danger" href={`${basePath}/leaderboard`}>{t("leaderboard")}</Button>
-              </div>
+              <p className={`${styles.my_journey_body_text} m-0`}>{t("celebrate_achievements")}</p>
+            </div>
+            <div className='ms-auto d-flex align-items-center'>
+              <Button className={`${styles.my_journey_button} align-self-center px-5 py-2`} href={`${basePath}/leaderboard`}>{t("leaderboard")}</Button>
             </div>
           </div>
-        </div>
+          {/* Trail Journey Highlights  MOBILE */}
+          <div className={`${styles.my_journey_card} card d-flex d-lg-none p-3 mb-3`}>
+            <div className='d-flex flex-row'>
+              <div className="rounded-circle d-flex align-items-center justify-content-center me-4 align-self-center"
+                style={{ minWidth: "50px", height: "50px", backgroundColor: "#00A6CF" }}>
+                <img className="text-white fs-5" src={my_journey_hall_of_fame} placeholder="my_journey_hall_of_fame"></img>
+              </div>
+              <div>
+                <h5 className={`${styles.my_journey_header_text}`}>
+                  {t("hall_of_fame")}
+                </h5>
+                <p className={`${styles.my_journey_body_text} m-0`}>{t("celebrate_achievements")}</p>
+              </div>
+            </div>
+            <div className='d-flex'>
+              <Button className={`${styles.my_journey_button} flex-fill py-1 mt-3`} href={`${basePath}/leaderboard`}>{t("leaderboard")}</Button>
+            </div>
+          </div>
 
-        <div className="row mb-12 d-flex flex-column flex-lg-row justify-content-between align-items-center">
-          {/* Rating Card */}
-          <div className="col-md-4">
-            <div className="card p-3 mb-3 d-flex flex-row align-items-center shadow-sm">
-              <div className="rounded-circle d-flex align-items-center justify-content-center me-3 bg-dark"
-                style={{ width: "50px", height: "50px" }}>
-                <span className="text-white fs-5">:)</span> {/* Placeholder for icon */}
+          <div className="d-flex flex-column flex-lg-row gap-3 mb-4">
+            {/* Rating Card */}
+            <Button className={`${styles.my_journey_card_button} flex-fill card p-0 m-0`} href={`#`}>
+              <div className={`${styles.my_journey_card} d-flex flex-row p-3 p-lg-4 pe-2`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#9465A9" }}>
+                  <img className="text-white fs-5" src={my_journey_rating} placeholder="my_journey_rating"></img>
+                </div>
+                <div className='d-flex flex-column justify-content-center'>
+                  <h5 className={`${styles.my_journey_header_text} mb-1 text-start`}>{t("rating")}</h5>
+                  <p className={`${styles.my_journey_body_text} m-0`}>{t("review_trail_highlights")}</p>
+                </div>
+                <div className='ms-auto d-flex align-items-center'>
+                  <img className="text-white fs-5" src={my_journey_arrow} placeholder="my_journey_arrow" width={32}></img>
+                </div>
               </div>
-              <div className="flex-grow-1">
-                <h6 className="text-uppercase text-muted fw-bold mb-1">{t("rating")}</h6>
-                <p className="mb-0 text-dark">{t("review_trail_highlights")}</p>
-              </div>
-              <span className="text-muted fs-4">➝</span> {/* Arrow icon */}
-            </div>
-          </div>
-          {/* Apply Card */}
-          <div className="col-md-4">
-            <div className="card p-3 mb-3 d-flex flex-row align-items-center shadow-sm">
-              <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                style={{ width: "50px", height: "50px", backgroundColor: "#26A69A" }}>
-                <span className="text-white fs-5">:)</span> {/* Placeholder for icon */}
-              </div>
-              <div className="flex-grow-1">
-                <h6 className="text-uppercase text-muted fw-bold mb-1">{t("apply")}</h6>
-                <p className="mb-0 text-dark">{t("apply_text")}</p>
-              </div>
-              <span className="text-muted fs-4">➝</span> {/* Arrow icon */}
-            </div>
-          </div>
-          {/* Practice Card */}
-          <div className="col-md-4">
-            <div className="card p-3 mb-3 d-flex flex-row align-items-center shadow-sm">
-              <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                style={{ width: "50px", height: "50px", backgroundColor: "#1E88E5" }}>
-                <span className="text-white fs-5">:(</span> {/* Placeholder for icon */}
-              </div>
-              <div className="flex-grow-1">
-                <h6 className="text-uppercase text-muted fw-bold mb-1">{t("practice")}</h6>
-                <p className="mb-0 text-dark">{t("practice_text")}</p>
-              </div>
-              <span className="text-muted fs-4"><a href={`${basePath}/practice`}>➝</a></span> {/* Arrow icon */}
-            </div>
-          </div>
-        </div>
+            </Button>
 
-        {/* Current Certification Progress - musím opraviť certifikáciu, aby som robil medziprogress, zatiaľ dummyMe */}
-        <h3>
-          <span className="me-2"></span> {/* Placeholder for certification progress icon */}
-          {t("keep_up_the_great_work")}
-        </h3>
-        <div className="card p-3 mb-4">
-          <div>
-            <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
+            {/* Apply Card */}
+            <Button className={`${styles.my_journey_card_button} flex-fill card p-0 m-0`} href={`#`}>
+              <div className={`${styles.my_journey_card} d-flex flex-row p-3 p-lg-4 pe-2`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#67C4A7" }}>
+                  <img className="text-white fs-5" src={my_journey_apply} placeholder="my_journey_apply"></img>
+                </div>
+                <div className='d-flex flex-column justify-content-center'>
+                  <h5 className={`${styles.my_journey_header_text} mb-1 text-start`}>{t("apply")}</h5>
+                  <p className={`${styles.my_journey_body_text} m-0`}>{t("apply_text")}</p>
+                </div>
+                <div className='ms-auto d-flex align-items-center'>
+                  <img className="text-white fs-5" src={my_journey_arrow} placeholder="my_journey_arrow" width={32}></img>
+                </div>
+              </div>
+            </Button>
+            {/* Practice Card */}
+            <Button className={`${styles.my_journey_card_button} flex-fill card p-0 m-0`} href={`${basePath}/practice`}>
+              <div className={`${styles.my_journey_card} d-flex flex-row p-3 p-lg-4 pe-2`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#4783B5" }}>
+                  <img className="text-white fs-5" src={my_journey_practice} placeholder="my_journey_practice"></img>
+                </div>
+                <div className='d-flex flex-column justify-content-center'>
+                  <h5 className={`${styles.my_journey_header_text} mb-1 text-start`}>{t("practice")}</h5>
+                  <p className={`${styles.my_journey_body_text} m-0`}>{t("practice_text")}</p>
+                </div>
+                <div className='ms-auto d-flex align-items-center'>
+                  <img className="text-white fs-5" src={my_journey_arrow} placeholder="my_journey_arrow" width={32}></img>
+                </div>
+              </div>
+            </Button>
           </div>
-          {(inProgressCertifications.length > 0 ? inProgressCertifications : dummyProgress).map((certificate) => {
-            const totalQuest = certificate?.trail?.points?.length || 1; 
-            const answeredQuest = certificate?.answers?.length;
-            const progress = Math.round((answeredQuest / totalQuest) * 100);
-            return (
-            <>
-              <div className='d-flex mt-3'>
-                <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
-                <h2 className={`${styles.trail_heading} ms-2`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
-              </div>
-              <p><strong>{t("overall_progress")}</strong></p>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-md-8 mb-3" />
-                <Button variant="danger" href={`${basePath}/trails/certification/${certificate?.trail?._id}`}>
-                  {t("keep_making_progress")}
-                </Button>
-              </div>
-            </>
-          )})}
-        </div>
+          {/* Current Certification Progress - musím opraviť certifikáciu, aby som robil medziprogress, zatiaľ dummyMe */}
+          <h2 className="d-flex flex-row fs-5 pb-2">
+            <img src={my_journey_keep_up} alt="my_journey_keep_up" className='me-3' width={16}></img>
+            {t("keep_up_the_great_work")}
+          </h2>
+          <div className={`${styles.my_journey_card} card d-flex p-3 ps-lg-5 pe-lg-4 py-lg-4 mb-4`}>
+            <div>
+              <img src={my_journey_certification} alt="my_journey_certification" className='' />
+            </div>
+            {(inProgressCertifications.length > 0 ? inProgressCertifications : dummyProgress).map((certificate) => {
+              const totalQuest = certificate?.trail?.points?.length || 1;
+              const answeredQuest = certificate?.answers?.length;
+              const progress = Math.round((answeredQuest / totalQuest) * 100);
+              return (
+                <>
+                  <div className='d-flex my-3 mb-lg-4 '>
+                    <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
+                    <h2 className={`${styles.trail_heading} font-bold ps-2 col-lg-8 align-self-center`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
+                  </div>
+                  <p className='mb-1 font-bold'>{t("overall_progress")}</p>
+                  <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start mb-2">
+                    <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-12 col-lg-8 mb-3 m-lg-0" />
+                    <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/trails/certification/${certificate?.trail?._id}`}>
+                      {t("keep_making_progress")}
+                    </Button>
+                  </div>
+                </>
+              )
+            })}
+          </div>
 
-        {/* Completed Trails & Certificates */}
-        <h4 className="d-flex align-items-center">
-          <span className="me-2"></span> {/* Placeholder for mission accomplished icon */}
-          {t("mission_accomplished")}
-          <a href="#" className="ms-auto text-primary text-decoration-none text-sm">
-            {t("see_all_in_my_library")}
-          </a>
-        </h4>
-        <div className="card p-3">
-          {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
-            <div key={certificate.id} className="d-flex justify-content-between align-items-center mb-2">
-              <div className="d-flex align-items-center">
-                <div className="rounded-circle bg-dark d-flex align-items-center justify-content-center me-3"
-                  style={{ width: "40px", height: "40px" }}>
-                  {/* Placeholder for icon */}
+          {/* Completed Trails & Certificates */}
+          <h2 className="d-flex flex-row fs-5 pb-2">
+            <img src={my_journey_mission} alt="my_journey_mission" className='me-3' width={16}></img>
+            {t("mission_accomplished")}
+            <a href="#" className={`${styles.my_journey_library_link} ms-auto me-lg-4`}>
+              {t("see_all_in_my_library")}
+            </a>
+          </h2>
+          {/* Certificates */}
+          <div className='d-none d-lg-block'>
+            {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
+              <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
+                  <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
                 </div>
                 <div>
-                  <span className="text-sm">{t("trail_upper")}</span>
-                  <h5>{certifications.length > 0 ? certificate.trail.name : certificate.name}</h5>
-                  <span className="text-success">✔ {t("complete")}</span>
+                  <h5 className={`${styles.my_journey_header_text} mb-0`}>
+                    {t("trail_upper")}
+                  </h5>
+                  <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
+                  <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
+                    <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
+                  </h5>
+                </div>
+                <div className='ms-auto d-flex align-items-center'>
+                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} href="#">{t("get_certificate")}</Button>
                 </div>
               </div>
-              <Button variant="outline-dark">{t("get_certificate")}</Button>
-            </div>
-          ))}
+            ))}
+          </div>
+          {/* Certificates MOBILE */}
+          <div className='d-block d-lg-none'>
+            {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
+              <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
+                <div className='d-flex flex-row mb-3'>
+                  <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
+                    style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
+                    <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
+                  </div>
+                  <div>
+                    <h5 className={`${styles.my_journey_header_text} mb-0`}>
+                      {t("trail_upper")}
+                    </h5>
+                    <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
+                    <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
+                      <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
+                    </h5>
+                  </div>
+                </div>
+                <div className='d-flex align-items-center'>
+                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} href="#">{t("get_certificate")}</Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
       {/* Footer */}
       <footer className={`bg-white px-0`}>
         <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
           <div className={`offset-lg-2`}>
             <div className="d-flex">
-              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
+              <img src={title_page_logo} alt="title_page_logo" className='ps-2' width={110} />
               <div className="col-lg-3 pe-5">
                 <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
               </div>
             </div>
-            <p className="mt-5 mb-0 text-white">© 2024 AVA Trail | {t("university_name")}</p>
+            <p className="mt-5 mb-0 text-white">© 2024 AVAtar | {t("university_name")}</p>
           </div>
         </div>
       </footer>
