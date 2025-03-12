@@ -32,6 +32,7 @@ const Practice = () => {
   const [userAnswers, setUserAnswers] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
@@ -48,10 +49,14 @@ const Practice = () => {
     api(configuration)
       .then((response) => {
         const allQuestions = response.data.data
-          .flatMap((trail) => trail.points?.map((point) => ({
-            trailName: trail.name,
-            ...point.quiz,
-          })))
+          .filter((trail) => trail.points && trail.points.length > 0)
+          .flatMap((trail) =>
+            trail.points
+              .filter((point) => point.quiz)
+              .map((point) => ({
+                trailName: trail.name,
+                ...point.quiz,
+              })))
           .filter((quiz) => quiz); // Remove undefined quizzes
 
         // Randomly select 5 questions
@@ -131,115 +136,137 @@ const Practice = () => {
     setUserAnswers((prev) => [...prev, { questionId: question._id, isCorrect }]);
     setFeedback(isCorrect ? t("correct") : t("incorrect"));
 
-    setTimeout(() => {
+    setShowFeedback(true);
+
+    /*setTimeout(() => {
       setFeedback(null);
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
         setShowSummary(true);
       }
-    }, 2000); // Show feedback for 10 seconds
+    }, 2000); */
+  };
+
+  const handleNextQuestion = () => {
+    setShowFeedback(false);
+    setTempAnswer(null);
+    setRightPairAnswer(null);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      setShowSummary(true);
+    }
   };
 
   return (
     <div className='row d-flex mx-0 px-0'>
       <NavbarExplorer />
-      <div className={`${styles.show_trail_bg}`}> 
-      <div className={`py-3 px-0 offset-lg-2 col-lg-8`}>
-        <div className={`col-12 ps-4 pe-5 mt-5`}>
-          <div className={`${styles.white_bg} p-0`}>
-            <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('practice')}</p>
-            <div className={`col-12 p-4 pt-0`}>
-              <div className='d-flex flex-column w-100 p-2'>
-                {showSummary ? (
+      <div className={`${styles.show_trail_bg}`}>
+        <div className={`py-4 px-0 offset-lg-2 col-lg-8`}>
+          <h2 className={`${styles.overview_heading} fs-4 pb-3`}>{t('practice')}</h2>
+          <div className='col-12 p-2 pt-2'>
+            {showSummary ? (
+              <>
+                <div className='d-flex'>
+                  <h2>{t('practice_results')}</h2>
+                  <ul>
+                    {questions.map((q, index) => (
+                      <li key={q._id} className='d-flex justify-content-between'>
+                        <span>{q.question}</span>
+                        <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className='p-2'>
+                  <strong>{t("correct_answers")}:</strong> {userAnswers.filter((a) => a.isCorrect).length} / {questions.length}
+                </div>
+              </>
+            ) : (
+              <>
+                <h5>
+                  {t("task")} {currentQuestionIndex + 1} / {questions.length}
+                </h5>
+                <p className={`${styles.accordion_point_title} mb-2`}>{questions[currentQuestionIndex]?.question}</p>
+                <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                  {/* Render quiz type */}
+                  {(() => {
+                    switch (questions[currentQuestionIndex]?.type) {
+                      case "short-answer":
+                        return <ShortAnswerComponent value={tempAnswer || ""} quizMode handleAnswer={setTempAnswer} />;
+                      case "single":
+                      case "multiple":
+                        return (
+                          <ChoiceComponent
+                            quizType={questions[currentQuestionIndex]?.type}
+                            answers={questions[currentQuestionIndex]?.answers}
+                            quizMode
+                            handleQuizAnswer={setTempAnswer}
+                          />
+                        );
+                      case "slider":
+                        return (
+                          <SliderComponent
+                            correctValue={questions[currentQuestionIndex]?.answers[0].minValue}
+                            minValue={questions[currentQuestionIndex]?.answers[0].minValue}
+                            maxValue={questions[currentQuestionIndex]?.answers[0].maxValue}
+                            setCorrectValue={setTempAnswer}
+                            quizMode
+                          />
+                        );
+                      case "pairs":
+                        return (
+                          <PairsComponent
+                            answers={questions[currentQuestionIndex]?.answers}
+                            handleQuizAnswer={setTempAnswer}
+                            handleRightSideQuizAnswer={setRightPairAnswer}
+                            quizMode
+                          />
+                        );
+                      case "order":
+                        return <OrderComponent answers={questions[currentQuestionIndex]?.answers} handleQuizAnswer={setTempAnswer} quizMode />;
+                      case "true-false":
+                        return (
+                          <TrueFalseComponent
+                            quizMode
+                            value={tempAnswer}
+                            answer={questions[currentQuestionIndex]?.answers[0]}
+                            handleChangeAnswer={setTempAnswer}
+                          />
+                        );
+                      default:
+                        return <p>{t("no_questions_available")}</p>;
+                    }
+                  })()}
+                </div>
+                {/* Show Feedback after submitting the answer */}
+                {showFeedback ? (
                   <>
-                    <div className='d-flex'>
-                      <h2>{t('practice_results')}</h2>
-                      <ul>
-                        {questions.map((q, index) => (
-                          <li key={q._id} className='d-flex justify-content-between'>
-                            <span>{q.question}</span>
-                            <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className='p-2'>
-                      <strong>{t("correct_answers")}:</strong> {userAnswers.filter((a) => a.isCorrect).length} / {questions.length}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h5>
-                      {t("task")} {currentQuestionIndex + 1} / {questions.length}
-                    </h5>
-                    <p className={`${styles.accordion_point_title} mb-2`}>{questions[currentQuestionIndex]?.question}</p>
-                    <div className='d-flex'>
-                      {/* Render quiz type */}
-                      {(() => {
-                        switch (questions[currentQuestionIndex]?.type) {
-                          case "short-answer":
-                            return <ShortAnswerComponent value={tempAnswer || ""} quizMode handleAnswer={setTempAnswer} />;
-                          case "single":
-                          case "multiple":
-                            return (
-                              <ChoiceComponent
-                                quizType={questions[currentQuestionIndex]?.type}
-                                answers={questions[currentQuestionIndex]?.answers}
-                                quizMode
-                                handleQuizAnswer={setTempAnswer}
-                              />
-                            );
-                          case "slider":
-                            return (
-                              <SliderComponent
-                                correctValue={questions[currentQuestionIndex]?.answers[0].minValue}
-                                minValue={questions[currentQuestionIndex]?.answers[0].minValue}
-                                maxValue={questions[currentQuestionIndex]?.answers[0].maxValue}
-                                setCorrectValue={setTempAnswer}
-                                quizMode
-                              />
-                            );
-                          case "pairs":
-                            return (
-                              <PairsComponent
-                                answers={questions[currentQuestionIndex]?.answers}
-                                handleQuizAnswer={setTempAnswer}
-                                handleRightSideQuizAnswer={setRightPairAnswer}
-                                quizMode
-                              />
-                            );
-                          case "order":
-                            return <OrderComponent answers={questions[currentQuestionIndex]?.answers} handleQuizAnswer={setTempAnswer} quizMode />;
-                          case "true-false":
-                            return (
-                              <TrueFalseComponent
-                                quizMode
-                                value={tempAnswer}
-                                answer={questions[currentQuestionIndex]?.answers[0]}
-                                handleChangeAnswer={setTempAnswer}
-                              />
-                            );
-                          default:
-                            return <p>{t("no_questions_available")}</p>;
-                        }
-                      })()}
-
-                      <div className="d-flex justify-content-between align-items-center mt-3">
-                        <p className="text-muted">{feedback && <span>{feedback}</span>}</p>
-                        <button className="btn btn-primary" onClick={handleAnswerSubmit} disabled={tempAnswer === null}>
-                          {t("check")}
-                        </button>
+                    <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
+                      <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
+                      <div className={feedback === t("correct") ? 'my-1' : 'my-1 d-none'}>
+                        <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
+                      </div>
+                      <div className={feedback === t("incorrect") ? 'my-1' : 'my-1 d-none'}>
+                        <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{feedback}</p>
                       </div>
                     </div>
+                    <button className="btn btn-secondary mt-3" onClick={handleNextQuestion}>
+                      {t("next_question")}
+                    </button>
                   </>
+                ) : (
+                  <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
+                    {t('submit_answer')}
+                  </button>
                 )}
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
-      </div> 
       {/* Footer */}
       <Footer />
     </div>

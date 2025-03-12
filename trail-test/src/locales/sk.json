@@ -285,5 +285,11 @@
   "leader_rank": "PORADIE",
   "leader_name": "MENO",
   "see_details": "Viac detailov",
-  "start_trail": "Spusti trasu"
+  "start_trail": "Spusti trasu",
+  "task": "Úloha",
+  "practice_results": "Výsledky výcviku",
+  "correct_answers": "Správne odpovede",
+  "correct": "Výborne! Tvoja odpoveď je správna.",
+  "incorrect": "Zle! Tvoja odpoveď je nesprávna.",
+  "next_question": "Ďalšia otázka"
 }

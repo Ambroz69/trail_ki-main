@@ -288,5 +288,11 @@
   "leader_rank": "RANK",
   "leader_name": "NAME",
   "see_details": "See Details",
-  "start_trail": "Start Trail"
+  "start_trail": "Start Trail",
+  "task": "Task",
+  "practice_results": "Practice results",
+  "correct_answers": "Correct answers",
+  "correct": "Great! Your answer is correct.",
+  "incorrect": "Wrong! Your answer is not correct.",
+  "next_question": "Next Question"
 }
