@@ -267,8 +267,8 @@
   "explore_nav_my_journey": "Moja cesta",
   "explore_trail_list": "Objavuj nové trasy a dobrodružstvá",
   "explore_nav_certificates": "Certifikáty",
-  "explore_nav_hall_of_fame": "Hall of Fame",
-  "your_journey": "Your AVA Trail Journey",
+  "explore_nav_hall_of_fame": "Sieň slávy",
+  "your_journey": "Tvoje AVA dobrodružstvo",
   "hall_of_fame": "Sieň slávy",
   "celebrate_achievements": "Osláv svoje úspechy a pozri, kto sa dostal do TOP 10!",
   "leaderboard": "Rebríček",
@@ -281,5 +281,9 @@
   "see_all_library": "Pozri všetky v knižnici",
   "logout": "Odhlásenie",
   "see_all_in_my_library": "Pozri všetky v knižnici",
-  "trail_upper": "TRASA"
+  "trail_upper": "TRASA",
+  "leader_rank": "PORADIE",
+  "leader_name": "MENO",
+  "see_details": "Viac detailov",
+  "start_trail": "Spusti trasu"
 }

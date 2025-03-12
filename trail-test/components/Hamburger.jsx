@@ -47,32 +47,32 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
         </div>
         <ul className="d-flex flex-column px-3 mb-0">
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href={`${basePath}`}>Home</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('home')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#explore">Explore Trails</a>
+            <a className={`${styles.hamburger_link}`} href="#explore">{t('explore_nav_explore')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#about">About</a>
+            <a className={`${styles.hamburger_link}`} href="#about">{t('explore_nav_about')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#community" >Community</a>
+            <a className={`${styles.hamburger_link}`} href="#community" >{t('explore_nav_community')}</a>
           </li>
         </ul>
       </Modal.Body>
       <Modal.Footer className={`d-flex flex-column p-3 pt-2 align-items-start`}>
         <ul className={`${userLoggedIn ? "" : styles.hidden} d-flex flex-column px-3 m-0`}>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href={`${basePath}/journey`}>My Journey</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/journey`}>{t('explore_nav_my_journey')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#hall_of_fame">Hall ofFame</a>
+            <a className={`${styles.hamburger_link}`} href="#hall_of_fame">{t('hall_of_fame')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#certificates">Certificates</a>
+            <a className={`${styles.hamburger_link}`} href="#certificates">{t('explore_nav_certificates')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href={`${basePath}/profile`} >Profile</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/profile`} >{t('profile')}</a>
           </li>
         </ul>
       </Modal.Footer>
@@ -82,17 +82,17 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
             <Link to="/users/login" className='col-5 d-flex text-decoration-none m-0'>
               <button className={`${styles.hamburger_logout_button} flex-fill d-flex`}>
                 <img src={hamburger_logout} alt="hamburger_logout" className='pe-3' />
-                Log Out
+                {t('logout')}
               </button>
             </Link>
           </Modal.Footer>
         ) : (
           <Modal.Footer className={`d-flex justify-content-between p-3`}>
             <Link to="/users/login" className='col-5 d-flex text-decoration-none m-0'>
-              <button className={`${styles.hamburger_login_button} flex-fill`}>Log In</button>
+              <button className={`${styles.hamburger_login_button} flex-fill`}>{t('login')}</button>
             </Link>
             <Link to="/users/register" className='col-5 d-flex text-decoration-none m-0'>
-              <button className={`${styles.hamburger_get_started_button} flex-fill`}>Get Started</button>
+              <button className={`${styles.hamburger_get_started_button} flex-fill`}>{t('get_started')}</button>
             </Link>
           </Modal.Footer>
         )}

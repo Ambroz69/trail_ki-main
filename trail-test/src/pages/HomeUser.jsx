@@ -251,13 +251,13 @@ const HomeUser = () => {
                   <div className='d-flex justify-content-between pt-4 w-100'>
                     <div className='d-flex align-items-center'>
                       <a href={`${basePath}/trails/details/${trail._id}`} className={`${styles.trail_card_button_details} pe-1`}>
-                        See Details
+                        {t('see_details')}
                       </a>
                       <span className={`${styles.trail_card_button_details_icon}`}>
                         <img src={trail_card_arrow_right} alt="trail_card_arrow_right" width={22} className={`pe-0`} />
                       </span>
                     </div>
-                    <button className={`btn ${styles.trail_card_button_start} py-1`} onClick={() => goTo(`${basePath}/trails/certification/${trail._id}`)}>Start Trail</button>
+                    <button className={`btn ${styles.trail_card_button_start} py-1`} onClick={() => goTo(`${basePath}/trails/certification/${trail._id}`)}>{t('start_trail')}</button>
                   </div>
                 </div>
               </div>

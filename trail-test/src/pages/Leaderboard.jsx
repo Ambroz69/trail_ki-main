@@ -38,13 +38,13 @@ const Leaderboard = () => {
       <NavbarExplorer />
       <div className={`${styles.show_trail_bg}`}>
         <div className={`py-4 px-0 offset-lg-2 col-lg-8`}>
-          <h2 className="fs-4 pb-3">Leaderboard</h2>
+          <h2 className="fs-4 pb-3">{t('leaderboard')}</h2>
           <div className={`${styles.leaderboard_card}`}>
             <table className="table table-borderless">
               <thead>
                 <tr className={`${styles.leaderboard_header}`}>
-                  <th className='col-2 ps-4'>RANK</th>
-                  <th className='col-8'>NAME</th>
+                  <th className='col-2 ps-4'>{t('leader_rank')}</th>
+                  <th className='col-8'>{t('leader_name')}</th>
                   <th className='col-2 text-end pe-5'>XP</th>
                 </tr >
               </thead>

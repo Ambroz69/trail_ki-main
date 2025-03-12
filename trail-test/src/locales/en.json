@@ -284,5 +284,9 @@
   "see_all_library": "See All in My Library",
   "logout": "Logout",
   "see_all_in_my_library": "See All in My Library",
-  "trail_upper": "TRAIL"
+  "trail_upper": "TRAIL",
+  "leader_rank": "RANK",
+  "leader_name": "NAME",
+  "see_details": "See Details",
+  "start_trail": "Start Trail"
 }
