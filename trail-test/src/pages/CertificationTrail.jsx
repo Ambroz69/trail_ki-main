@@ -195,20 +195,20 @@ const CertificationTrail = () => {
       setShowFeedback(false);
       // check if user already has all questions answered, if not, save progress
       if (userAnswers.length + 1 === trail.points.length) {
-        submitCertificationResults();
+        submitCertificationResults([...userAnswers, updatedAnswer], newScore);
       } else {
-        saveAnswerToDatabase(updatedAnswer, newScore);
+        saveAnswerToDatabase(updatedAnswer, newScore, [...userAnswers, updatedAnswer]);
       }
     }, 1000); // 10 seconds
   };
 
-  const saveAnswerToDatabase = async (updatedAnswer, newScore) => {
+  const saveAnswerToDatabase = async (updatedAnswer, newScore, newAnswers) => {
     const certificationData = {
       userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
       trail: id,
       score: newScore,
       status: null,
-      answers: [...userAnswers, updatedAnswer],
+      answers: newAnswers,
     };
 
     try {
@@ -246,17 +246,15 @@ const CertificationTrail = () => {
     }
   };
 
-  const submitCertificationResults = () => {
-    const totalQuestions = trail.points.length;
-    const correctAnswers = userAnswers.filter((answer) => answer.isCorrect).length;
-    const status = score >= totalPoints * 0.7 ? 'Passed' : 'Failed';
+  const submitCertificationResults = (finalAnswers, finalScore) => {
+    const status = finalScore >= totalPoints * 0.7 ? 'Passed' : 'Failed';
 
     const certificationData = {
       userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
       trail: id,
-      score: score,
+      score: finalScore,
       status,
-      answers: userAnswers,
+      answers: finalAnswers,
     }
 
     const configuration = {
