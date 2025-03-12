@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import Cookies from "universal-cookie";
 import i18n from '../src/i18n'; // Import i18n config
 import Modal from 'react-bootstrap/Modal';
 import styles from '../src/css/Hamburger.module.css';
@@ -9,8 +10,25 @@ import hamburger_close from '../src/assets/hamburger_close.svg';
 import hamburger_logo from '../src/assets/avatar_color.png';
 import hamburger_logout from '../src/assets/hamburger_logout.svg';
 
+const cookies = new Cookies();
+const token = cookies.get("SESSION_TOKEN");
+
 function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
   const { t } = useTranslation();
+
+  const getUserRole = () => {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      return tokenPayload?.userRole || "explorer";
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return "explorer"; // Default role
+    }
+  };
+
+  const userRole = getUserRole();
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+
 
   return (
     <Modal
@@ -29,7 +47,7 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
         </div>
         <ul className="d-flex flex-column px-3 mb-0">
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#home">Home</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}`}>Home</a>
           </li>
           <li className="py-2 mt-1">
             <a className={`${styles.hamburger_link}`} href="#explore">Explore Trails</a>
@@ -45,7 +63,7 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
       <Modal.Footer className={`d-flex flex-column p-3 pt-2 align-items-start`}>
         <ul className={`${userLoggedIn ? "" : styles.hidden} d-flex flex-column px-3 m-0`}>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#my_journey">My Journey</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/journey`}>My Journey</a>
           </li>
           <li className="py-2 mt-1">
             <a className={`${styles.hamburger_link}`} href="#hall_of_fame">Hall ofFame</a>
@@ -54,7 +72,7 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
             <a className={`${styles.hamburger_link}`} href="#certificates">Certificates</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#profile" >Profile</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/profile`} >Profile</a>
           </li>
         </ul>
       </Modal.Footer>

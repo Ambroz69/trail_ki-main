@@ -4,6 +4,7 @@ import Cookies from "universal-cookie";
 import styles from '../css/TrailGrid.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
@@ -39,6 +40,7 @@ const HomeUser = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [menuModalShow, setMenuModalShow] = useState(false);
+  const navigate = useNavigate();
 
   const getUserRole = () => {
     try {
@@ -255,7 +257,7 @@ const HomeUser = () => {
                         <img src={trail_card_arrow_right} alt="trail_card_arrow_right" width={22} className={`pe-0`} />
                       </span>
                     </div>
-                    <button className={`btn ${styles.trail_card_button_start} py-1`}>Start Trail</button>
+                    <button className={`btn ${styles.trail_card_button_start} py-1`} onClick={() => goTo(`${basePath}/trails/certification/${trail._id}`)}>Start Trail</button>
                   </div>
                 </div>
               </div>

@@ -102,8 +102,8 @@ const TitlePage = () => {
               <p className={`${styles.desc_font}`}>{t("hero_description_2")}</p>
             </div>
             <div className="d-lg-flex mt-4">
-              <button className={`${styles.explore_button} col-12 col-lg-6 py-2 mb-3 mb-lg-0 px-lg-5 py-lg-2 me-lg-3`}>{t("explore")}</button>
-              <button className={`${styles.login_button} col-12 col-lg-6 py-2 px-lg-3 py-lg-2`}>{t("request_access")}</button>
+              <button className={`${styles.explore_button} col-12 col-lg-6 py-2 mb-3 mb-lg-0 px-lg-5 py-lg-2 me-lg-3`} onClick={() => goTo("users/login")}>{t("explore")}</button>
+              <button className={`${styles.login_button} col-12 col-lg-6 py-2 px-lg-3 py-lg-2`} onClick={() => goTo("users/register")}>{t("request_access")}</button>
             </div>
           </div>
           <div className="d-none d-lg-block col-lg-6">
