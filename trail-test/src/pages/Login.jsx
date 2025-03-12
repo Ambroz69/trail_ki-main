@@ -4,9 +4,14 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import styles from '../css/Main.module.css';
 import logo from "../assets/avatar_color.png";
+import Dropdown from 'react-bootstrap/Dropdown';
 import footer_logo from "../assets/footer_logo.svg";
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import i18n from '../i18n'; // Import i18n config
+
+import sk_flag from '../assets/flag-sk.svg';
+import gb_flag from '../assets/flag-gb.svg';
 
 const cookies = new Cookies();
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -17,6 +22,7 @@ const Login = () => {
   const [login, setLogin] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -47,6 +53,16 @@ const Login = () => {
         error = new Error();
       });
   }
+
+  const handleLanguageChange = (lang) => {
+    setSelectedLanguage(lang);
+    i18n.changeLanguage(lang);
+    localStorage.setItem("language", lang); // Store user preference
+  };
+
+  const getFlag = (lang) => {
+    return lang === 'en' ? gb_flag : sk_flag;
+  };
 
   useEffect(() => {
     if (alert.message) {
@@ -126,7 +142,20 @@ const Login = () => {
                   <a href='/users/register' className={`${styles.forgot_pass_link} ms-1`}>
                     {t('sing_up')}
                   </a>
-                </div>
+                </div>                
+              </div>
+
+              <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
+                {/* Language Dropdown */}
+                <Dropdown >
+                  <Dropdown.Toggle variant="" size="sm" className="d-flex align-items-center text-black pt-lg-2">
+                    <img src={getFlag(selectedLanguage)} width="20px" className="me-2" alt="selected flag" /> {selectedLanguage.toUpperCase()}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
 
               {/* {login ? (
