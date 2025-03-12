@@ -13,6 +13,7 @@ import ChoiceComponent from '../../components/quiztypes/ChoiceComponent';
 import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
 import NavbarExplorer from '../NavbarExplorer';
+import Footer from '../../components/Footer';
 
 // svg import
 import accordion_points from '../assets/accordion_points.svg';
@@ -143,7 +144,8 @@ const Practice = () => {
   return (
     <div className='row d-flex mx-0 px-0'>
       <NavbarExplorer />
-      <div className={`${styles.show_trail_bg} py-3 px-0 offset-lg-2 col-lg-8`}>
+      <div className={`${styles.show_trail_bg}`}> 
+      <div className={`py-3 px-0 offset-lg-2 col-lg-8`}>
         <div className={`col-12 ps-4 pe-5 mt-5`}>
           <div className={`${styles.white_bg} p-0`}>
             <p className={`${styles.overview_heading} pb-2 mx-4 mt-4 mb-4`}>{t('practice')}</p>
@@ -237,20 +239,9 @@ const Practice = () => {
           </div>
         </div>
       </div>
+      </div> 
       {/* Footer */}
-      <footer className={`bg-white px-0`}>
-        <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
-          <div className={`offset-lg-2`}>
-            <div className="d-flex">
-              <img src={title_page_logo} alt="title_page_logo" className='ps-2' />
-              <div className="col-lg-3 pe-5">
-                <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
-              </div>
-            </div>
-            <p className="mt-5 mb-0 text-white">© 2024 AVA Trail | {t("university_name")}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

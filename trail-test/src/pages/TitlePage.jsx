@@ -7,6 +7,7 @@ import sk_flag from '../assets/flag-sk.svg';
 import gb_flag from '../assets/flag-gb.svg';
 import styles from '../css/TitlePage.module.css';
 import Hamburger from '../../components/Hamburger';
+import Footer from "../../components/Footer";
 import i18n from '../i18n'; // Import i18n config
 
 //svg+png import
@@ -254,19 +255,7 @@ const TitlePage = () => {
       </section>
 
       {/* Footer */}
-      <footer className={`bg-white`}>
-        <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
-          <div className={`offset-lg-2`}>
-            <div className="d-flex">
-              <img src={avatar_white} alt="avatar_white" className='ps-2' width={110} />
-              <div className="col-lg-3 pe-5">
-                <p className={`${styles.footer_text} pt-3 ps-4`}>{t("footer_description")}</p>
-              </div>
-            </div>
-            <p className="mt-5 mb-0">© 2024 AVAtar | {t("university_name")}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 };

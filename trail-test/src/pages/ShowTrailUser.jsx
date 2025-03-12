@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
 import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
+import Footer from '../../components/Footer';
 
 import TrailMap from '../../components/TrailMap';
 
@@ -291,6 +292,9 @@ const ShowTrailUser = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </>
   )
 };
