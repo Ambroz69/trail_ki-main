@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import styles from '../css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Button from 'react-bootstrap/Button';
 
 import Cookies from "universal-cookie";
 
@@ -22,6 +23,8 @@ import accordion_question_type from '../assets/accordion_question_type.svg';
 import title_page_logo from '../../src/assets/title_page_logo.svg';
 import practice_correct from '../../src/assets/practice_correct.svg';
 import practice_incorrect from '../../src/assets/practice_incorrect.svg';
+import practice_result_xp from '../../src/assets/practice_result_xp.svg';
+import practice_result_weight from '../../src/assets/practice_result_weight.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -172,10 +175,22 @@ const Practice = () => {
   };
   const progress = Math.round((currentQuestionIndex / questions.length) * 100);
 
+  const getUserRole = () => {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      return tokenPayload?.userRole || "explorer";
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return "explorer"; // Default role
+    }
+  };
+  const userRole = getUserRole();
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+
   useEffect(() => {
     setTempAnswer(null);
     setRightPairAnswer(null);
-}, [currentQuestionIndex]);
+  }, [currentQuestionIndex]);
 
   return (
     <div className='row d-flex mx-0 px-0'>
@@ -184,22 +199,23 @@ const Practice = () => {
         <div className={`py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2`}>
           <div className='col-12'>
             {showSummary ? (
-              <>
-                <div className='d-flex'>
-                  <h2>{t('practice_results')}</h2>
-                  <ul>
-                    {questions.map((q, index) => (
-                      <li key={q._id} className='d-flex justify-content-between'>
-                        <span>{q.question}</span>
-                        <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <div className='d-flex flex-column align-items-center justify-content-center mt-5'>
+                <div className="rounded-circle d-flex align-items-center justify-content-center align-self-center mt-lg-5 mb-4"
+                  style={{ minWidth: "110px", maxWidth: "110px", height: "110px", backgroundColor: "#4783B5" }}>
+                  <img className="text-white fs-5" src={practice_result_weight} placeholder="practice_result_weight"></img>
                 </div>
-                <div className='p-2'>
-                  <strong>{t("correct_answers")}:</strong> {userAnswers.filter((a) => a.isCorrect).length} / {questions.length}
+                <img className="text-white fs-5 mb-4" src={practice_result_xp} placeholder="practice_result_xp"></img>
+                <h2 className='fs-3 mt-2 mb-3 font-bold'>Practice completed!</h2>
+                <p className='fs-5 mb-0 text-center'>Practicing on a daily basis increases your knowledge and understanding.</p>
+                <div className={`d-flex pt-4 gap-3`}>
+                  <Button className={`${styles.show_all_button} flex-fill btn py-3 px-lg-4 px-5`} href={`${basePath}/journey`}>
+                    Take Me Back
+                  </Button>
+                  <Button className={`${styles.my_journey_button} flex-fill btn py-3 px-lg-4 px-5`} href={`${basePath}/practice`}>
+                    Practice Again
+                  </Button>
                 </div>
-              </>
+              </div>
             ) : (
               <>
                 <h5 className='fs-5 font-bold text-center mb-3 mt-4'>Practice</h5>
@@ -264,7 +280,7 @@ const Practice = () => {
                 {showFeedback ? (
                   <>
                     {/* CORRECT feedback */}
-                    <div className={`${feedback === t("correct") ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom`}>
+                    <div className={`${feedback === t("correct") ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
                         <div className='me-auto d-flex flex-row align-items-center'>
                           <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
@@ -273,14 +289,14 @@ const Practice = () => {
                           </div>
                           <p className={`${styles.feedback_correct} mb-0`}>{t("correct")}</p>
                         </div>
-                        <p className={`${styles.feedback_correct} mb-0 pe-3`}>CLICK BUTTON TO</p>
+                        <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 pe-3`}>CLICK BUTTON TO</p>
                         <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
                           Continue
                         </button>
                       </div>
                     </div>
                     {/* INCORRECT feedback */}
-                    <div className={`${feedback === t("incorrect") ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom`}>
+                    <div className={`${feedback === t("incorrect") ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
                         <div className='me-auto d-flex flex-row align-items-center'>
                           <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
@@ -289,7 +305,7 @@ const Practice = () => {
                           </div>
                           <p className={`${styles.feedback_incorrect} mb-0`}>{t("incorrect")}</p>
                         </div>
-                        <p className={`${styles.feedback_incorrect} mb-0 pe-3`}>CLICK BUTTON TO</p>
+                        <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 pe-3`}>CLICK BUTTON TO</p>
                         <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
                           Continue
                         </button>
@@ -298,9 +314,9 @@ const Practice = () => {
                   </>
                 ) : (
                   <>
-                    <div className={`${styles.sticky_default} fixed-bottom`}>
+                    <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
-                        <p className='mb-0 pe-3'>CLICK BUTTON TO</p>
+                        <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
                         <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
                           Check
                         </button>

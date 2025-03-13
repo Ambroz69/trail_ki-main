@@ -172,8 +172,7 @@ const Register = () => {
                   </a>
                 </div>
               </div>
-              <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
-                {/* Language Dropdown */}
+              {/*<div className='d-flex flex-row align-items-center justify-content-center mt-3'>
                 <Dropdown >
                   <Dropdown.Toggle variant="" size="sm" className="d-flex align-items-center text-black pt-lg-2">
                     <img src={getFlag(selectedLanguage)} width="20px" className="me-2" alt="selected flag" /> {selectedLanguage.toUpperCase()}
@@ -183,7 +182,7 @@ const Register = () => {
                     <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-              </div>
+              </div>*/}
             </Form>
           </div>
         </Col>

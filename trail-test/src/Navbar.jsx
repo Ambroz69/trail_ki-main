@@ -11,7 +11,7 @@ import i18n from './i18n'; // Import i18n config
 import sidebar_dashboard from "./assets/sidebar_dashboard.svg";
 import sidebar_faq from "./assets/sidebar_faq.svg";
 import sidebar_home from "./assets/sidebar_home.svg";
-import sidebar_logo from "./assets/sidebar_logo.svg";
+import sidebar_logo from "./assets/avatar_white.png";
 import sidebar_logout from "./assets/sidebar_logout.svg";
 import sidebar_submenu from "./assets/sidebar_submenu.svg";
 import sidebar_profile from "./assets/sidebar_profile.svg";
@@ -76,7 +76,7 @@ function Navbar() {
   return (
     <div className={`${styles.sidebar} d-flex flex-column flex-shrink-0 p-3 mx-0 px-0 pt-4`}>
       <a href={`${basePath}`} className="d-flex justify-content-center pt-3 pb-4">
-        <img src={sidebar_logo} alt="sidebar_logo" />
+        <img src={sidebar_logo} alt="sidebar_logo" width={150} />
       </a>
       <ul className="nav nav-pills flex-column mb-auto mx-4">
         {/* Home Link (Dynamic for each role) */}

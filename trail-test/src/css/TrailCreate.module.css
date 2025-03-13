@@ -363,3 +363,118 @@ div.progress_bar {
 .full_height {
   height: 100vh;
 }
+
+.show_trail_div_border_top {
+  border-top: 1.5px solid #F1F1F1;
+}
+
+button.practice_check_button_incorrect,
+button.practice_check_button_incorrect:visited {
+  color: #000;
+  background-color: #FCEAFF;
+  border: none;
+  border-radius: 0.25rem;
+  transition-duration: 0.5s;
+}
+
+button.practice_check_button_incorrect:hover,
+button.practice_check_button_incorrect:focus,
+button.practice_check_button_incorrect:not(:disabled):not(:disabled):active {
+  color: #000;
+  background-color: #d3a3db;
+  border: none;
+}
+
+a.show_all_button,
+a.show_all_button:visited {
+  color: #0E2134;
+  background-color: #F7F7FC;
+  border: 1px solid #8B8FAC;
+  font-weight: 300;
+  border-radius: 0.25rem;
+}
+
+a.show_all_button:hover,
+a.show_all_button:focus,
+a.show_all_button:not(:disabled):not(:disabled):active {
+  background-color: #d4d4d4;
+  border: 1px solid #8B8FAC;
+}
+
+button.show_all_button,
+button.show_all_button:visited {
+  color: #0E2134;
+  background-color: #F7F7FC;
+  border: 1px solid #8B8FAC;
+  font-weight: 300;
+  border-radius: 0.25rem;
+}
+
+button.show_all_button:hover,
+button.show_all_button:focus,
+button.show_all_button:not(:disabled):not(:disabled):active {
+  color: #0E2134;
+  background-color: #d4d4d4;
+  border: 1px solid #8B8FAC;
+}
+
+a.upload_button,
+a.upload_button:visited {
+  color: #7FCEC6;
+  background-color: #F7F7FC;
+  border: 1.5px solid #7FCEC6;
+  font-weight: 300;
+  border-radius: 0.25rem;
+}
+
+a.upload_button:hover,
+a.upload_button:focus,
+a.upload_button:not(:disabled):not(:disabled):active {
+  color: #7FCEC6;
+  background-color: #e2e2e2;
+  border: 1.5px solid #7FCEC6;
+}
+
+a.my_journey_button,
+a.my_journey_button:visited {
+  color: #000;
+  font-weight: 900;
+  background-color: #F9F871;
+  border-radius: 0.25rem;
+  border: none;
+  transition-duration: 0.5s;
+}
+
+a.my_journey_button:hover,
+a.my_journey_button:focus,
+a.my_journey_button:not(:disabled):not(:disabled):active {
+  color: #000;
+  background-color: #FCCE0D;
+  transition-duration: 0.5s;
+}
+
+button.save_changes_button,
+button.save_changes_button:visited {
+  color: #fff;
+  font-weight: 900;
+  background-color: #7FCEC6;
+  border-radius: 0.25rem;
+  border: none;
+  transition-duration: 0.5s;
+}
+
+button.save_changes_button:hover,
+button.save_changes_button:focus,
+button.save_changes_button:not(:disabled):not(:disabled):active {
+  color: #fff;
+  background-color: #62aaa3;
+  transition-duration: 0.5s;
+}
+
+@media (max-width: 767.98px) {
+  .form_label_2 {
+    color: #787D84;
+    font-size: 1rem;
+    font-weight: 200;
+  }
+}

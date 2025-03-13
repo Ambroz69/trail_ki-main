@@ -7,6 +7,7 @@ import AlertComponent from '../../components/AlertComponent';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import Button from 'react-bootstrap/Button';
 
 import title_page_logo from '../../src/assets/title_page_logo.svg';
 
@@ -81,125 +82,83 @@ const UserProfile = () => {
     }
   }, [alert.message]);
 
+  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+
   return (
     <>
-      {userRole === "explorer" ? (
-        <>
-          <NavbarExplorer />
-          <div className={`${styles.show_trail_bg}`}>
-          <div className={`py-3 px-0 offset-lg-2 col-lg-8`}>
-            <div className='col-9'>
-              <div className='py-2 ps-0'>
-                <div className='flex justify-between items-center'>
-                  <h1 className='text-3xl my-8'>{t('user_profile')}</h1>
-                </div>
-              </div>
-              {alert.message && (
-                <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
-              )}
-              <div className={`${styles.tabs_bg} p-4`}>
-                <form onSubmit={handleUpdateProfile}>
-                  <div className='mb-3 d-flex'>
-                    <div className='col-9 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>{t('name')}</label>
-                      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                    </div>
-                  </div>
-                  <div className='mb-3 d-flex'>
-                    <div className='col-9 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>E-mail</label>
-                      <input type='text' value={email} disabled className={`${styles.form_input} form-control`}></input>
-                    </div>
-                  </div>
-                  <div className='mb-3 d-flex'>
-                    <div className='col-9 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>{t('new_password_profile')}</label>
-                      <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                    </div>
-                  </div>
-                  <div className='mb-3 d-flex'>
-                    <div className='col-9 pe-3'>
-                      <label className={`${styles.form_label} form-label mb-1`}>{t('country')}</label>
-                      <select value={country} onChange={e => setCountry(e.target.value)} className={`${styles.form_input} form-select`}>
-                        <option value="Slovakia">{t('slovakia')}</option>
-                        <option value="Czech Republic">{t('czech')}</option>
-                        <option value="Spain">{t('spain')}</option>
-                        <option value="Other">{t('other')}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className='mb-3 d-flex'>
-                    <div className='col-9 pe-3'>
-                      <button className={`${styles.save_button} btn btn-secondary`} type="submit">{t('update_profile')}</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          </div>
-
-          {/* Footer */}
-          <Footer />
-        </>
-      ) : (
-        <div className='d-flex container-fluid mx-0 px-0'>
-          <div className='col-3 pe-3'>
-            <Navbar />
-          </div>
-          <div className='col-9 px-5'>
-            <div className='py-4 ps-0'>
-              <div className='flex justify-between items-center'>
-                <h1 className='text-3xl my-8'>{t('user_profile')}</h1>
-              </div>
-            </div>
+      <NavbarExplorer />
+      <div className={`${styles.show_trail_bg}`}>
+        <div className={`py-lg-3 px-0 offset-lg-3 col-lg-6`}>
+          <div className='offset-lg-1 col-lg-10 p-3 p-lg-0'>
+            <h1 className='fs-3 mt-3 my-8 font-bold'>{t('user_profile')}</h1>
             {alert.message && (
               <AlertComponent message={alert.message} type={alert.type} onClose={() => setAlert({ message: '', type: '' })} />
             )}
-            <div className={`${styles.tabs_bg} p-4`}>
-              <form onSubmit={handleUpdateProfile}>
-                <div className='mb-3 d-flex'>
-                  <div className='col-9 pe-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>{t('name')}</label>
-                    <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                  </div>
-                </div>
-                <div className='mb-3 d-flex'>
-                  <div className='col-9 pe-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>E-mail</label>
-                    <input type='text' value={email} disabled className={`${styles.form_input} form-control`}></input>
-                  </div>
-                </div>
-                <div className='mb-3 d-flex'>
-                  <div className='col-9 pe-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>{t('new_password_profile')}</label>
-                    <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                  </div>
-                </div>
-                <div className='mb-3 d-flex'>
-                  <div className='col-9 pe-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>{t('country')}</label>
-                    <select value={country} onChange={e => setCountry(e.target.value)} className={`${styles.form_input} form-select`}>
-                      <option value="Slovakia">{t('slovakia')}</option>
-                      <option value="Czech Republic">{t('czech')}</option>
-                      <option value="Spain">{t('spain')}</option>
-                      <option value="Other">{t('other')}</option>
-                    </select>
-                  </div>
-                </div>
-                <div className='mb-3 d-flex'>
-                  <div className='col-9 pe-3'>
-                    <button className={`${styles.save_button} btn btn-secondary`} type="submit">{t('update_profile')}</button>
-                  </div>
-                </div>
-              </form>
+            <div className='d-flex mb-3'>
+              <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                style={{ minWidth: "70px", maxWidth: "70px", height: "70px", backgroundColor: "#7FCEC6" }}>
+              </div>
+              <div className='align-content-center'>
+                <Button className={`${styles.upload_button} d-flex py-3 px-5 btn py-2`} href={``}>
+                  Upload New Picture
+                </Button>
+              </div>
             </div>
+            <form onSubmit={handleUpdateProfile} className='w-100'>
+              <div className='mb-3 d-flex'>
+                <div className='flex-fill'>
+                  <label className={`${styles.form_label_2} fs-6 form-label mb-1`}>{t('name')}</label>
+                  <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                </div>
+              </div>
+              <div className='mb-3 d-flex'>
+                <div className='flex-fill'>
+                  <label className={`${styles.form_label_2} fs-6 form-label mb-1`}>E-mail</label>
+                  <input type='text' value={email} disabled className={`${styles.form_input} form-control`}></input>
+                </div>
+              </div>
+              <div className='mb-3 d-flex'>
+                <div className='flex-fill'>
+                  <label className={`${styles.form_label_2} fs-6 form-label mb-1`}>{t('new_password_profile')}</label>
+                  <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                </div>
+              </div>
+              <div className='mb-3 d-flex'>
+                <div className='flex-fill'>
+                  <label className={`${styles.form_label_2} fs-6 form-label mb-1`}>{t('country')}</label>
+                  <select value={country} onChange={e => setCountry(e.target.value)} className={`${styles.form_input} form-select`}>
+                    <option value="Slovakia">{t('slovakia')}</option>
+                    <option value="Czech Republic">{t('czech')}</option>
+                    <option value="Spain">{t('spain')}</option>
+                    <option value="Other">{t('other')}</option>
+                  </select>
+                </div>
+              </div>
+              {/* DESKTOP */}
+              <div className='mb-3 d-none d-lg-flex justify-content-between'>
+                <div className=''>
+                  <Button className={`${styles.show_all_button} btn btn-secondary px-5 py-3`} href={`${basePath}/journey`}>Cancel</Button>
+                </div>
+                <div className=''>
+                  <Button className={`${styles.save_changes_button} btn btn-secondary px-5 py-3`} type="submit">{t('update_profile')}</Button>
+                </div>
+              </div>
+              {/* MOBILE */}
+              <div className='mb-3 d-flex d-lg-none'>
+                <div className='col-6 d-flex'>
+                  <Button className={`${styles.show_all_button} btn btn-secondary py-3 me-2 flex-fill`} href={`${basePath}/journey`}>Cancel</Button>
+                </div>
+                <div className='col-6 d-flex'>
+                  <Button className={`${styles.save_changes_button} btn btn-secondary py-3 ms-2 flex-fill`} type="submit">{t('update_profile')}</Button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      )}
+      </div>
+      {/* Footer */}
+      <Footer />
     </>
-
-
   );
 };
 

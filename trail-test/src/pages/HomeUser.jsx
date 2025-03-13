@@ -153,7 +153,7 @@ const HomeUser = () => {
           <h1 className='col-12 col-lg-6 fs-4 px-3 px-lg-0 align-self-start pt-1'>{t('explore_trail_list')}</h1>
           {/* Search and Filter Section */}
           <div className="col-12 col-lg-6 px-3 px-lg-0 d-flex justify-content-end">
-            <div className="input-group mb-3 w-auto">
+            <div className="input-group mb-3 w-auto me-auto me-lg-0">
               <span className={`${styles.search_icon} input-group-text pe-0`} id="basic-addon1">
                 <img src={explore_search_button} alt="explore_search_button" className='pe-1' />
               </span>

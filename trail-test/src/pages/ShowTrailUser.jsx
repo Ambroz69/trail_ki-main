@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
+import Button from 'react-bootstrap/Button';
 
 import TrailMap from '../../components/TrailMap';
 
@@ -31,7 +32,7 @@ import trail_language from '../../src/assets/trail_language.svg';
 import trail_lock from '../../src/assets/trail_lock.svg';
 import trail_points from '../../src/assets/trail_points.svg';
 import trail_practice from '../../src/assets/trail_practice.svg';
-import trail_prepare_certification from '../../src/assets/trail_prepare_certification.svg';
+import trail_prepare_certification from '../../src/assets/my_journey_certification.svg';
 import trail_qr_code from '../../src/assets/trail_qr_code.svg';
 import trail_rating from '../../src/assets/trail_rating.svg';
 import trail_time from '../../src/assets/trail_time.svg';
@@ -115,15 +116,14 @@ const ShowTrailUser = () => {
     <>
       {/* Navbar */}
       <NavbarExplorer />
-
       <div className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}>
-        <div className={`offset-lg-2 col-lg-8 px-0 mt-5`}>
+        <div className={`offset-lg-2 col-lg-8 px-0 mx-lg-auto m-3 mt-lg-5`}>
           <div className={`${styles.white_bg} p-0`}>
-            <div className='mb-5'>
+            <div className='mx-lg-0'>
               <ReactCardFlip isFlipped={cardFlipped} flipDirection="horizontal">
-                <div /* FRONT CARD */ onClick={e => handleCardFlip(e)} className={`${styles.show_trail_div_border} ${styles.trail_card_div} py-3`}>
-                  <div className='d-flex p-4'>
-                    <div className='col-8 d-flex flex-column pe-4'>
+                <div /* FRONT CARD */ onClick={e => handleCardFlip(e)} className={`${styles.show_trail_div_border} ${styles.trail_card_div} py-lg-3`}>
+                  <div className='d-flex flex-column flex-lg-row p-4'>
+                    <div className='col-lg-8 col-12 d-flex flex-column pe-4'>
                       <div>
                         <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
                       </div>
@@ -135,14 +135,14 @@ const ShowTrailUser = () => {
                       <div className='mt-auto'>
                         <h2 className={`${styles.trail_content_heading} mb-1`}>{t('overall_progress')}</h2>
                         <div className='d-flex'>
-                          <div className="progress col-9" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
+                          <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
                             <div className="progress-bar" role="progressbar" style={{ width: '0%' }}></div>
                           </div>
-                          <p className={`${styles.trail_card_description} mb-0 col-3 ms-2`}>0%</p>
+                          <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>0%</p>
                         </div>
                       </div>
                     </div>
-                    <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} col-4 px-4 pt-4 pb-3`}>
+                    <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} col-lg-4 col-12 px-4 pt-4 pb-3`}>
                       <h2 className={styles.trail_content_heading}>{t('trail_content')}:</h2>
                       <div className='d-flex justify-content-between mb-2'>
                         <div className='d-flex flex-row'>
@@ -195,7 +195,7 @@ const ShowTrailUser = () => {
                       </div>
                     </div>
                   </div>
-                  <div className={`${styles.show_trail_div_border_top} d-flex p-4 pb-2`}>
+                  <div className={`${styles.show_trail_div_border_top} d-lg-flex d-none p-4 pb-2`}>
                     <div className={`${styles.show_trail_div_border_right} col-4 d-flex flex-column align-items-center`}>
                       <div className='d-flex'>
                         <button className={`${styles.rating_practice_apply_button} px-4 py-1`}>{t('rating')}</button>
@@ -232,20 +232,21 @@ const ShowTrailUser = () => {
                 <img src={trail_certification} alt="trail_certification" className='pe-2 pb-1' />
                 <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('certification')}</p>
               </div>
-              <div className={`${styles.show_trail_div_border} d-flex px-4 py-3`}>
-                <div className='col-4 d-flex align-items-center'>
-                  <img src={trail_certification_img} alt="trail_certification_img" style={{ width: '14rem', height: '9.5rem' }} className='' />
+              <div className={`${styles.show_trail_div_border} d-flex flex-lg-row flex-column px-4 py-3`}>
+                <div className='col-12 col-lg-4 d-flex align-items-center'>
+                  <img src={trail_certification_img} alt="trail_certification_img" className={styles.certification_image} />
                 </div>
-                <div className='col-8'>
-                  <h1 className={`${styles.trail_heading}`}>{t('certification_text1')}</h1>
+                <div className='col-12 col-lg-8'>
+                  <h1 className={`${styles.trail_heading} d-none d-lg-block`}>{t('certification_text1')}</h1>
+                  <h1 className={`${styles.trail_heading} d-block d-lg-none fs-4 mt-3`}>{t('certification_text1')}</h1>
                   <p className={`${styles.trail_description} mt-3`}>{t('certification_text2')}</p>
-                  <div className='d-flex'>
-                    <div className='col-6 pe-2'>
+                  <div className='d-flex flex-column flex-lg-row'>
+                    <div className='col-lg-6 col-12 pe-lg-2 mb-2'>
                       <button className={`${styles.rating_practice_apply_button} d-flex w-100 align-items-center py-2 px-3`}>
                         <img src={trail_lock} alt="trail_lock" className='pe-3' />{t('environment_guardian')}
                       </button>
                     </div>
-                    <div className='col-6 ps-2'>
+                    <div className='col-lg-6 col-12 ps-lg-2'>
                       <button className={`${styles.rating_practice_apply_button} d-flex w-100 align-items-center py-2 px-3`}>
                         <img src={trail_lock} alt="trail_lock" className='pe-3' />{t('trail_master')}
                       </button>
@@ -257,42 +258,37 @@ const ShowTrailUser = () => {
                 <img src={trail_qr_code} alt="trail_qr_code" className='pe-2 pb-1' />
                 <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('qr_code')}</p>
               </div>
-              <div className={`${styles.show_trail_div_border} d-flex px-4 py-3`}>
-                <div className='col-4 d-flex align-items-center justify-content-center pe-5'>
-                  <img src={trail_qr_code_img} alt="trail_qr_code_img" style={{ width: '10rem', height: '9.5rem' }} className='' />
+              <div className={`${styles.show_trail_div_border} d-flex flex-column flex-lg-row px-4 py-3`}>
+                <div className='col-lg-4 col-12 d-flex align-items-center justify-content-center pe-5'>
+                  <img src={trail_qr_code_img} alt="trail_qr_code_img" className={styles.QR_code_image} />
                 </div>
-                <div className='col-5'>
+                <div className='d-none d-lg-block col-lg-8'>
                   <h1 className={`${styles.trail_heading}`}>{t('qr_code_text1')}</h1>
                   <p className={`${styles.trail_description} mt-3`}>{t('qr_code_text2')}</p>
                 </div>
-                <div className='col-3 d-flex justify-content-end'>
-                  <div>
-                    <button className={`${styles.show_all_button} btn d-flex px-4`} href='/'>
-                      {t('show_all')}
-                      <div>
-                        <img src={trail_arrow_show_all} alt="trail_arrow_show_all" className='ps-2 pt-1' />
-                      </div>
-                    </button>
-                  </div>
-                </div>
               </div>
-              <div className={`${styles.show_trail_bg} d-flex justify-content-end pt-4`}>
-                <div>
-                  <form action={`${basePath}/trails/certification/${trail?._id}`}>
-                    <button className={`${styles.start_button} btn d-flex ps-5 pe-3 align-items-center`} href={`${basePath}/trails/certification/${trail?._id}`} type='submit'>
-                      {t('start')}
-                      <div>
-                        <img src={trail_arrow_start} alt="trail_arrow_start" className='ps-2 pt-0' />
-                      </div>
-                    </button>
-                  </form>
-                </div>
+              {/* DESKTOP */}
+              <div className={`${styles.show_trail_bg} d-none d-lg-flex justify-content-end pt-4 gap-3`}>
+                <Button className={`${styles.show_all_button} btn px-5 py-2`} href={`${basePath}`}>
+                  {t('show_all')}
+                </Button>
+                <Button className={`${styles.start_button} btn px-5 py-2`} href={`${basePath}/trails/certification/${trail?._id}`}>
+                  {t('start')}
+                </Button>
+              </div>
+              {/* MOBILE */}
+              <div className={`${styles.show_trail_bg} d-flex d-lg-none justify-content-end pt-4 gap-3`}>
+                <Button className={`${styles.show_all_button} flex-fill btn py-2`} href={`${basePath}`}>
+                  {t('show_all')}
+                </Button>
+                <Button className={`${styles.start_button} flex-fill btn py-2`} href={`${basePath}/trails/certification/${trail?._id}`}>
+                  {t('start')}
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       {/* Footer */}
       <Footer />
     </>

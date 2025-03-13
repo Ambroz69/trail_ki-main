@@ -21,7 +21,7 @@ import my_journey_mission from '../../src/assets/my_journey_mission.svg';
 import my_journey_practice from '../../src/assets/my_journey_practice.svg';
 import my_journey_rating from '../../src/assets/my_journey_rating.svg';
 import my_journey_trail_star from '../../src/assets/my_journey_trail_star.svg';
-import my_journey_certification from '../../src/assets/my_journey_certification.png';
+import my_journey_certification from '../../src/assets/my_journey_certification.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");

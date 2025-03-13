@@ -66,11 +66,11 @@ router.post('/register', async (request, response) => {
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: request.body.email,
-      subject: 'AVA Trail - Account verification',
-      text: `Verify your email\n\n Hello ${request.body.name}, thanks for registering on AVA Trail! \n Please click the link below to verify your email: \n http://localhost:5555/users/verify/${emailToken} \n This link will expire in 24 hours.`,
+      subject: 'AVAtar - Account verification',
+      text: `Verify your email\n\n Hello ${request.body.name}, thanks for registering on AVAtar! \n Please click the link below to verify your email: \n http://localhost:5555/users/verify/${emailToken} \n This link will expire in 24 hours.`,
       html: `
         <h2>Verify your email</h2>
-        <p>Hello ${request.body.name}, thanks for registering on AVA Trail!</p>
+        <p>Hello ${request.body.name}, thanks for registering on AVAtar!</p>
         <p>Please click the link below to verify your email:</p>
         <a href="${process.env.BACKEND_URL}/users/verify/${emailToken}">Verify your account</a>
         <p>This link will expire in 24 hours.</p>
@@ -197,11 +197,11 @@ router.post("/forgot-password", async (request, response) => {
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: request.body.email,
-      subject: 'AVA Trail - Password Reset',
-      text: `Password reset\n\n Hello ${request.body.name}, you requested a password reset for your account on AVA Trail. \n Please click the link below to set a new password (valid for 60 minutes): \n http://localhost:5555/reset-password/${resetToken} `,
+      subject: 'AVAtar - Password Reset',
+      text: `Password reset\n\n Hello ${request.body.name}, you requested a password reset for your account on AVAtar. \n Please click the link below to set a new password (valid for 60 minutes): \n http://localhost:5555/reset-password/${resetToken} `,
       html: `
         <h2>Password reset</h2>
-        <p>Hello ${request.body.name}, you requested a password reset for your account on AVA Trail.</p>
+        <p>Hello ${request.body.name}, you requested a password reset for your account on AVAtar.</p>
         <p>Please click the link below to set a new password (valid for 60 minutes):</p>
         <a href="${process.env.FRONTEND_URL}/reset-password/${resetToken}">Reset your password</a>
       `,

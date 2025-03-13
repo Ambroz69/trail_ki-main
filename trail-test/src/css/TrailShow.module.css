@@ -69,43 +69,39 @@
 .lower_card_heading {
   color: #23242A;
   font-weight: 900;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
-button.show_all_button,
-button.show_all_button:visited {
+a.show_all_button,
+a.show_all_button:visited {
   color: #0E2134;
   background-color: #FFF;
   border: 1px solid #8B8FAC;
   font-weight: 900;
   border-radius: 0.25rem;
-  padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
 }
 
-button.show_all_button:hover,
-button.show_all_button:focus,
-button.show_all_button:not(:disabled):not(:disabled):active {
+a.show_all_button:hover,
+a.show_all_button:focus,
+a.show_all_button:not(:disabled):not(:disabled):active {
   background-color: #d4d4d4;
   border: 1px solid #8B8FAC;
 }
 
-button.start_button,
-button.start_button:visited {
-  color: #FFF;
-  background-color: #1976D3;
+a.start_button,
+a.start_button:visited {
+  color: #000;
+  background-color: #F9F871;
   border: none;
   font-weight: 400;
-  border-radius: 0.5rem;
-  padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
+  border-radius: 0.25rem;
 }
 
-button.start_button:hover,
-button.start_button:focus,
-button.start_button:not(:disabled):not(:disabled):active {
-  color: #FFF;
-  background-color: #125292;
+a.start_button:hover,
+a.start_button:focus,
+a.start_button:not(:disabled):not(:disabled):active {
+  color: #000;
+  background-color: #d1d141;
   border: none;
 }
 
@@ -117,4 +113,34 @@ button.start_button:not(:disabled):not(:disabled):active {
 .nav_2_item_current {
   text-decoration: none;
   color: #000;
+}
+
+.certification_image {
+  width: 18rem;
+  height: 11rem;
+}
+
+.QR_code_image {
+  width: 10rem;
+  height: 9.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .certification_image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .lower_card_heading {
+    color: #23242A;
+    font-weight: 900;
+    font-size: 1.5rem;
+  }
+
+  .QR_code_image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 }
