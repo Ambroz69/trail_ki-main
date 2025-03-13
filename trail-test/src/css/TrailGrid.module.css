@@ -337,11 +337,10 @@ a.my_journey_button:visited {
 a.my_journey_button:hover,
 a.my_journey_button:focus,
 a.my_journey_button:not(:disabled):not(:disabled):active {
+  color: #000;
   background-color: #FCCE0D;
   transition-duration: 0.5s;
 }
-
-
 
 a.my_journey_card_button,
 a.my_journey_card_button:visited {

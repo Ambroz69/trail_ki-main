@@ -221,8 +221,8 @@
   "trail_difficulty_title": "Trail Difficulty",
   "choice_create_correct_answers": "Create Answers (check the correct asnwers)",
   "choice_create_first_answers": "Create Answers (first is correct)",
-  "choice_find_correct_answers": "Find the Correct Answers",
-  "choice_find_correct_answer": "Find the Correct Answer (one is correct)",
+  "choice_find_correct_answers": "Multiple correct answers",
+  "choice_find_correct_answer": "One correct answer",
   "order_answers": "Answers in correct order",
   "pairs_answers": "Insert Correct Pairings",
   "short_title_answers": "Insert the correct answer",
@@ -292,7 +292,7 @@
   "task": "Task",
   "practice_results": "Practice results",
   "correct_answers": "Correct answers",
-  "correct": "Great! Your answer is correct.",
-  "incorrect": "Wrong! Your answer is not correct.",
+  "correct": "Well done!",
+  "incorrect": "Oops! That's not correct.",
   "next_question": "Next Question"
 }

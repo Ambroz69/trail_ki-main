@@ -110,14 +110,14 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
         </div>
       ) : ( // quizMode true
         <div>
-          <label className={`${styles.form_label} form-label mb-1`}>{quizType === 'multiple' ? `${t('choice_find_correct_answers')}` : `${t('choice_find_correct_answer')}`}</label>
+          <label className={`${styles.form_label_2} my-2`}>{quizType === 'multiple' ? `${t('choice_find_correct_answers')}` : `${t('choice_find_correct_answer')}`}</label>
           {shuffledAnswers.map((answer, index) => (
             <div className='d-flex justify-content-between align-items-center mb-3' key={index} onClick={() => handleSelectQuizAnswer(index)} style={{ cursor: 'pointer' }}>
-              <div className='col-1 d-flex justify-content-start'>
-                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
+              <div className={`me-3`} >
+                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} px-4 py-3 mb-0`}>{toLetters(index + 1)}</p>
               </div>
-              <div className='col-11'>
-                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer}</p>
+              <div className={`flex-fill`}>
+                <p className={`${(selectedQuizAnswers.includes(index)) ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} px-4 py-3 mb-0`}>{answer}</p>
               </div>
             </div>
           ))}

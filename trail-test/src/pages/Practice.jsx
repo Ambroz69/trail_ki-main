@@ -3,6 +3,7 @@ import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import styles from '../css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import Cookies from "universal-cookie";
 
@@ -19,6 +20,8 @@ import Footer from '../../components/Footer';
 import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
 import title_page_logo from '../../src/assets/title_page_logo.svg';
+import practice_correct from '../../src/assets/practice_correct.svg';
+import practice_incorrect from '../../src/assets/practice_incorrect.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -159,14 +162,14 @@ const Practice = () => {
       setShowSummary(true);
     }
   };
+  const progress = Math.round((currentQuestionIndex / questions.length) * 100);
 
   return (
     <div className='row d-flex mx-0 px-0'>
       <NavbarExplorer />
-      <div className={`${styles.show_trail_bg}`}>
-        <div className={`py-4 px-0 offset-lg-2 col-lg-8`}>
-          <h2 className={`${styles.overview_heading} fs-4 pb-3`}>{t('practice')}</h2>
-          <div className='col-12 p-2 pt-2'>
+      <div className={`${styles.show_trail_bg} ${styles.full_height}`}>
+        <div className={`py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2`}>
+          <div className='col-12'>
             {showSummary ? (
               <>
                 <div className='d-flex'>
@@ -186,10 +189,12 @@ const Practice = () => {
               </>
             ) : (
               <>
-                <h5>
+                <h5 className='fs-5 font-bold text-center mb-3 mt-4'>Practice</h5>
+                <ProgressBar now={progress} label={`${progress}%`} className={`${styles.progress_bar} col-12 mb-3 m-lg-0`} />
+                <h5 className='mt-5 fs-5 font-bold'>
                   {t("task")} {currentQuestionIndex + 1} / {questions.length}
                 </h5>
-                <p className={`${styles.accordion_point_title} mb-2`}>{questions[currentQuestionIndex]?.question}</p>
+                <p className={`fs-5 font-bold mb-2`}>{questions[currentQuestionIndex]?.question}</p>
                 <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                   {/* Render quiz type */}
                   {(() => {
@@ -204,6 +209,7 @@ const Practice = () => {
                             answers={questions[currentQuestionIndex]?.answers}
                             quizMode
                             handleQuizAnswer={setTempAnswer}
+
                           />
                         );
                       case "slider":
@@ -244,32 +250,57 @@ const Practice = () => {
                 {/* Show Feedback after submitting the answer */}
                 {showFeedback ? (
                   <>
-                    <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                      <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
-                      <div className={feedback === t("correct") ? 'my-1' : 'my-1 d-none'}>
-                        <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{feedback}</p>
-                      </div>
-                      <div className={feedback === t("incorrect") ? 'my-1' : 'my-1 d-none'}>
-                        <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{feedback}</p>
+                    {/* CORRECT feedback */}
+                    <div className={`${feedback === t("correct") ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom`}>
+                      <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
+                        <div className='me-auto d-flex flex-row align-items-center'>
+                          <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                            style={{ minWidth: "50px", height: "50px", backgroundColor: "#05192D" }}>
+                            <img className="text-white fs-5" src={practice_correct} placeholder="practice_correct"></img>
+                          </div>
+                          <p className={`${styles.feedback_correct} mb-0`}>{t("correct")}</p>
+                        </div>
+                        <p className={`${styles.feedback_correct} mb-0 pe-3`}>CLICK BUTTON TO</p>
+                        <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
+                          Continue
+                        </button>
                       </div>
                     </div>
-                    <button className="btn btn-secondary mt-3" onClick={handleNextQuestion}>
-                      {t("next_question")}
-                    </button>
+                    {/* INCORRECT feedback */}
+                    <div className={`${feedback === t("incorrect") ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom`}>
+                      <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
+                        <div className='me-auto d-flex flex-row align-items-center'>
+                          <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                            style={{ minWidth: "50px", height: "50px", backgroundColor: "#FCEAFF" }}>
+                            <img className="text-white fs-5" src={practice_incorrect} placeholder="practice_incorrect"></img>
+                          </div>
+                          <p className={`${styles.feedback_incorrect} mb-0`}>{t("incorrect")}</p>
+                        </div>
+                        <p className={`${styles.feedback_incorrect} mb-0 pe-3`}>CLICK BUTTON TO</p>
+                        <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
+                          Continue
+                        </button>
+                      </div>
+                    </div>
                   </>
                 ) : (
-                  <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
-                    {t('submit_answer')}
-                  </button>
+                  <>
+                    <div className={`${styles.sticky_default} fixed-bottom`}>
+                      <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
+                        <p className='mb-0 pe-3'>CLICK BUTTON TO</p>
+                        <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
+                          Check
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 )}
               </>
             )}
           </div>
         </div>
       </div>
-      {/* Footer */}
-      <Footer />
-    </div>
+    </div >
   );
 };
 

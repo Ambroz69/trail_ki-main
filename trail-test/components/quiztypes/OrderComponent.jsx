@@ -72,7 +72,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={{
-                  background: snapshot.isDraggingOver ? 'white' : 'white',
+                  background: snapshot.isDraggingOver ? '#FAFBFF' : '#FAFBFF',
                   padding: 8,
                   width: '100%',
                   minHeight: '80px',
@@ -86,7 +86,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                   >
                     {(provided, snapshot) => (
                       <div
-                        className={styles.accordion_point_answers_text}
+                        className={`${styles.accordion_point_answers_text} p-0`}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
@@ -95,7 +95,7 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                           padding: 2,
                           margin: `0 0 8px 0`,
                           maxHeight: '40px',
-                          backgroundColor: snapshot.isDragging ? '#191C21' : '#007AF7',
+                          backgroundColor: snapshot.isDragging ? '#191C21' : '#7FCEC6',
                           color: 'white',
                           borderRadius: '4px',
                           ...provided.draggableProps.style,

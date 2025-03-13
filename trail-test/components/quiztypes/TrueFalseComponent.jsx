@@ -31,7 +31,19 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
           </div>
         </>
       ) : (
-        <div className='mb-3'>
+
+        <>
+          < div className='d-flex justify-content-between align-items-center mb-3' onClick={() => handleChange(true)} style={{ cursor: 'pointer' }}>
+            <div className={`flex-fill`}>
+              <p className={`${selectedAnswer ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} px-4 py-3 mb-0`}>TRUE</p>
+            </div>
+          </div >
+          < div className='d-flex justify-content-between align-items-center mb-3'onClick={() => handleChange(false)} style={{ cursor: 'pointer' }}>
+            <div className={`flex-fill`}>
+              <p className={`${!selectedAnswer ? styles.accordion_point_answers_text_correct : styles.accordion_point_answers_text} px-4 py-3 mb-0`}>FALSE</p>
+            </div>
+          </div >
+          {/*<div className='mb-3'>
           <div className="form-check">
             <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={selectedAnswer === true} onChange={() => handleChange(true)} />
             <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
@@ -44,7 +56,8 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
               {t('false')}
             </label>
           </div>
-        </div>
+        </div>*/}
+        </>
       )}
     </>
   );
