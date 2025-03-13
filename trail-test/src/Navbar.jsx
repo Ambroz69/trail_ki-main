@@ -81,7 +81,7 @@ function Navbar() {
       <ul className="nav nav-pills flex-column mb-auto mx-4">
         {/* Home Link (Dynamic for each role) */}
         <li className="nav-item pb-2">
-          <NavLink to={basePath} end aria-current="page" className={({ isActive }) =>
+          <NavLink to={`${basePath}/homeuser`} end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.sidebar_link}  nav-link d-flex` // add when created another home ${styles.sidebar_link_active} ${styles.sidebar_link_active_bg}
               : `${styles.sidebar_link} nav-link d-flex`
           }>

@@ -13,7 +13,7 @@ import hamburger_logout from '../src/assets/hamburger_logout.svg';
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
 
-function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
+function Hamburger({ userLoggedIn, menuModalShow, closeMenuModalShow }) {
   const { t } = useTranslation();
 
   const getUserRole = () => {
@@ -46,12 +46,28 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
           </button>
         </div>
         <ul className="d-flex flex-column px-3 mb-0">
-          <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('home')}</a>
-          </li>
-          <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#explore">{t('explore_nav_explore')}</a>
-          </li>
+          {(userRole === "trail creator" || userRole === "manager") ? (
+            <>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}/homeuser`}>{t('home')}</a>
+              </li>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('dashboard')}</a>
+              </li>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}/homeuser`}>{t('explore_nav_explore')}</a>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('home')}</a>
+              </li>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('explore_nav_explore')}</a>
+              </li>
+            </>
+          )}
           <li className="py-2 mt-1">
             <a className={`${styles.hamburger_link}`} href="#about">{t('explore_nav_about')}</a>
           </li>
@@ -66,7 +82,7 @@ function Hamburger({userLoggedIn, menuModalShow, closeMenuModalShow }) {
             <a className={`${styles.hamburger_link}`} href={`${basePath}/journey`}>{t('explore_nav_my_journey')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#hall_of_fame">{t('hall_of_fame')}</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/leaderboard`}>{t('hall_of_fame')}</a>
           </li>
           <li className="py-2 mt-1">
             <a className={`${styles.hamburger_link}`} href="#certificates">{t('explore_nav_certificates')}</a>

@@ -39,6 +39,11 @@ const Practice = () => {
   const { t } = useTranslation(); // Hook to access translations
 
   useEffect(() => {
+    const storedQuestions = localStorage.getItem("practiceQuestions");
+    if (storedQuestions) {
+      setQuestions(JSON.parse(storedQuestions));
+      return;
+    }
     // fetch random querstions from all trails
     const configuration = {
       method: "get",
@@ -65,6 +70,7 @@ const Practice = () => {
         // Randomly select 5 questions
         const shuffledQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 5);
         setQuestions(shuffledQuestions);
+        localStorage.setItem("practiceQuestions", JSON.stringify(shuffledQuestions));
       })
       .catch((error) => {
         console.log(error);
@@ -88,6 +94,7 @@ const Practice = () => {
       case 'short-answer': {
         const correctAnswer = question.answers[0].text.trim().toLowerCase();
         isCorrect = tempAnswer.trim().toLowerCase() === correctAnswer;
+        break;
       }
       case 'single': {
         const correcAnswer = question.answers.find((answer) => answer.isCorrect);
@@ -160,9 +167,15 @@ const Practice = () => {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setShowSummary(true);
+      localStorage.removeItem("practiceQuestions");
     }
   };
   const progress = Math.round((currentQuestionIndex / questions.length) * 100);
+
+  useEffect(() => {
+    setTempAnswer(null);
+    setRightPairAnswer(null);
+}, [currentQuestionIndex]);
 
   return (
     <div className='row d-flex mx-0 px-0'>

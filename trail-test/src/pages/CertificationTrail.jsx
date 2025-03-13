@@ -42,6 +42,7 @@ const CertificationTrail = () => {
   const { t } = useTranslation(); // Hook to access translations
   const [certificationId, setCertificationId] = useState(null); // store id if exists
   const [totalPoints, setTotalPoints] = useState(0);
+  const [quizQuestions, setQuizQuestions] = useState([]);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -56,7 +57,11 @@ const CertificationTrail = () => {
     // make the API call
     api(configuration)
       .then((response) => {
-        setTrail(response.data);
+        const trailData = response.data;
+        const validQuestions = trailData.points.filter(p => p.quiz); // only points with quizes
+
+        setTrail(trailData);
+        setQuizQuestions(validQuestions);
         setTotalPoints(response.data.points.reduce((sum, point) => sum + (point.quiz?.points || 0), 0));
       })
       .catch((error) => {
@@ -94,6 +99,12 @@ const CertificationTrail = () => {
       })
   }, [id]);
 
+  const handleSkipPOI = () => {
+    if (answeredQuestions.size === quizQuestions.length) {
+      submitCertificationResults(userAnswers, score);
+    }
+  };
+
   const toLetters = (num) => {
     "use strict";
     var mod = num % 26,
@@ -123,6 +134,7 @@ const CertificationTrail = () => {
         const correctAnswer = point.quiz.answers[0].text.trim().toLowerCase();
         console.log(correctAnswer);
         isCorrect = tempAnswer.trim().toLowerCase() === correctAnswer;
+        break;
       }
       case 'single': {
         const correcAnswer = point.quiz.answers.find((answer) => answer.isCorrect);
@@ -199,7 +211,7 @@ const CertificationTrail = () => {
       } else {
         saveAnswerToDatabase(updatedAnswer, newScore, [...userAnswers, updatedAnswer]);
       }
-    }, 1000); // 10 seconds
+    }, 10000); // 10 seconds
   };
 
   const saveAnswerToDatabase = async (updatedAnswer, newScore, newAnswers) => {
@@ -297,10 +309,14 @@ const CertificationTrail = () => {
                       <h2>{t('certification_results')}</h2>
                       <ul>
                         {trail.points.map((p, index) => (
+                          point?.quiz ? (
                           <li key={p._id} className='d-flex justify-content-between'>
                             <span>{p.title}</span>
                             <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
                           </li>
+                          ) : (
+                            <></>
+                          )
                         ))}
                       </ul>
                     </div>
@@ -344,10 +360,15 @@ const CertificationTrail = () => {
                             <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : ` ${t('points').toLowerCase()}`}</p>
                           </div>
                         </>
+                      ) : ( point? (
+                        <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
+                          {t('skip_this_poi')}
+                        </button>
                       ) : (
                         <>
                           <p className={`${styles.accordion_point_question_type} m-0`}>{t('certification_look')}</p>
                         </>
+                      )
                       )}
                     </div>
                     <div className='p-2 pt-0'>

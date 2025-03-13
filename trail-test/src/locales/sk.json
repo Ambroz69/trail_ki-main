@@ -290,6 +290,7 @@
   "practice_results": "Výsledky výcviku",
   "correct_answers": "Správne odpovede",
   "correct": "Výborne! Tvoja odpoveď je správna.",
-  "incorrect": "Zle! Tvoja odpoveď je nesprávna.",
-  "next_question": "Ďalšia otázka"
+  "incorrect": "Ups! To nie je správne.",
+  "next_question": "Ďalšia otázka",
+  "skip_this_poi": "Pokračuj ďalej"
 }

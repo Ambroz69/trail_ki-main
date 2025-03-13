@@ -46,25 +46,31 @@ const App = () => {
       <Route path='creator' element={<ProtectedRoute requiredRole="trail creator" />}>
         <Route index element={<Home />} />
         <Route path='homeuser' element={<HomeUser />} />
-        <Route path='trails/details/:id' element={<ShowTrail />} />
+        <Route path='trails/details/:id' element={<ShowTrailUser />} />
         <Route path='trails/edit/:id' element={<CreateTrail />} />
         <Route path='trails/remove/:id' element={<DeleteTrail />} />
         <Route path='trails/create' element={<CreateTrail />} />
         <Route path='trails/certification/:id' element={<CertificationTrail />} />
         <Route path='profile' element={<UserProfile />} />
+        <Route path='journey' element={<ExplorerJourney />} />
+        <Route path='leaderboard' element={<Leaderboard />} />
+        <Route path='practice' element={<Practice />} />
       </Route>
 
       {/* Manager Routes */}
       <Route path='manager' element={<ProtectedRoute requiredRole="manager" />}>
         <Route index element={<Home />} />
         <Route path='homeuser' element={<HomeUser />} />
-        <Route path='trails/details/:id' element={<ShowTrail />} />
+        <Route path='trails/details/:id' element={<ShowTrailUser />} />
         <Route path='trails/edit/:id' element={<CreateTrail />} />
         <Route path='trails/remove/:id' element={<DeleteTrail />} />
         <Route path='trails/create' element={<CreateTrail />} />
         <Route path='trails/certification/:id' element={<CertificationTrail />} />
         <Route path='users' element={<Users />} />
         <Route path='profile' element={<UserProfile />} />
+        <Route path='journey' element={<ExplorerJourney />} />
+        <Route path='leaderboard' element={<Leaderboard />} />
+        <Route path='practice' element={<Practice />} />
       </Route>
 
       {/* Default Redirect */}

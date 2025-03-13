@@ -294,5 +294,6 @@
   "correct_answers": "Correct answers",
   "correct": "Well done!",
   "incorrect": "Oops! That's not correct.",
-  "next_question": "Next Question"
+  "next_question": "Next Question",
+  "skip_this_poi": "Continue Journey"
 }

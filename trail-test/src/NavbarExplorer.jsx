@@ -31,11 +31,18 @@ function NavbarExplorer() {
   };
 
   const isTokenExpired = (tok) => {
+    if (!tok) {
+      setUserLoggedIn(false);
+      return true;  // No token = Not logged in
+    }
     const arrayToken = tok.split('.');
-    const tokenPayload = JSON.parse(atob(arrayToken[1]));
+    //const tokenPayload = JSON.parse(atob(arrayToken[1]));
+    const tokenPayload = JSON.parse(decodeURIComponent(escape(atob(arrayToken[1]))));
     setUserEmail(tokenPayload?.userEmail || '');
     setUserName(tokenPayload?.userName || '');
-    return Math.floor(new Date().getTime() / 1000) >= tokenPayload?.sub;
+    const isExpired = Math.floor(new Date().getTime() / 1000) >= tokenPayload?.sub;
+    setUserLoggedIn(!isExpired);
+    return isExpired;
   };
 
   const getUserRole = () => {
@@ -103,8 +110,15 @@ function NavbarExplorer() {
             <Dropdown className="bg-[#416A65] d-none d-lg-block">
               <Dropdown.Toggle variant="" size="sm" className="d-flex align-items-center text-white pt-2">
                 {userName}
-              </Dropdown.Toggle>
+              </Dropdown.Toggle>              
               <Dropdown.Menu>
+                {(userRole === "trail creator" || userRole === "manager") && (
+                  <Dropdown.Item className="d-flex align-items-center">
+                    <NavLink to={`${basePath}`} className={`${styles.sidebar_link} nav-link d-flex`}>
+                      {t('dashboard')}
+                    </NavLink>
+                  </Dropdown.Item>
+                )}
                 <Dropdown.Item className="d-flex align-items-center">
                   <NavLink to={`${basePath}/profile`} className={`${styles.sidebar_link} nav-link d-flex`}>
                     {t('profile')}
@@ -136,12 +150,21 @@ function NavbarExplorer() {
           </NavLink>
         </div>
         <div className={`pe-4 py-4`}>
+        {(userRole === "trail creator" || userRole === "manager") ? (
+          <NavLink to={`${basePath}/homeuser`} end aria-current="page" className={({ isActive }) =>
+            isActive ? `${styles.nav_2_item_current}`
+              : `${styles.nav_2_item}`
+          }>
+            {t("explore_nav_explore")}
+          </NavLink>
+        ) : (
           <NavLink to={`${basePath}`} end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.nav_2_item_current}`
               : `${styles.nav_2_item}`
           }>
             {t("explore_nav_explore")}
           </NavLink>
+        )}
         </div>
         <div className={`pe-4 py-4`}>
           <NavLink to="#" end aria-current="page" className={({ isActive }) =>
@@ -152,7 +175,7 @@ function NavbarExplorer() {
           </NavLink>
         </div>
         <div className={`pe-4 py-4`}>
-          <NavLink to="#" end aria-current="page" className={({ isActive }) =>
+          <NavLink to={`${basePath}/leaderboard`} end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.nav_2_item}` // change to nav_2_item_current when active link
               : `${styles.nav_2_item}`
           }>

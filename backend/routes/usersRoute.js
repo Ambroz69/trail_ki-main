@@ -32,7 +32,7 @@ router.post('/register', async (request, response) => {
       email: request.body.email,
       country: request.body.country,
       password: hashedPassword,
-      role: 'trail creator', // change to user later
+      role: 'explorer', 
       verified: false,
       verificationToken: null,
     });
