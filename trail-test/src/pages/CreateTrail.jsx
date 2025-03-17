@@ -275,9 +275,14 @@ const CreateTrail = () => {
       setPoints(points => points.map(p => p.id === cID || p._id === cID ? { ...p, ...data } : p));
       //updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
     } else {
-      const point = { ...data, longitude: tempPoint.longitude, latitude: tempPoint.latitude, id: tempPoint.id };
-      setPoints(prevPoints => [...prevPoints, point]);
-      //updateMapPoints([...points, point]);
+      if (tempPoint===null) {
+        const point = { ...data, longitude: longitude, latitude: latitude, id: Date.now() };
+        setPoints(prevPoints => [...prevPoints, point]);
+      } else {
+        const point = { ...data, longitude: longitude, latitude: latitude, id: tempPoint.id };
+        setPoints(prevPoints => [...prevPoints, point]);
+        //updateMapPoints([...points, point]);
+      }
     }
     //setModalOpen(false);
     setEditMode(false);
@@ -555,7 +560,7 @@ const CreateTrail = () => {
               <Tab eventKey="points" title={t('trail_content')}>
                 <div className={`${styles.tabs_bg} p-0 d-flex`}>
                   <div className='col-6 p-4'>
-                    {pointCreated ? (
+                    {/*{pointCreated ? (*/}
                       <>
                         <div className='mb-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>{t('interaction_title')}</label>
@@ -564,11 +569,11 @@ const CreateTrail = () => {
                         <div className='mb-3 d-flex'>
                           <div className='col-6 pe-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('longitude')}</label>
-                            <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
+                            <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
                           </div>
                           <div className='col-6 ps-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('latitude')}</label>
-                            <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} disabled></input>
+                            <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
                           </div>
                         </div>
                         <div className='mb-3'>
@@ -692,13 +697,13 @@ const CreateTrail = () => {
                           : <></>
                         }
                       </>
-                    ) : (
+                    {/*) : (
                       <>
                         <div className={`${styles.map_container}  d-flex justify-content-center align-items-center`}>
                           <p className={`${styles.map_left_text} text-center`}>{t('map_text_left')}</p>
                         </div>
-                      </>
-                    )}
+                      </> 
+                    )} */}
 
                   </div>
                   <div className='col-6'>
