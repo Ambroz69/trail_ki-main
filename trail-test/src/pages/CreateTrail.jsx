@@ -52,9 +52,11 @@ const CreateTrail = () => {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
-  const { quill, quillRef } = useQuill();
+  const { quill: quillDescription, quillRef: quillRefDescription } = useQuill();
+  const { quill: quillContent, quillRef: quillRefContent} = useQuill();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const contentRef = useRef(content); // useRef to prevent rerenders
   const [question, setQuestion] = useState('');
   const [ppoints, setPpoints] = useState('');
   const [quizType, setQuizType] = useState('single');
@@ -212,13 +214,13 @@ const CreateTrail = () => {
 
 
   useEffect(() => {
-    if (quill) {
+    if (quillDescription) {
       if (!hasLoadedInitialContent.current && description) {
-        quill.clipboard.dangerouslyPasteHTML(description); // Set the initial description
+        quillDescription.clipboard.dangerouslyPasteHTML(description); // Set the initial description
         hasLoadedInitialContent.current = true;
       }
-      quill.on('text-change', (delta, oldDelta, source) => {
-        const currentContent = quill.root.innerHTML;
+      quillDescription.on('text-change', (delta, oldDelta, source) => {
+        const currentContent = quillDescription.root.innerHTML;
 
         // Only update state if the content has actually changed
         if (descriptionRef.current !== currentContent) {
@@ -227,7 +229,25 @@ const CreateTrail = () => {
         }
       });
     }
-  }, [quill, description]);
+  }, [quillDescription, description]);
+
+  useEffect(() => {
+    if (quillContent) {
+      if (!hasLoadedInitialContent.current && content) {
+        quillContent.clipboard.dangerouslyPasteHTML(content); // Set the initial description
+        hasLoadedInitialContent.current = true;
+      }
+      quillContent.on('text-change', (delta, oldDelta, source) => {
+        const currentContent = quillContent.root.innerHTML;
+
+        // Only update state if the content has actually changed
+        if (contentRef.current !== currentContent) {
+          contentRef.current = currentContent;
+          setContent(currentContent);
+        }
+      });
+    }
+  }, [quillContent, content]);
 
   const handleConfirmDelete = () => {
     setPoints(points => {
@@ -336,6 +356,7 @@ const CreateTrail = () => {
     setLongitude('');
     setLatitude('');
     setContent('');
+    if(quillContent) { quillContent.root.innerHTML = ''; }
     setQuizChecked(false);
     setQuestion('');
     setPpoints('');
@@ -392,6 +413,7 @@ const CreateTrail = () => {
       setLongitude(pointToEdit.longitude || '');
       setLatitude(pointToEdit.latitude || '');
       setContent(pointToEdit.content || '');
+      if (quillContent) { quillContent.clipboard.dangerouslyPasteHTML(pointToEdit.content || ''); }
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
       setQuizType(pointToEdit.quiz?.type || 'single');
@@ -552,7 +574,7 @@ const CreateTrail = () => {
                   <div className='mb-3'>
                     <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
                     <div>
-                      <div ref={quillRef} className={`${styles.description_input}`} />
+                      <div ref={quillRefDescription} className={`${styles.description_input}`} />
                     </div>
                   </div>
                 </div>
@@ -578,7 +600,8 @@ const CreateTrail = () => {
                         </div>
                         <div className='mb-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
-                          <textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>
+                          <div ref={quillRefContent} className={`${styles.description_input}`} />
+                          {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
                         </div>
                         <div className="d-flex flex-row justify-content-between mt-3">
                           <div className=" form-check col-8">
