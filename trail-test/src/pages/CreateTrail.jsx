@@ -16,6 +16,7 @@ import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
 import AlertComponent from '../../components/AlertComponent';
 import TrailMap from '../../components/TrailMap';
+import AudioRecorder from '../../components/AudioRecorder';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next'; // Import translation hook
@@ -53,7 +54,7 @@ const CreateTrail = () => {
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
   const { quill: quillDescription, quillRef: quillRefDescription } = useQuill();
-  const { quill: quillContent, quillRef: quillRefContent} = useQuill();
+  const { quill: quillContent, quillRef: quillRefContent } = useQuill();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const contentRef = useRef(content); // useRef to prevent rerenders
@@ -81,6 +82,9 @@ const CreateTrail = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
+  const [tempAudios, setTempAudios] = useState({});
+  const [tempPointId, setTempPointId] = useState(null);
+  const [audioB, setAudioB] = useState(null);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -131,22 +135,47 @@ const CreateTrail = () => {
     setThumbnailPreview(fileURL);
   };
 
-  const handleSaveTrail = () => {
+  const handleSaveTrail = async () => {
     let trailLength = calculateTrailLength(points);
     const userId = getUserIDFromToken(token);
     if (!userId) {
-      setAlert({message: `${t('error_userid')}`, type: 'error'});
+      setAlert({ message: `${t('error_userid')}`, type: 'error' });
       return;
     }
     if (!name.trim()) {
-      setAlert({message: `${t('missing_trail_name')}`, type: 'error'});
+      setAlert({ message: `${t('missing_trail_name')}`, type: 'error' });
       return;
     }
     if (!description.trim()) {
-      setAlert({message: `${t('missint_trail_description')}`, type: 'error'});
+      setAlert({ message: `${t('missint_trail_description')}`, type: 'error' });
       return;
     }
     const formData = new FormData();
+
+    const uploadedAudios = {};
+
+    for (const pointId in tempAudios) {
+      const audioBlob = tempAudios[pointId];
+      if (!audioBlob || !(audioBlob instanceof Blob)) continue;
+      const audioForm = new FormData();
+      audioForm.append('audio', audioBlob, `${pointId}.wav`);
+      try {
+        const response = await fetch(`${backendUrl}/trails/upload-audio`, {
+          method: 'POST',
+          headers: {Authorization: `Bearer ${token}`},
+          body: audioForm,
+        });
+        const data = await response.json();
+        uploadedAudios[tempPointId || pointId] = data.audioPath; // store returned file path
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+    const updatedPoints = points.map((point) => ({
+      ...point,
+      audioPath: uploadedAudios[point.id] || uploadedAudios[point._id] || point.audioPath || null,
+    }));
+
     formData.append('name', name);
     formData.append('description', description);
     formData.append('difficulty', difficulty);
@@ -156,7 +185,7 @@ const CreateTrail = () => {
     formData.append('length', trailLength);
     formData.append('estimatedTime', estimatedTime);
     formData.append('language', language);
-    formData.append('points', JSON.stringify(points));
+    formData.append('points', JSON.stringify(updatedPoints));
     const url = id
       ? `${backendUrl}/trails/${id}`
       : `${backendUrl}/trails`;
@@ -173,14 +202,16 @@ const CreateTrail = () => {
     api(configuration)
       .then((response) => {
         console.log(id ? 'Trail updated.' : 'Trail created.');
-        setAlert({message: id ? `${t('trail_updated')}` : `${t('trail_created')}`, type: 'success'});
+        setAlert({ message: id ? `${t('trail_updated')}` : `${t('trail_created')}`, type: 'success' });
+        setPoints([]);
+        setTempAudios({});
         setTimeout(() => {
           navigate('/');
         }, 1500);
       })
       .catch((error) => {
         console.log(error);
-        setAlert({message: `${t('error_trail_save')}`, type: 'error'});
+        setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
       });
   };
 
@@ -272,10 +303,12 @@ const CreateTrail = () => {
   // handle for TrailMap component  
   const handleAddPoint = (point) => {
     //setPoints((prevPoints) => [...prevPoints, point]);
-    setCurrentPoint(point);
+    const newPointId = Date.now();
+    setTempPointId(newPointId);
+    setCurrentPoint({ ...point, id: newPointId });
     setLongitude(point.longitude);
     setLatitude(point.latitude);
-    setTempPoint(point);
+    setTempPoint({ ...point, id: newPointId });
     setPointCreated(true);
   };
 
@@ -289,18 +322,43 @@ const CreateTrail = () => {
     );
   };
 
-  const handleSavePoint = (data) => {
+  const handleSavePoint = (data, audioBlob) => {
     if (editMode) {
       let cID = currentPoint.id || currentPoint._id;
-      setPoints(points => points.map(p => p.id === cID || p._id === cID ? { ...p, ...data } : p));
+      setPoints(points => points.map(p => p.id === cID || p._id === cID ? { ...p, ...data, audioPath: audioBlob ? p.audioPath : null } : p));
+      if (audioBlob) {        
+        setTempAudios((prev) => ({
+          ...prev,
+          [cID]: audioBlob,
+        }));
+      } else {
+        setTempAudios((prev) => {
+          const updated = { ...prev };
+          delete updated[cID];
+          return updated;
+        });
+      }
       //updateMapPoints(points.map(p => p.id === currentPoint.id ? { ...p, ...data } : p));
     } else {
-      if (tempPoint===null) {
-        const point = { ...data, longitude: longitude, latitude: latitude, id: Date.now() };
+      if (tempPoint === null) {
+        const pointId = tempPointId || Date.now();
+        const point = { ...data, longitude: longitude, latitude: latitude, id: pointId, audioFile: audioBlob || null };
         setPoints(prevPoints => [...prevPoints, point]);
+        if (audioBlob) {
+          setTempAudios((prev) => ({
+            ...prev,
+            [pointId]: audioBlob,
+          }));
+        }
       } else {
-        const point = { ...data, longitude: longitude, latitude: latitude, id: tempPoint.id };
+        const point = { ...data, longitude: longitude, latitude: latitude, id: tempPoint.id, audioFile: audioBlob || null };
         setPoints(prevPoints => [...prevPoints, point]);
+        if (audioBlob) {
+          setTempAudios((prev) => ({
+            ...prev,
+            [tempPoint.id]: audioBlob,
+          }));
+        }
         //updateMapPoints([...points, point]);
       }
     }
@@ -312,6 +370,9 @@ const CreateTrail = () => {
       setAccordionEdit(false);
     }
     setCurrentPoint(null);
+    setTempPointId(null);
+    setTempPoint(null);
+    setAudioB(null);
   }
 
   const handleSave = () => {
@@ -325,7 +386,7 @@ const CreateTrail = () => {
 
       if (quizChecked) {
         if (!question || (!answers[0].text && quizType !== 'slider')) {
-          setAlert({message: `${t('missing_quiz_fields')}`, type: 'error'});
+          setAlert({ message: `${t('missing_quiz_fields')}`, type: 'error' });
           return;
         }
 
@@ -342,11 +403,11 @@ const CreateTrail = () => {
       } else {
         pointData.quiz = null;
       }
-      handleSavePoint(pointData);
+      handleSavePoint(pointData, audioB);
       resetContent();
       //onClose();
     } else {
-      setAlert({message: `${t('missing_point_title')}`, type: 'error'});
+      setAlert({ message: `${t('missing_point_title')}`, type: 'error' });
     }
   }
 
@@ -356,7 +417,7 @@ const CreateTrail = () => {
     setLongitude('');
     setLatitude('');
     setContent('');
-    if(quillContent) { quillContent.root.innerHTML = ''; }
+    if (quillContent) { quillContent.root.innerHTML = ''; }
     setQuizChecked(false);
     setQuestion('');
     setPpoints('');
@@ -425,7 +486,9 @@ const CreateTrail = () => {
       setSliderMinValue(pointToEdit.quiz?.answers[0]?.minValue || 0);
       setSliderMaxValue(pointToEdit.quiz?.answers[0]?.maxValue || 100);
       setEditMode(true);
+      setTempPointId(pointToEdit._id || pointToEdit.id);
       setCurrentPoint(pointToEdit);
+      setAudioB(pointToEdit.audioFile || null);
 
       // Switch to the "Trail Content" tab 
       document.getElementById("create-trail-tab-tab-points").click();
@@ -466,6 +529,17 @@ const CreateTrail = () => {
         setThumbnailPreview(fileURL);
       }
     }
+  };
+
+  const handleAudioSave = (audioBlob) => {
+    const pointId = tempPointId || Date.now();
+    setTempAudios((prev) => ({
+      ...prev,
+      [pointId]: audioBlob,
+    }));
+    setTempPointId(pointId);
+    setAudioB(audioBlob);
+    console.log("Audio saved for point:", pointId);
   };
 
   useEffect(() => {
@@ -583,143 +657,146 @@ const CreateTrail = () => {
                 <div className={`${styles.tabs_bg} p-0 d-flex`}>
                   <div className='col-6 p-4'>
                     {/*{pointCreated ? (*/}
-                      <>
-                        <div className='mb-3'>
-                          <label className={`${styles.form_label} form-label mb-1`}>{t('interaction_title')}</label>
-                          <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                    <>
+                      <div className='mb-3'>
+                        <label className={`${styles.form_label} form-label mb-1`}>{t('interaction_title')}</label>
+                        <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                      </div>
+                      <div className='mb-3 d-flex'>
+                        <div className='col-6 pe-3'>
+                          <label className={`${styles.form_label} form-label mb-1`}>{t('longitude')}</label>
+                          <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
                         </div>
-                        <div className='mb-3 d-flex'>
-                          <div className='col-6 pe-3'>
-                            <label className={`${styles.form_label} form-label mb-1`}>{t('longitude')}</label>
-                            <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
-                          </div>
-                          <div className='col-6 ps-3'>
-                            <label className={`${styles.form_label} form-label mb-1`}>{t('latitude')}</label>
-                            <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
-                          </div>
+                        <div className='col-6 ps-3'>
+                          <label className={`${styles.form_label} form-label mb-1`}>{t('latitude')}</label>
+                          <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
                         </div>
-                        <div className='mb-3'>
-                          <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
-                          <div ref={quillRefContent} className={`${styles.description_input}`} />
-                          {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
+                      </div>
+                      <div className='mb-3'>
+                        <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
+                        <div ref={quillRefContent} className={`${styles.description_input}`} />
+                        {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
+                      </div>
+                      <div className='mb-3'>
+                        <AudioRecorder onSave={handleAudioSave} existingAudio={currentPoint?.audioPath} blob={audioB} reset={!pointCreated} />
+                      </div>
+                      <div className="d-flex flex-row justify-content-between mt-3">
+                        <div className=" form-check col-8">
+                          <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
+                          <label className={`${styles.form_label} form-check-label`} htmlFor="quiz_included" >
+                            {t('quiz_text')}
+                          </label>
                         </div>
-                        <div className="d-flex flex-row justify-content-between mt-3">
-                          <div className=" form-check col-8">
-                            <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
-                            <label className={`${styles.form_label} form-check-label`} htmlFor="quiz_included" >
-                              {t('quiz_text')}
-                            </label>
-                          </div>
-                          <div className="col-4 text-end">
-                            <button className='btn btn-primary' onClick={handleSave}>
-                              {t('save_point')}
-                            </button>
-                          </div>
+                        <div className="col-4 text-end">
+                          <button className='btn btn-primary' onClick={handleSave}>
+                            {t('save_point')}
+                          </button>
                         </div>
-                        {quizChecked ? (
-                          <>
-                            <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>{t('question')}</label>
-                              <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                      </div>
+                      {quizChecked ? (
+                        <>
+                          <div className='mb-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('question')}</label>
+                            <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                          </div>
+                          <div className='mb-3 d-flex'>
+                            <div className='col-4 pe-3'>
+                              <label className={`${styles.form_label} form-label mb-1`}>{t('points')}</label>
+                              <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`}></input>
                             </div>
-                            <div className='mb-3 d-flex'>
-                              <div className='col-4 pe-3'>
-                                <label className={`${styles.form_label} form-label mb-1`}>{t('points')}</label>
-                                <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                              </div>
-                              <div className='col-8 ps-3'>
-                                <label className={`${styles.form_label} form-label mb-1`}>{t('question_type')}</label>
-                                <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`}>
-                                  <option value="single">{t('single')}</option>
-                                  <option value="multiple">{t('multiple')}</option>
-                                  <option value="short-answer">{t('short_answer')}</option>
-                                  <option value="slider">{t('slider')}</option>
-                                  <option value="pairs">{t('pairs')}</option>
-                                  <option value="order">{t('order')}</option>
-                                  <option value="true-false">{t('true_false')}</option>
-                                </select>
-                              </div>
+                            <div className='col-8 ps-3'>
+                              <label className={`${styles.form_label} form-label mb-1`}>{t('question_type')}</label>
+                              <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`}>
+                                <option value="single">{t('single')}</option>
+                                <option value="multiple">{t('multiple')}</option>
+                                <option value="short-answer">{t('short_answer')}</option>
+                                <option value="slider">{t('slider')}</option>
+                                <option value="pairs">{t('pairs')}</option>
+                                <option value="order">{t('order')}</option>
+                                <option value="true-false">{t('true_false')}</option>
+                              </select>
                             </div>
-                            {(() => {
-                              switch (quizType) {
-                                case 'short-answer':
-                                  return (
-                                    <ShortAnswerComponent
-                                      value={answers[0].text}
-                                      onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
-                                    />
-                                  );
-                                case 'single':
-                                case 'multiple':
-                                  return (
-                                    <>
-                                      <ChoiceComponent
-                                        quizType={quizType}
-                                        answers={answers}
-                                        handleChangeAnswer={handleChangeAnswer}
-                                        handleRemoveAnswer={handleRemoveAnswer}
-                                      />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
-                                    </>
-                                  );
-                                case 'slider':
-                                  return (
-                                    <SliderComponent
-                                      correctValue={sliderCorrectValue}
-                                      minValue={sliderMinValue}
-                                      maxValue={sliderMaxValue}
-                                      setCorrectValue={correctValue => setSliderCorrectValue(correctValue)}
-                                      setMinValue={minValue => setSliderMinValue(minValue)}
-                                      setMaxValue={maxValue => setSliderMaxValue(maxValue)}
-                                    />
-                                  );
-                                case 'pairs':
-                                  return (
-                                    <>
-                                      <PairsComponent
-                                        answers={answers}
-                                        handleChangeAnswer={handleChangeAnswer}
-                                        handleRemoveAnswer={handleRemoveAnswer}
-                                      />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
-                                    </>
-                                  );
-                                case 'order':
-                                  return (
-                                    <>
-                                      <OrderComponent
-                                        answers={answers}
-                                        handleChangeAnswer={handleChangeAnswer}
-                                        handleRemoveAnswer={handleRemoveAnswer}
-                                      />
-                                      <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
-                                    </>
-                                  );
-                                case 'true-false':
-                                  return (
-                                    <TrueFalseComponent
-                                      value={answers[0].isCorrect}
-                                      answer={answers[0]}
+                          </div>
+                          {(() => {
+                            switch (quizType) {
+                              case 'short-answer':
+                                return (
+                                  <ShortAnswerComponent
+                                    value={answers[0].text}
+                                    onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
+                                  />
+                                );
+                              case 'single':
+                              case 'multiple':
+                                return (
+                                  <>
+                                    <ChoiceComponent
+                                      quizType={quizType}
+                                      answers={answers}
                                       handleChangeAnswer={handleChangeAnswer}
+                                      handleRemoveAnswer={handleRemoveAnswer}
                                     />
-                                  );
-                                default:
-                                  return null;
-                              }
-                            })()}
-                            <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>{t('correct_answer_feedback')}</label>
-                              <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                            </div>
-                            <div className='mb-3'>
-                              <label className={`${styles.form_label} form-label mb-1`}>{t('incorrect_answer_feedback')}</label>
-                              <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
-                            </div>
-                          </>
-                        )
-                          : <></>
-                        }
-                      </>
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                  </>
+                                );
+                              case 'slider':
+                                return (
+                                  <SliderComponent
+                                    correctValue={sliderCorrectValue}
+                                    minValue={sliderMinValue}
+                                    maxValue={sliderMaxValue}
+                                    setCorrectValue={correctValue => setSliderCorrectValue(correctValue)}
+                                    setMinValue={minValue => setSliderMinValue(minValue)}
+                                    setMaxValue={maxValue => setSliderMaxValue(maxValue)}
+                                  />
+                                );
+                              case 'pairs':
+                                return (
+                                  <>
+                                    <PairsComponent
+                                      answers={answers}
+                                      handleChangeAnswer={handleChangeAnswer}
+                                      handleRemoveAnswer={handleRemoveAnswer}
+                                    />
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                  </>
+                                );
+                              case 'order':
+                                return (
+                                  <>
+                                    <OrderComponent
+                                      answers={answers}
+                                      handleChangeAnswer={handleChangeAnswer}
+                                      handleRemoveAnswer={handleRemoveAnswer}
+                                    />
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                  </>
+                                );
+                              case 'true-false':
+                                return (
+                                  <TrueFalseComponent
+                                    value={answers[0].isCorrect}
+                                    answer={answers[0]}
+                                    handleChangeAnswer={handleChangeAnswer}
+                                  />
+                                );
+                              default:
+                                return null;
+                            }
+                          })()}
+                          <div className='mb-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('correct_answer_feedback')}</label>
+                            <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                          </div>
+                          <div className='mb-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('incorrect_answer_feedback')}</label>
+                            <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                          </div>
+                        </>
+                      )
+                        : <></>
+                      }
+                    </>
                     {/*) : (
                       <>
                         <div className={`${styles.map_container}  d-flex justify-content-center align-items-center`}>

@@ -2,11 +2,15 @@ import express from 'express';
 import { Trail } from '../models/trailModel.js';
 import auth from '../auth.js';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    const isAudio = file.mimetype.startsWith('audio/');
+    const folder = isAudio ? 'uploads/audio/' : 'uploads/'
+    cb(null, folder);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
@@ -14,7 +18,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file limit
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file limit
 });
 
 // Route to Save a new Trail
@@ -32,6 +36,46 @@ router.post('/', auth, upload.single('thumbnail'), async (request, response) => 
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
+  }
+});
+
+// Route to upload an audio file and return its path
+router.post('/upload-audio', auth, upload.single('audio'), async (request, response) => {
+  try {
+    if (!request.file) {
+      return response.status(400).send({ message: 'No audio file uploaded' });
+    }
+    const audioPath = `/uploads/audio/${request.file.filename}`;
+    response.status(200).json({ audioPath });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
+
+// Route to Delete an Audio File
+router.delete('/delete-audio', auth, async (request, response) => {
+  try {
+    const { existingAudio } = request.body;
+    const audioPath = existingAudio;
+    if (!audioPath) {
+      return response.status(400).json({ message: 'No audio path provided' });
+    }
+
+    const filePath = path.join(process.cwd(), audioPath); // Convert to absolute path
+    /*const filePath = '.' + audioPath;*/
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath); // Delete the file
+      console.log(`Deleted file: ${filePath}`);
+      return response.status(200).json({ message: 'Audio deleted successfully' });
+    } else {
+      return response.status(404).json({ message: 'File not found' });
+    }
+
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    response.status(500).json({ message: 'Failed to delete audio file' });
   }
 });
 
@@ -87,7 +131,7 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
         message: 'Trail not found',
       });
     }
-    
+
     if (existingTrail.creator.toString() !== request.user.userId) {
       return response.status(403).json({ message: 'You are not authorized to perform this action' });
     }
@@ -197,6 +241,14 @@ router.delete('/:id', auth, async (request, response) => {
     if (existingTrail.creator.toString() !== request.user.userId) {
       return response.status(403).json({ message: 'You are not authorized to perform this action' });
     }
+    // delete associated audio files
+    existingTrail.points.forEach(point => {
+      if (point.audioPath) {
+        fs.unlinkSync('.' + point.audioPath, (error) => {
+          if (error) console.log('Error deleting audio:', error);
+        });
+      }
+    });
     const result = await Trail.findByIdAndDelete(id);
     if (!result) {
       return response.status(400).send({
@@ -218,6 +270,12 @@ router.delete('/point/:trailId/:pointId', auth, async (request, response) => {
     const trail = await Trail.findById(trailId);
     if (!trail) {
       return response.status(404).send({ message: 'Trail not found' });
+    }
+    const audioPath = trail.points[pointId].audioPath;
+    if (audioPath) {
+      fs.unlinkSync('.' + audioPath, (error) => {
+        if (error) console.log('Error deleting audio:', error);
+      });
     }
     const updatedPoints = trail.points.filter(point => point._id.toString() !== pointId);
 

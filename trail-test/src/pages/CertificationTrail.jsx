@@ -393,6 +393,7 @@ const CertificationTrail = () => {
                         </div>
                         <div className='p-2 pt-0'>
                           <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point?.content }}></p>
+                          <audio controls src={backendUrl+point?.audioPath} type="audio/wav"></audio>
                           {answeredQuestions.has(point?.quiz?._id) ? (
                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                               <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>

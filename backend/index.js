@@ -31,6 +31,7 @@ app.use('/trails', trailsRoute);
 app.use('/users', usersRoute);
 app.use('/certifications', certificationRoute);
 app.use('/uploads', express.static('uploads'));
+app.use('/uploads/audio', express.static('uploads/audio'));
 
 mongoose.connect(mongoDBRUL)
 .then(() => { 

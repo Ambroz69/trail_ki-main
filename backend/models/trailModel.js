@@ -54,6 +54,10 @@ const poiSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    audioPath: { // if records audio, here will be the link
+        type: String, // path to the audio
+        required: false,
+    },
     quiz: { // this will be Interaktivny
         type: quizSchema,
         required: false,
