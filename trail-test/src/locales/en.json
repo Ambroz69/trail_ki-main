@@ -299,5 +299,8 @@
   "forfeit": "Forfeit",
   "forfeit_trail": "Forfeit Trail",
   "forfeit_trail_text1": "Do you really want to forfeit this trail?",
-  "forfeit_trail_text2": "You will have to start from the beginning again."
+  "forfeit_trail_text2": "You will have to start from the beginning again.",
+  "rate_trail": "Rate this Trail",
+  "submit_review": "Submit Review",
+  "thank_you_review": "Thank you for your feedback!"
 }

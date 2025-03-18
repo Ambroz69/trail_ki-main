@@ -19,6 +19,7 @@ import PairsComponent from '../../components/quiztypes/PairsComponent';
 import OrderComponent from '../../components/quiztypes/OrderComponent';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
+import Rating from "../../components/Rating";
 
 // svg import
 import accordion_points from '../assets/accordion_points.svg';
@@ -47,6 +48,9 @@ const CertificationTrail = () => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [forfeitModalShow, setForfeitModalShow] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -316,21 +320,53 @@ const CertificationTrail = () => {
     // Fill in the missing answers as incorrect
     const finalAnswers = allQuestionIds.map((questionId) => {
       const existingAnswer = userAnswers.find((ans) => ans.questionId === questionId);
-      
+
       if (existingAnswer) return existingAnswer; // Keep answered ones
-  
+
       // Find the question type to provide an appropriate default answer
       const point = trail.points.find((p) => p.quiz?._id === questionId);
       const defaultAnswer = point?.quiz?.type === "multiple" ? [] : "Not answered";
-  
-      return { 
-        questionId, 
+
+      return {
+        questionId,
         providedAnswer: defaultAnswer,  // Prevents validation error
-        isCorrect: false 
+        isCorrect: false
       };
     });
     handleForfeitModalClose();
     submitCertificationResults(finalAnswers, score);
+  };
+
+  const handleSubmitReview = async () => {
+    if (rating === 0) {
+      alert("Please select a star rating before submitting.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${backendUrl}/reviews`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
+          trail: id,
+          rating,
+          comment: reviewText,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setReviewSubmitted(true);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
   };
 
   const userRole = getUserRole();
@@ -385,6 +421,35 @@ const CertificationTrail = () => {
                             <Button variant="outline-dark">{t("get_certificate")}</Button>
                           </div>
                         </div>
+                        {!reviewSubmitted ? (
+                          <>
+                            <div className='d-flex'>
+                              <div className='col-9 p-2'>
+                                <h4>{t('rate_trail')}</h4>
+                              </div>
+                              <div className='col-2 p-2'>
+                                <Rating onRate={setRating} />
+                              </div>
+                            </div>
+                            <div className='d-flex'>
+                              <div className='col-12 p-2'>
+                                <textarea
+                                  className="form-control mt-2"
+                                  placeholder="Leave a comment (optional)"
+                                  value={reviewText}
+                                  onChange={(e) => setReviewText(e.target.value)}
+                                />
+                                <button className="btn btn-primary mt-2" onClick={handleSubmitReview}>
+                                  {t('submit_review')}
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className='d-flex'>
+                            <p>{t('thank_you_review')}</p>
+                          </div>
+                        )}
                       </>
                     ) : (
                       <>
