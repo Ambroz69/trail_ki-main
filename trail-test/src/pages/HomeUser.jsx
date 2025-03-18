@@ -137,14 +137,15 @@ const HomeUser = () => {
             <p className={`d-none d-lg-block fs-6 text-white`}>{t("explore_ava_description")}</p>
             <p className={`d-block d-lg-none ${styles.desc_ava_font} text-white`}>{t("explore_ava_description")}</p>
           </div>
-          <div className={`${styles.div_ava_parent} col-6 d-none d-lg-block`}>
+          {/* hidden, they don't like him*/}
+          {/*<div className={`${styles.div_ava_parent} col-6 d-none d-lg-block`}>
             <div className={`${styles.div_ava}`}>
               <img src={svabatar} alt="svabatar" className='' />
             </div>
           </div>
           <div className={`col-6 d-block d-lg-none`}>
             <img src={svabatar} alt="svabatar" className='w-100' />
-          </div>
+          </div>*/}
         </div>
       </section>
 

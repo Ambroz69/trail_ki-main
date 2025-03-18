@@ -106,11 +106,11 @@ const TitlePage = () => {
               <button className={`${styles.login_button} col-12 col-lg-6 py-2 px-lg-3 py-lg-2`} onClick={() => goTo("users/register")}>{t("request_access")}</button>
             </div>
           </div>
-          <div className="d-none d-lg-block col-lg-6">
+          {/*<div className="d-none d-lg-block col-lg-6">
             <div className="rounded-full h-80 mx-auto ps-5 pt-5">
               <img src={svabatar} alt="svabatar" className='pe-2 pt-5' width={410} />
             </div>
-          </div>
+          </div>*/}
         </div>
       </section>
 
