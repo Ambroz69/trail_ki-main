@@ -295,5 +295,9 @@
   "correct": "Well done!",
   "incorrect": "Oops! That's not correct.",
   "next_question": "Next Question",
-  "skip_this_poi": "Continue Journey"
+  "skip_this_poi": "Continue Journey",
+  "forfeit": "Forfeit",
+  "forfeit_trail": "Forfeit Trail",
+  "forfeit_trail_text1": "Do you really want to forfeit this trail?",
+  "forfeit_trail_text2": "You will have to start from the beginning again."
 }

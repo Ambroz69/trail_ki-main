@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import styles from '../css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Modal from 'react-bootstrap/Modal';
 
 import Cookies from "universal-cookie";
 
@@ -23,6 +24,7 @@ import Footer from '../../components/Footer';
 import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
 import title_page_logo from '../../src/assets/title_page_logo.svg';
+import modal_delete from '../assets/modal_delete.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -44,6 +46,7 @@ const CertificationTrail = () => {
   const [certificationId, setCertificationId] = useState(null); // store id if exists
   const [totalPoints, setTotalPoints] = useState(0);
   const [quizQuestions, setQuizQuestions] = useState([]);
+  const [forfeitModalShow, setForfeitModalShow] = useState(false);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -297,6 +300,39 @@ const CertificationTrail = () => {
     }
   };
 
+  const handleForfeitModalShow = () => {
+    setForfeitModalShow(true);
+  };
+
+  const handleForfeitModalClose = () => {
+    setForfeitModalShow(false);
+  };
+
+  const handleConfirmForfeit = () => {
+    if (!trail) return;
+
+    const allQuestionIds = quizQuestions.map((point) => point.quiz._id);
+
+    // Fill in the missing answers as incorrect
+    const finalAnswers = allQuestionIds.map((questionId) => {
+      const existingAnswer = userAnswers.find((ans) => ans.questionId === questionId);
+      
+      if (existingAnswer) return existingAnswer; // Keep answered ones
+  
+      // Find the question type to provide an appropriate default answer
+      const point = trail.points.find((p) => p.quiz?._id === questionId);
+      const defaultAnswer = point?.quiz?.type === "multiple" ? [] : "Not answered";
+  
+      return { 
+        questionId, 
+        providedAnswer: defaultAnswer,  // Prevents validation error
+        isCorrect: false 
+      };
+    });
+    handleForfeitModalClose();
+    submitCertificationResults(finalAnswers, score);
+  };
+
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
@@ -393,7 +429,9 @@ const CertificationTrail = () => {
                         </div>
                         <div className='p-2 pt-0'>
                           <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point?.content }}></p>
-                          <audio controls src={backendUrl+point?.audioPath} type="audio/wav"></audio>
+                          {point?.audioPath && (
+                            <audio controls src={backendUrl + point?.audioPath} type="audio/wav"></audio>
+                          )}
                           {answeredQuestions.has(point?.quiz?._id) ? (
                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                               <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>
@@ -508,7 +546,33 @@ const CertificationTrail = () => {
               Take Me Back
             </Button>
           </div>
+          <div className='px-3 px-lg-4 mt-5 mb-3'>
+            <button className={`${styles.show_all_button} d-none d-lg-inline py-3 px-5 btn py-2`} onClick={() => handleForfeitModalShow()}>
+              Forfeit
+            </button>
+          </div>
         </div>
+        <Modal
+          show={forfeitModalShow}
+          onHide={handleForfeitModalClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Body className='d-flex flex-column align-items-center p-4'>
+            <img src={modal_delete} alt="modal_delete" className='px-2 pb-2' />
+            <h1 className={`${styles.modal_heading}`}>{t('forfeit_trail')}</h1>
+            <p className={`${styles.modal_text} mb-0`}>{t('forfeit_trail_text1')}</p>
+            <p className={`${styles.modal_text} `}>{t('forfeit_trail_text2')}</p>
+          </Modal.Body>
+          <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
+            <Button variant="secondary" onClick={() => handleForfeitModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>
+              {t('cancel')}
+            </Button>
+            <Button variant="primary" onClick={() => handleConfirmForfeit()} className={`${styles.modal_delete_button} flex-fill ms-2 me-5`}>
+              {t('forfeit')}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
       {/* Footer */}
       <Footer />
