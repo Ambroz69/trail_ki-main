@@ -311,5 +311,8 @@
   "with_a_score_of": "with a score of",
   "out_of": "out of",
   "date": "Date",
-  "print_certificate": "Print Certificate"
+  "print_certificate": "Print Certificate",
+  "primary_language": "Primary Language",
+  "czechis": "Czech",
+  "select_primary_language": "Select Primary Language"
 }

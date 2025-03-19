@@ -13,6 +13,8 @@ import hamburger from '../src/assets/hamburger.svg';
 import profile_photo_placeholder from '../src/assets/profile_photo_placeholder.svg';
 import sk_flag from './assets/flag-sk.svg';
 import gb_flag from './assets/flag-gb.svg';
+import cz_flag from './assets/flag-cz.svg';
+import es_flag from './assets/flag-es.svg';
 import avatar_white from '../src/assets/avatar_white.png';
 
 const cookies = new Cookies();
@@ -66,7 +68,11 @@ function NavbarExplorer() {
   }
 
   const getFlag = (lang) => {
-    return lang === 'en' ? gb_flag : sk_flag;
+    if (lang === 'en') return gb_flag;
+    if (lang === 'sk') return sk_flag;
+    if (lang === 'cz') return cz_flag;
+    if (lang === 'es') return es_flag;
+    return gb_flag;
   };
 
   const closeMenuModalShow = () => {
@@ -102,6 +108,8 @@ function NavbarExplorer() {
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleLanguageChange('cz')} className="d-flex align-items-center"><img src={cz_flag} width="20px" className="me-2" alt="Czech Flag" />Čeština</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleLanguageChange('es')} className="d-flex align-items-center"><img src={es_flag} width="20px" className="me-2" alt="Espania Flag" />Español</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <div className='ps-3 pe-1 d-none d-lg-block'>

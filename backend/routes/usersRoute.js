@@ -31,6 +31,7 @@ router.post('/register', async (request, response) => {
       name: request.body.name,
       email: request.body.email,
       country: request.body.country,
+      primaryLanguage: request.body.primaryLanguage,
       password: hashedPassword,
       role: 'explorer', 
       verified: false,
@@ -275,6 +276,7 @@ router.post("/login", (request, response) => {
               userName: user.name,
               userCountry: user.country,
               userRole: user.role,
+              primaryLanguage: user.primaryLanguage || 'English',
               userVerified: user.verified,
             },
             process.env.LOGIN_SECRET,
@@ -308,7 +310,7 @@ router.post("/login", (request, response) => {
 router.put('/profile', auth, async (request, response) => {
   try {
     const userId = request.user.userId;
-    const { name, password, country } = request.body;
+    const { name, password, country, primaryLanguage } = request.body;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -325,6 +327,9 @@ router.put('/profile', auth, async (request, response) => {
     if (country) {
       user.country = country;
     }
+    if (primaryLanguage) {
+      user.primaryLanguage = primaryLanguage;
+    }
     await user.save();
 
     return response.status(200).send({
@@ -334,6 +339,7 @@ router.put('/profile', auth, async (request, response) => {
         name: user.name,
         email: user.email,
         country: user.country,
+        primaryLanguage: user.primaryLanguage,
       }
     });
   } catch (error) {
@@ -354,6 +360,7 @@ router.get('/me', auth, (request, response) => {
           name: user.name,
           email: user.email,
           country: user.country,
+          primaryLanguage: user.primaryLanguage,
         }
       });
     });

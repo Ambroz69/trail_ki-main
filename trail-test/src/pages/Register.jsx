@@ -21,6 +21,7 @@ const Register = () => {
   const [country, setCountry] = useState("Slovakia");
   const [register, setRegister] = useState(false);
   const [name, setName] = useState("");
+  const [primaryLanguage, setPrimaryLanguage] = useState("");
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
   const { t } = useTranslation(); // Hook to access translations
@@ -38,6 +39,7 @@ const Register = () => {
         name,
         email,
         country,
+        primaryLanguage,
         password
       },
     };
@@ -134,6 +136,22 @@ const Register = () => {
                   <option value="Slovakia">{t('slovakia')}</option>
                   <option value="Czech Republic">{t('czech')}</option>
                   <option value="Spain">{t('spain')}</option>
+                  <option value="Other">{t('other')}</option>
+                </Form.Select>
+              </Form.Group>
+              {/* primaryLanguage */}
+              <Form.Group controlId="formBasicPrimaryLanguage" className='mt-3'>
+                <Form.Select
+                  name="primaryLanguage"
+                  value={primaryLanguage}
+                  onChange={(e) => setPrimaryLanguage(e.target.value)}
+                  placeholder={t('select_primary_language')}
+                  required
+                >
+                  <option value="Slovak">{t('slovak')}</option>
+                  <option value="Czech">{t('czechis')}</option>
+                  <option value="Spanish">{t('spanish')}</option>
+                  <option value="English">{t('english')}</option>
                   <option value="Other">{t('other')}</option>
                 </Form.Select>
               </Form.Group>

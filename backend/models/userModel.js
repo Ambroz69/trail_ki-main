@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     enum: ['Slovakia', 'Czech Republic', 'Spain', 'Other'],
   },
+  primaryLanguage: {
+    type: String,
+    required: true,
+    enum: ['Slovak', 'Czech', 'Spanish', 'English', 'Other'],
+  },
   role: {
     type: String,
     required: true,

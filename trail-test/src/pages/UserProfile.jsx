@@ -19,6 +19,7 @@ const UserProfile = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
+  const [primaryLanguage, setPrimaryLanguage] = useState('');
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
@@ -49,6 +50,7 @@ const UserProfile = () => {
         setName(name || '');
         setEmail(email || '');
         setCountry(country || '');
+        setPrimaryLanguage(primaryLanguage || '');
       })
       .catch((error) => {
         setAlert({ message: `${t('error_profile')}`, type: 'error' });
@@ -63,6 +65,7 @@ const UserProfile = () => {
       if (name) { data.name = name; }
       if (password) { data.password = password; }
       if (country) { data.country = country; }
+      if (primaryLanguage) { data.primaryLanguage = primaryLanguage; }
       await api.put(`${backendUrl}/users/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -130,6 +133,18 @@ const UserProfile = () => {
                     <option value="Slovakia">{t('slovakia')}</option>
                     <option value="Czech Republic">{t('czech')}</option>
                     <option value="Spain">{t('spain')}</option>
+                    <option value="Other">{t('other')}</option>
+                  </select>
+                </div>
+              </div>
+              <div className='mb-3 d-flex'>
+                <div className='flex-fill'>
+                  <label className={`${styles.form_label_2} fs-6 form-label mb-1`}>{t('primary_language')}</label>
+                  <select value={primaryLanguage} onChange={e => setPrimaryLanguage(e.target.value)} className={`${styles.form_input} form-select`}>
+                    <option value="Slovak">{t('slovak')}</option>
+                    <option value="Czech">{t('czechis')}</option>
+                    <option value="Spanish">{t('spanish')}</option>
+                    <option value="English">{t('english')}</option>
                     <option value="Other">{t('other')}</option>
                   </select>
                 </div>
