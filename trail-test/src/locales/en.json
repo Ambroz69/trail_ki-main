@@ -302,5 +302,7 @@
   "forfeit_trail_text2": "You will have to start from the beginning again.",
   "rate_trail": "Rate this Trail",
   "submit_review": "Submit Review",
-  "thank_you_review": "Thank you for your feedback!"
+  "thank_you_review": "Thank you for your feedback!",
+  "no_reviews": "No reviews yet",
+  "no_comment": "No comment"
 }

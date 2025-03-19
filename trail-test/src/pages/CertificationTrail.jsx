@@ -105,6 +105,27 @@ const CertificationTrail = () => {
         console.log(error);
         console.log("No existing certification found, starting new.");
       })
+
+    const configurationRW = {
+      method: "get",
+      url: `${backendUrl}/reviews/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // make the API call
+    api(configurationRW)
+      .then((response) => {
+        const userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+        const userReview = response.data.find(review => review.userId._id === userId);
+        if (userReview) {
+          setReviewSubmitted(true);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [id]);
 
   const handleSkipPOI = () => {

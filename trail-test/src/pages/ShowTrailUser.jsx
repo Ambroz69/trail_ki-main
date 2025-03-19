@@ -56,6 +56,7 @@ const ShowTrailUser = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [menuModalShow, setMenuModalShow] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   const getUserRole = () => {
     try {
@@ -85,6 +86,24 @@ const ShowTrailUser = () => {
     api(configuration)
       .then((response) => {
         setTrail(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    const configurationRW = {
+      method: "get",
+      url: `${backendUrl}/reviews/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // make the API call
+    api(configurationRW)
+      .then((response) => {
+        setReviews(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -265,6 +284,35 @@ const ShowTrailUser = () => {
                 <div className='d-none d-lg-block col-lg-8'>
                   <h1 className={`${styles.trail_heading}`}>{t('qr_code_text1')}</h1>
                   <p className={`${styles.trail_description} mt-3`}>{t('qr_code_text2')}</p>
+                </div>
+              </div>
+              <div className={`${styles.show_trail_bg} d-flex`}>
+                <img src={trail_rating} alt="trail_rating" className='pe-2 pb-1' />
+                <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('rating')}</p>
+              </div>
+              <div className={`${styles.show_trail_div_border} d-flex flex-column flex-lg-row px-4 py-3`}>
+                <div className='col-lg-4 col-12 d-flex align-items-center justify-content-center pe-5'>
+
+                </div>
+                <div className='d-none d-lg-block col-lg-8'>
+                  {!reviews || reviews.length === 0 ? (
+                    <p className={`${styles.trail_description} mt-3`}>{t('no_reviews')}</p>
+                  ) : (
+                    reviews.map((review) => (
+                      <div key={review.id} className="mb-2">
+                        <p>
+                          <strong>{review.userId.name} </strong> 
+                          {Array.from({ length: 5 }, (_, i) => (
+                            <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
+                          ))}
+                        </p>
+                        <p className={`${styles.trail_description} mt-3`}>
+                          {review.comment || t('no_comment')}
+                        </p>
+                        <hr />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
               {/* DESKTOP */}
