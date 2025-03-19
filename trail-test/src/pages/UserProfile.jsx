@@ -46,7 +46,7 @@ const UserProfile = () => {
     };
     api(configuration)
       .then((response) => {
-        const { name, email, country } = response.data.user || {};
+        const { name, email, country, primaryLanguage } = response.data.user || {};
         setName(name || '');
         setEmail(email || '');
         setCountry(country || '');
