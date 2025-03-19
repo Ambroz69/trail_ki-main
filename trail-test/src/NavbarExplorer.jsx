@@ -25,6 +25,7 @@ function NavbarExplorer() {
   const { t } = useTranslation(); // Hook to access translations
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [menuModalShow, setMenuModalShow] = useState(false);
+  const [primaryLanguage, setPrimaryLanguage] = useState('');
 
   const handleLanguageChange = (lang) => {
     setSelectedLanguage(lang);
@@ -42,6 +43,7 @@ function NavbarExplorer() {
     const tokenPayload = JSON.parse(decodeURIComponent(escape(atob(arrayToken[1]))));
     setUserEmail(tokenPayload?.userEmail || '');
     setUserName(tokenPayload?.userName || '');
+    setPrimaryLanguage(tokenPayload?.primaryLanguage || '');
     const isExpired = Math.floor(new Date().getTime() / 1000) >= tokenPayload?.sub;
     setUserLoggedIn(!isExpired);
     return isExpired;
@@ -106,10 +108,16 @@ function NavbarExplorer() {
                 <img src={getFlag(selectedLanguage)} width="20px" className="me-2" alt="selected flag" /> {selectedLanguage.toUpperCase()}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('cz')} className="d-flex align-items-center"><img src={cz_flag} width="20px" className="me-2" alt="Czech Flag" />Čeština</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('es')} className="d-flex align-items-center"><img src={es_flag} width="20px" className="me-2" alt="Espania Flag" />Español</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
+                { primaryLanguage === "Slovak" && (
+                  <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
+                )}
+                { primaryLanguage === "Czech" && (
+                  <Dropdown.Item onClick={() => handleLanguageChange('cz')} className="d-flex align-items-center"><img src={cz_flag} width="20px" className="me-2" alt="Czech Flag" />Čeština</Dropdown.Item>
+                )}
+                { primaryLanguage === "Spanish" && (
+                  <Dropdown.Item onClick={() => handleLanguageChange('es')} className="d-flex align-items-center"><img src={es_flag} width="20px" className="me-2" alt="Espania Flag" />Español</Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
             <div className='ps-3 pe-1 d-none d-lg-block'>

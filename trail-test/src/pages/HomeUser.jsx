@@ -77,6 +77,14 @@ const HomeUser = () => {
         setAlert({ message: `${t('error_trail')}`, type: 'error' });
         console.log(error);
       });
+
+    // set locality filter based on country
+    try {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      setLocalityFilter(tokenPayload?.userCountry || "");
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
   }, []);
 
   const closeMenuModalShow = () => {

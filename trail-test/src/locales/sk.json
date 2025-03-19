@@ -18,7 +18,8 @@
     "moderate": "Stredná"
   },
   "trail_location": {
-    "slovakia": "Slovensko"
+    "slovakia": "Slovensko",
+    "czech republic": "Česko"
   },
   "location": "Lokalita",
   "all_localities": "Všetky lokality",

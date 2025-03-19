@@ -18,7 +18,8 @@
     "moderate": "Moderate"
   },
   "trail_location": {
-    "slovakia": "Slovakia"
+    "slovakia": "Slovakia",
+    "czech republic": "Czech Republic"
   },
   "location": "Location",
   "all_localities": "All Localities",
