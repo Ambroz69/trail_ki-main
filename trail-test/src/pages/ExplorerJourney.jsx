@@ -226,7 +226,7 @@ const ExplorerJourney = () => {
           {/* Certificates */}
           <div className='d-none d-lg-block'>
             {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
-              <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
+              <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
                 <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
                   style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
                   <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
@@ -241,7 +241,7 @@ const ExplorerJourney = () => {
                   </h5>
                 </div>
                 <div className='ms-auto d-flex align-items-center'>
-                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} href="#">{t("get_certificate")}</Button>
+                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`,"_blank")} >{t("get_certificate")}</Button>
                 </div>
               </div>
             ))}

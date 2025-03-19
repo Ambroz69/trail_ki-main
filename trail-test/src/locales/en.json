@@ -304,5 +304,12 @@
   "submit_review": "Submit Review",
   "thank_you_review": "Thank you for your feedback!",
   "no_reviews": "No reviews yet",
-  "no_comment": "No comment"
+  "no_comment": "No comment",
+  "certificate_of_completion": "Certificate of Completion",
+  "this_is_to_certify": "This is to certify",
+  "has_successfully_completed_the_trail": "has successfully completed the trail",
+  "with_a_score_of": "with a score of",
+  "out_of": "out of",
+  "date": "Date",
+  "print_certificate": "Print Certificate"
 }

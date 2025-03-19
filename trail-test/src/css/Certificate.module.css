@@ -1,0 +1,103 @@
+.certificateContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f9f9f9;
+}
+
+.certificate {
+  width: 80%;
+  max-width: 800px;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border: 10px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.subtitle, .text {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.userName {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.trailName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.thumbnail {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  margin: 20px 0;
+}
+
+.date {
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
+.printButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.printButton:hover {
+  background: #0056b3;
+}
+
+/* Remove everything except the certificate when printing */
+@media print {
+
+  body * {
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  .certificateContainer {
+    width: 100%;
+    height: 100vh; /* Forces it to fit within one page - but does not work :D */
+    overflow: hidden; /* Prevents content from overflowing */
+    page-break-inside: avoid; /* Ensures no content is split */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .printButton {
+    display: none; /* Hide print button in print mode */
+  }
+  NavbarExplorer, Footer {
+    display: none; /* Hide Navbar and Footer when printing */
+  }
+  .certificate, .certificate * {
+    visibility: visible;
+  }
+  .certificate {
+    position: absolute;
+    left: 10;
+    top: 0;
+    width: 90%;
+    height: 95vh; /* Adjusts height to fit perfectly on one page */
+    display: flex;
+    flex-direction: column;
+  }
+}

@@ -439,7 +439,7 @@ const CertificationTrail = () => {
                             <p><strong>{t('status')}:</strong> {score >= totalPoints * 0.7 ? t('passed') : t('failed')}</p>
                           </div>
                           <div className='p-2'>
-                            <Button variant="outline-dark">{t("get_certificate")}</Button>
+                            <Button variant="outline-dark" onClick={() => window.open(`${basePath}/certificate/${trail?._id || trail?.id}`,"_blank")}>{t("get_certificate")}</Button>
                           </div>
                         </div>
                         {!reviewSubmitted ? (

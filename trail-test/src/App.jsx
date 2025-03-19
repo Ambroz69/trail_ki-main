@@ -18,6 +18,7 @@ import ShowTrailUser from './pages/ShowTrailUser';
 import ExplorerJourney from './pages/ExplorerJourney';
 import Leaderboard from './pages/Leaderboard';
 import Practice from './pages/Practice';
+import Certificate from './pages/Certificate';
 
 const App = () => {
   return (
@@ -27,6 +28,8 @@ const App = () => {
       <Route path='users/login' element={<Login />} />
       <Route path='/reset-password/:token' element={<ResetPassword />} />
       <Route path='/forgot-password' element={<ForgottenPassword />} />
+      
+      
 
       {/* Redirect to correct home pages based on role */}
       <Route path='/' element={<ProtectedRoute />} />
@@ -40,6 +43,7 @@ const App = () => {
         <Route path='journey' element={<ExplorerJourney />} />
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
+        <Route path='certificate/:id' element={<Certificate />} />
       </Route>
 
       {/* Trail Creator Routes */}
@@ -55,6 +59,7 @@ const App = () => {
         <Route path='journey' element={<ExplorerJourney />} />
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
+        <Route path='certificate/:id' element={<Certificate />} />
       </Route>
 
       {/* Manager Routes */}
@@ -71,6 +76,7 @@ const App = () => {
         <Route path='journey' element={<ExplorerJourney />} />
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
+        <Route path='certificate/:id' element={<Certificate />} />
       </Route>
 
       {/* Default Redirect */}

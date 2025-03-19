@@ -110,4 +110,19 @@ router.get('/user/:trailId', auth, async (request, response) => {
   }
 });
 
+// Route to get users certification for a trail (status has to be null - work in progress)
+router.get('/certificate/:trailId', auth, async (request, response) => {
+  try {
+    const certification = await Certification.findOne({
+      userId: request.user.userId,
+      trail: request.params.trailId,
+      status: "Passed"
+    }).sort({ score: -1}); // get the best attempt
+    response.status(200).json(certification);
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
+
 export default router;
