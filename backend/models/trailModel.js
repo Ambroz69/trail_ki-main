@@ -1,5 +1,66 @@
 import mongoose from 'mongoose';
 
+const translationSchema = new mongoose.Schema({
+    language: {
+        type: String,
+        required: true, 
+        enum: ['English', 'Slovak', 'Czech', 'Spanish'], 
+    },
+    name: { 
+        type: String, 
+        required: true 
+    },
+    description: { 
+        type: String, 
+        required: true 
+    }
+});
+
+const translationPoiSchema = new mongoose.Schema({
+    language: {
+        type: String,
+        required: true, 
+        enum: ['English', 'Slovak', 'Czech', 'Spanish'], 
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    content: { 
+        type: String,
+        required: false,
+    },
+});
+
+const translationQuizSchema = new mongoose.Schema({
+    question: {
+        type: String,
+        required: true,
+    },
+    type: {
+        type: String,
+        required: true,
+        enum: ['single', 'multiple', 'short-answer', 'slider', 'pairs', 'order', 'foto', 'true-false']
+    },
+    answers: [{
+        text: { type: String, required: false},
+        pairText: { type: String, required: false},
+        minValue: { type: Number, required: false},
+        maxValue: { type: Number, required: false},
+        isCorrect: { type: Boolean, required: false},
+    }],
+    feedback: {
+        correct: {
+            type: String,
+            required: false,
+        },
+        incorrect: {
+            type: String,
+            required: false,
+        }
+    }
+});
+
 const quizSchema = new mongoose.Schema({
     question: {
         type: String,
@@ -34,7 +95,8 @@ const quizSchema = new mongoose.Schema({
             type: String,
             required: false,
         }
-    }
+    },
+    translation: [translationQuizSchema],
 });
 
 const poiSchema = new mongoose.Schema({
@@ -61,7 +123,8 @@ const poiSchema = new mongoose.Schema({
     quiz: { // this will be Interaktivny
         type: quizSchema,
         required: false,
-    }
+    },
+    translation: [translationPoiSchema],
 });
 
 const trailSchema = new mongoose.Schema(
@@ -101,7 +164,7 @@ const trailSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
-        language: {
+        language: { // Original trail language
             type: String,
             required: true,  
             default: 'English',          
@@ -121,7 +184,8 @@ const trailSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             required: true,
-        }
+        },
+        translation: [translationSchema],
     }
 );
 

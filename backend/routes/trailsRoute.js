@@ -24,13 +24,14 @@ const upload = multer({
 // Route to Save a new Trail
 router.post('/', auth, upload.single('thumbnail'), async (request, response) => {
   try {
-    const { name, description, difficulty, locality, season, length, estimatedTime, language, points } = request.body;
+    const { name, description, difficulty, locality, season, length, estimatedTime, language, points, translation } = request.body;
     const parsedPoints = JSON.parse(points);
+    const parsedTranslation = JSON.parse(translation);
     let thumbnail = null;
     if (request.file) {
       thumbnail = request.file.path;
     }
-    const newTrail = new Trail({ name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints, creator: request.user.userId });
+    const newTrail = new Trail({ name, description, thumbnail, difficulty, locality, season, length, estimatedTime, language, points: parsedPoints, translation: parsedTranslation, creator: request.user.userId });
     await newTrail.save();
     return response.status(201).send(newTrail);
   } catch (error) {
@@ -108,9 +109,11 @@ router.get('/:id', auth, async (request, response) => {
 // Route to Update a trail
 router.put('/:id', auth, upload.single('thumbnail'), async (request, response) => {
   try {
-    const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points } = request.body;
+    const { name, description, difficulty, locality, season, thumbnail, length, estimatedTime, language, points, translation } = request.body;
     const parsedPoints = JSON.parse(points);
-    if (!name || !Array.isArray(parsedPoints) || parsedPoints.length === 0) {
+    const parsedTranslation = JSON.parse(translation);
+    //if (!name || !Array.isArray(parsedPoints) || parsedPoints.length === 0) {
+    if (!name) {
       return response.status(400).send({
         message: 'Send all required fields: name and points array (with title, longitude, latitude)',
       });
@@ -143,7 +146,7 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
 
     const updatedTrail = await Trail.findByIdAndUpdate(
       id,
-      { name, description, difficulty, locality, season, thumbnail: newThumbnail, length, estimatedTime, language, points: parsedPoints },
+      { name, description, difficulty, locality, season, thumbnail: newThumbnail, length, estimatedTime, language, points: parsedPoints, translation: parsedTranslation },
       { new: true }
     );
 

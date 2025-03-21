@@ -47,7 +47,7 @@ const CreateTrail = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState(0);
-  const [language, setLanguage] = useState('English');
+  const [language, setLanguage] = useState('Slovak');
   const [points, setPoints] = useState([]);
   const [tempPoint, setTempPoint] = useState(null);
   const navigate = useNavigate();
@@ -85,6 +85,11 @@ const CreateTrail = () => {
   const [tempAudios, setTempAudios] = useState({});
   const [tempPointId, setTempPointId] = useState(null);
   const [audioB, setAudioB] = useState(null);
+  const [translations, setTranslations] = useState([]);
+  const [languageVersion, setLanguageVersion] = useState('');
+  const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('');
+  const [originalTrail, setOriginalTrail] = useState(null);
+  const [storedOriginalTrail, setStoredOriginalTrail] = useState({ name: '', description: '' });
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -162,7 +167,7 @@ const CreateTrail = () => {
       try {
         const response = await fetch(`${backendUrl}/trails/upload-audio`, {
           method: 'POST',
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
           body: audioForm,
         });
         const data = await response.json();
@@ -176,8 +181,27 @@ const CreateTrail = () => {
       audioPath: uploadedAudios[point.id] || uploadedAudios[point._id] || point.audioPath || null,
     }));
 
-    formData.append('name', name);
-    formData.append('description', description);
+    if (language !== selectedLanguageVersion && (translations[0]?.language === "")) {
+      const tempTranslation = { language: '', name: '', description: '' }
+      tempTranslation.name = name;
+      tempTranslation.description = description;
+      tempTranslation.language = selectedLanguageVersion;
+      formData.append('name', storedOriginalTrail.name);
+      formData.append('description', storedOriginalTrail.description);
+      formData.append('translation', JSON.stringify(tempTranslation))
+      console.log(JSON.stringify(tempTranslation));
+    } else {
+      if (language !== selectedLanguageVersion) {
+        formData.append('name', storedOriginalTrail.name);
+        formData.append('description', storedOriginalTrail.description);
+        formData.append('translation', JSON.stringify(translations));
+      } else {
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('translation', JSON.stringify(translations));
+      }
+    }
+    console.log(selectedLanguageVersion);
     formData.append('difficulty', difficulty);
     formData.append('locality', locality);
     formData.append('season', season);
@@ -186,6 +210,8 @@ const CreateTrail = () => {
     formData.append('estimatedTime', estimatedTime);
     formData.append('language', language);
     formData.append('points', JSON.stringify(updatedPoints));
+
+    console.log(JSON.stringify(translations));
     const url = id
       ? `${backendUrl}/trails/${id}`
       : `${backendUrl}/trails`;
@@ -227,15 +253,19 @@ const CreateTrail = () => {
       api(configuration)
         .then(response => {
           // Load data into state for editing
-          setName(response.data.name);
-          setDescription(response.data.description);
-          setLocality(response.data.locality);
-          setDifficulty(response.data.difficulty);
-          setSeason(response.data.season);
-          setThumbnail(response.data.thumbnail);
-          setPoints(response.data.points || []);
-          setEstimatedTime(response.data.estimatedTime);
-          setLanguage(response.data.language);
+          const data = response.data;
+          setOriginalTrail(data);
+          setName(data.name);
+          setDescription(data.description);
+          setLocality(data.locality);
+          setDifficulty(data.difficulty);
+          setSeason(data.season);
+          setThumbnail(data.thumbnail);
+          setPoints(data.points || []);
+          setEstimatedTime(data.estimatedTime);
+          setLanguage(data.language);
+          setTranslations(data.translation || [])
+          setSelectedLanguageVersion(data.language);
           //loadExistingPoints(response.data.points || []);
         }).catch(error => {
           console.error(error);
@@ -326,7 +356,7 @@ const CreateTrail = () => {
     if (editMode) {
       let cID = currentPoint.id || currentPoint._id;
       setPoints(points => points.map(p => p.id === cID || p._id === cID ? { ...p, ...data, audioPath: audioBlob ? p.audioPath : null } : p));
-      if (audioBlob) {        
+      if (audioBlob) {
         setTempAudios((prev) => ({
           ...prev,
           [cID]: audioBlob,
@@ -542,6 +572,58 @@ const CreateTrail = () => {
     console.log("Audio saved for point:", pointId);
   };
 
+  const handleAddTranslation = () => {
+    const newLang = prompt("Enter the new language");
+    if (newLang) {
+      setTranslations([...translations, { language: newLang, name: '', description: '' }]);
+    }
+  };
+
+  const handleTranslationChange = (index, field, value) => {
+    setTranslations(translations.map((t, i) => (i === index ? { ...t, [field]: value } : t)));
+    setSelectedLanguageVersion(value);
+  };
+
+  const handleLanguageChange = (event) => {
+    const newLang = event.target.value;
+
+    // Store the current input before switching
+    /*setTranslations(prevTranslations => {
+        const updatedTranslations = prevTranslations.filter(t => t.language !== selectedLanguageVersion);
+        console.log(updatedTranslations);
+        return [...updatedTranslations, { language: selectedLanguageVersion, name, description }];
+    });*/
+    if (selectedLanguageVersion !== language && name.trim() && description.trim()) {
+      setTranslations(prevTranslations => {
+        const filteredTranslations = prevTranslations
+          .filter(t => t.language !== selectedLanguageVersion && t.language !== "") // Remove empty and duplicates
+          .filter(t => t.language !== language); // Ensure the original is NOT in translations
+        return [...filteredTranslations, { language: selectedLanguageVersion, name, description }];
+      });
+    }
+
+    setSelectedLanguageVersion(newLang);
+    if (newLang !== language) {
+      setStoredOriginalTrail({ name, description }); // store original input before switching
+    }
+    if (newLang === language) {
+      setName(storedOriginalTrail?.name || '');
+      setDescription(storedOriginalTrail?.description || '');
+      if (quillDescription) { quillDescription.root.innerHTML = storedOriginalTrail?.description; }
+    } else {
+      const translation = translations.find(t => t.language === newLang);
+      if (translation) {
+        setName(translation.name);
+        setDescription(translation.description);
+        if (quillDescription) { quillDescription.root.innerHTML = translation.description; }
+      } else {
+        setName('');
+        setDescription('');
+        if (quillDescription) { quillDescription.root.innerHTML = ''; }
+      }
+    }
+  };
+
   useEffect(() => {
     if (alert.message) {
       const timer = setTimeout(() => {
@@ -562,6 +644,16 @@ const CreateTrail = () => {
             <div>
               <h1 className='text-3xl'>{id ? `${t('edit_new_trail')}` : `${t('add_new_trail')}`}</h1>
               <p className={`${styles.new_trail_text}`}>{t('new_trail_text')}</p>
+            </div>
+            <div>
+              {/* Language Selection */}
+              <select value={selectedLanguageVersion} onChange={handleLanguageChange} className="form-select">
+                <option value={language}>{language} (Original)</option>
+                {/*translations.map(t => (
+                  <option key={t.language} value={t.language}>{t.language}</option>
+                ))*/}
+                <option value={language === 'English' ? 'Slovak' : 'English'}>{language === 'English' ? 'Slovak' : 'English'}</option>
+              </select>
             </div>
             <div className='d-flex align-items-center pb-4'>
               <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>{t('save_draft')}</button>
@@ -617,8 +709,8 @@ const CreateTrail = () => {
                     <div className='col-6 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('language')}</label>
                       <select value={language} onChange={e => setLanguage(e.target.value)} className={`${styles.form_input} form-select`} >
-                        <option value="English">{t('lang_en')}</option>
                         <option value="Slovak">{t('lang_sk')}</option>
+                        <option value="English">{t('lang_en')}</option>
                         <option value="Spanish">{t('lang_es')}</option>
                         <option value="Other">{t('other')}</option>
                       </select>
