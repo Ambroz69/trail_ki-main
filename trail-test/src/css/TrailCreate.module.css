@@ -300,6 +300,23 @@ button.practice_check_button:not(:disabled):not(:disabled):active {
   border: none;
 }
 
+a.practice_check_button,
+a.practice_check_button:visited {
+  color: #000;
+  background-color: #F9F871;
+  border: none;
+  border-radius: 0.25rem;
+  transition-duration: 0.5s;
+}
+
+a.practice_check_button:hover,
+a.practice_check_button:focus,
+a.practice_check_button:not(:disabled):not(:disabled):active {
+  color: #000;
+  background-color: #d6d63b;
+  border: none;
+}
+
 button.practice_check_button:disabled {
   color: #000;
   background-color: #F9F87180;
