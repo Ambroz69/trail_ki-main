@@ -55,6 +55,8 @@ const CertificationTrail = () => {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [updatedAnswer, setUpdatedAnswer] = useState(null);
+  const [newScore, setNewScore] = useState(0);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -216,7 +218,7 @@ const CertificationTrail = () => {
     }
 
     // add users answer to state
-    const updatedAnswer = { questionId, providedAnswer: tempAnswer, isCorrect, };
+    setUpdatedAnswer({ questionId, providedAnswer: tempAnswer, isCorrect, });
     setUserAnswers((prev) => [
       ...prev,
       {
@@ -226,7 +228,7 @@ const CertificationTrail = () => {
       },
     ]);
     // update score
-    const newScore = isCorrect ? score + point.quiz.points : score;
+    setNewScore(isCorrect ? score + point.quiz.points : score);
     if (isCorrect) {
       setScore((prev) => prev + point.quiz.points);
       setFeedback(point.quiz.feedback.correct);
@@ -352,6 +354,7 @@ const CertificationTrail = () => {
   };
 
   const handleNextQuestion = () => {
+    const questionId = point.quiz._id;
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
     setShowFeedback(false);
