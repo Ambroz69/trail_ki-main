@@ -10,6 +10,8 @@ import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
 import Button from 'react-bootstrap/Button';
+import ReactDOM from "react-dom";
+import QRCode from "react-qr-code";
 
 import TrailMap from '../../components/TrailMap';
 
@@ -70,7 +72,7 @@ const ShowTrailUser = () => {
 
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
-
+  const originURL = window.location.hostname;
 
   useEffect(() => {
     // set configurations for the API call here
@@ -277,9 +279,14 @@ const ShowTrailUser = () => {
                 <img src={trail_qr_code} alt="trail_qr_code" className='pe-2 pb-1' />
                 <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('qr_code')}</p>
               </div>
-              <div className={`${styles.show_trail_div_border} d-flex flex-column flex-lg-row px-4 py-3`}>
+              <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} d-flex flex-column flex-lg-row px-4 py-3`}>
                 <div className='col-lg-4 col-12 d-flex align-items-center justify-content-center pe-5'>
-                  <img src={trail_qr_code_img} alt="trail_qr_code_img" className={styles.QR_code_image} />
+                  <div style={{ height: "auto", margin: "0 auto", maxWidth: 150, width: "100%" }}>
+                    <QRCode
+                      style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                      value={`${originURL}/explorer/trails/details/${trail?._id}`}
+                    />
+                  </div>
                 </div>
                 <div className='d-none d-lg-block col-lg-8'>
                   <h1 className={`${styles.trail_heading}`}>{t('qr_code_text1')}</h1>
@@ -290,26 +297,31 @@ const ShowTrailUser = () => {
                 <img src={trail_rating} alt="trail_rating" className='pe-2 pb-1' />
                 <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('rating')}</p>
               </div>
-              <div className={`${styles.show_trail_div_border} d-flex flex-column flex-lg-row px-4 py-3`}>
-                <div className='col-lg-4 col-12 d-flex align-items-center justify-content-center pe-5'>
-
-                </div>
-                <div className='d-none d-lg-block col-lg-8'>
+              <div className={`${styles.show_trail_bg} d-flex flex-column flex-lg-row pe-4 ps-0 py-0`}>
+                <div className={`col-12`}>
                   {!reviews || reviews.length === 0 ? (
                     <p className={`${styles.trail_description} mt-3`}>{t('no_reviews')}</p>
                   ) : (
                     reviews.map((review) => (
-                      <div key={review.id} className="mb-2">
-                        <p>
-                          <strong>{review.userId.name} </strong> 
-                          {Array.from({ length: 5 }, (_, i) => (
-                            <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
-                          ))}
-                        </p>
-                        <p className={`${styles.trail_description} mt-3`}>
-                          {review.comment || t('no_comment')}
-                        </p>
-                        <hr />
+                      <div key={review.id} className="mb-4 d-flex flex-row">
+                        <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                          style={{ width: "50px", height: "50px", backgroundColor: "#D9D9D9" }}>
+                        </div>
+                        <div>
+                          <p className='m-0'>{review.userId.name} </p>
+                          <div className='mb-2'>
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
+                            ))}
+                          </div>
+                          {review.comment ? (
+                            <p className={`mb-0`}>
+                              {review.comment}
+                            </p>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
                       </div>
                     ))
                   )}

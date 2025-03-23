@@ -26,6 +26,10 @@ import accordion_points from '../assets/accordion_points.svg';
 import accordion_question_type from '../assets/accordion_question_type.svg';
 import title_page_logo from '../../src/assets/title_page_logo.svg';
 import modal_delete from '../assets/modal_delete.svg';
+import practice_correct from '../../src/assets/practice_correct.svg';
+import practice_incorrect from '../../src/assets/practice_incorrect.svg';
+import practice_result_xp from '../../src/assets/practice_result_xp.svg';
+import practice_result_weight from '../../src/assets/practice_result_weight.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -230,17 +234,6 @@ const CertificationTrail = () => {
       setFeedback(point.quiz.feedback.incorrect);
     }
     setShowFeedback(true);
-    setTimeout(() => {
-      // save answered question in state
-      setAnsweredQuestions((prev) => new Set(prev).add(questionId));
-      setShowFeedback(false);
-      // check if user already has all questions answered, if not, save progress
-      if (userAnswers.length + 1 === trail.points.length) {
-        submitCertificationResults([...userAnswers, updatedAnswer], newScore);
-      } else {
-        saveAnswerToDatabase(updatedAnswer, newScore, [...userAnswers, updatedAnswer]);
-      }
-    }, 10000); // 10 seconds
   };
 
   const saveAnswerToDatabase = async (updatedAnswer, newScore, newAnswers) => {
@@ -358,6 +351,18 @@ const CertificationTrail = () => {
     submitCertificationResults(finalAnswers, score);
   };
 
+  const handleNextQuestion = () => {
+    // save answered question in state
+    setAnsweredQuestions((prev) => new Set(prev).add(questionId));
+    setShowFeedback(false);
+    // check if user already has all questions answered, if not, save progress
+    if (userAnswers.length + 1 === trail.points.length) {
+      submitCertificationResults([...userAnswers, updatedAnswer], newScore);
+    } else {
+      saveAnswerToDatabase(updatedAnswer, newScore, [...userAnswers, updatedAnswer]);
+    }
+  }
+
   const handleSubmitReview = async () => {
     if (rating === 0) {
       alert("Please select a star rating before submitting.");
@@ -409,29 +414,15 @@ const CertificationTrail = () => {
                   onProximityTask={handleProximityTask}
                 />
               </div>
-              <div className='col-lg-10 offset-lg-1'>
+              <div className={`${styles.full_height} col-lg-10 offset-lg-1`}>
                 <h5 className='fs-5 font-bold text-center mb-3 mt-4'>{trail?.name}</h5>
                 <ProgressBar now={progress} label={`${progress}%`} className={`${styles.progress_bar} col-12 mb-3 m-lg-0`} />
-                <h5 className='d-none d-lg-block fs-5 font-bold mt-4 mt-lg-5 text-start'>Task 0: Head to the starting point of the trail to begin your journey.</h5>
-                <h5 className='d-block d-lg-none fs-6 font-bold mt-4 mt-lg-5 text-start'>Task 0: Head to the starting point of the trail to begin your journey.</h5>
                 <div className={`col-12 pt-0`}>
                   <div className='d-flex flex-column w-100'>
                     {showSummary ? (
                       <>
                         <div className='d-flex'>
                           <h2>{t('certification_results')}</h2>
-                          <ul>
-                            {trail.points.map((p, index) => (
-                              point?.quiz ? (
-                                <li key={p._id} className='d-flex justify-content-between'>
-                                  <span>{p.title}</span>
-                                  <span>{userAnswers[index]?.isCorrect ? '✔️' : '❌'}</span>
-                                </li>
-                              ) : (
-                                <></>
-                              )
-                            ))}
-                          </ul>
                         </div>
                         <div className='d-flex'>
                           <div className='col-9 p-2'>
@@ -439,7 +430,7 @@ const CertificationTrail = () => {
                             <p><strong>{t('status')}:</strong> {score >= totalPoints * 0.7 ? t('passed') : t('failed')}</p>
                           </div>
                           <div className='p-2'>
-                            <Button variant="outline-dark" onClick={() => window.open(`${basePath}/certificate/${trail?._id || trail?.id}`,"_blank")}>{t("get_certificate")}</Button>
+                            <Button variant="outline-dark" onClick={() => window.open(`${basePath}/certificate/${trail?._id || trail?.id}`, "_blank")}>{t("get_certificate")}</Button>
                           </div>
                         </div>
                         {!reviewSubmitted ? (
@@ -474,53 +465,33 @@ const CertificationTrail = () => {
                       </>
                     ) : (
                       <>
-                        <p className={`${styles.accordion_point_title} mb-2`}>{point?.title}</p>
-                        <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
-                          {point?.quiz ? (
-                            <>
-                              <div className='col-6 d-flex'>
-                                <div>
-                                  <img src={accordion_question_type} alt="accordion_question_type" className='pe-2' style={{ width: '1.3rem', height: '1.3rem' }} />
-                                </div>
-                                <p className={`${styles.accordion_point_question_type} m-0`}>
-                                  {(() => {
-                                    switch (point?.quiz?.type) {
-                                      case 'short-answer': return (`${t('short_answer')}`);
-                                      case 'single': return (`${t('single')}`);
-                                      case 'multiple': return (`${t('multiple')}`);
-                                      case 'slider': return (`${t('slider')}`);
-                                      case 'pairs': return (`${t('pairs')}`);
-                                      case 'order': return (`${t('order')}`);
-                                      case 'true-false': return (`${t('true_false')}`);
-                                      default: return (<></>);
-                                    }
-                                  })()}
-                                </p>
-                              </div>
-                              <div className='col-6 d-flex'>
-                                <img src={accordion_points} alt="accordion_points" className='pe-2 pt-0' />
-                                <p className={`${styles.accordion_point_question_type} m-0`}>{point?.quiz.points} {point?.quiz.points === 1 ? ` ${t('point').toLowerCase()}` : ` ${t('points').toLowerCase()}`}</p>
-                              </div>
-                            </>
-                          ) : (point ? (
-                            <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
-                              {t('skip_this_poi')}
-                            </button>
-                          ) : (
-                            <>
+                        {point?.quiz ? (
+                          <>
+                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task X: {point?.title}</p>
+                          </>
+                        ) : (point ? (
+                          <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
+                            {t('skip_this_poi')}
+                          </button>
+                        ) : (
+                          <div className='d-flex flex-column pt-4'>
+                            <p className={`${styles.accordion_point_title} mb-2`}>Task 0: Head to the starting point of the trail to begin your journey.</p>
+                            <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
                               <p className={`${styles.form_label_2} mb-0`}>Follow the path and uncover unique spots that make this journey special.</p>
-                            </>
-                          )
-                          )}
-                        </div>
-                        <div className='p-2 pt-0'>
+                            </div>
+                          </div>
+                        )
+                        )}
+                        <div className='pt-0'>
+                          <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
                           <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point?.content }}></p>
+                          </div>
                           {point?.audioPath && (
                             <audio controls src={backendUrl + point?.audioPath} type="audio/wav"></audio>
                           )}
                           {answeredQuestions.has(point?.quiz?._id) ? (
-                            <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                              <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>
+                            <div className={`${styles.accordion_divider_top}`}>
+                              <p className={`${styles.form_label_2} mb-0 pt-2`}>
                                 {t('already_answered')}
                               </p>
                             </div>
@@ -594,6 +565,53 @@ const CertificationTrail = () => {
                                     )()}
                                   </div>
                                   {showFeedback ? (
+                                    <>
+                                      {/* CORRECT feedback */}
+                                      <div className={`${feedback === point?.quiz?.feedback?.correct ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                        <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 col-md-8 offset-md-2 align-items-center`}>
+                                          <div className='me-auto d-flex flex-row align-items-center'>
+                                            <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                                              style={{ minWidth: "50px", height: "50px", backgroundColor: "#05192D" }}>
+                                              <img className="text-white fs-5" src={practice_correct} placeholder="practice_correct"></img>
+                                            </div>
+                                            <p className={`${styles.feedback_correct} mb-0`}>{feedback}</p>
+                                          </div>
+                                          <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 pe-3`}>CLICK BUTTON TO</p>
+                                          <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
+                                            Continue
+                                          </button>
+                                        </div>
+                                      </div>
+                                      {/* INCORRECT feedback */}
+                                      <div className={`${feedback === point?.quiz?.feedback?.incorrect ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                        <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 col-md-8 offset-md-2 align-items-center`}>
+                                          <div className='me-auto d-flex flex-row align-items-center'>
+                                            <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                                              style={{ minWidth: "50px", height: "50px", backgroundColor: "#FCEAFF" }}>
+                                              <img className="text-white fs-5" src={practice_incorrect} placeholder="practice_incorrect"></img>
+                                            </div>
+                                            <p className={`${styles.feedback_incorrect} mb-0`}>{feedback}</p>
+                                          </div>
+                                          <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 pe-3`}>CLICK BUTTON TO</p>
+                                          <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
+                                            Continue
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                        <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
+                                          <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
+                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
+                                            Check
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                  {/*showFeedback ? (
                                     <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                                       <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                                       <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
@@ -605,7 +623,7 @@ const CertificationTrail = () => {
                                     </div>
                                   ) : (
                                     <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>{t('submit_answer')}</button>
-                                  )}
+                                  )*/}
                                 </>
                               ) : (
                                 <></>
@@ -616,15 +634,12 @@ const CertificationTrail = () => {
                       </>
                     )}
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
-          <div className='px-3 px-lg-4 mt-5 mb-3'>
+          {/*
+          <div className=''>
             <Button className={`${styles.show_all_button} d-none d-lg-inline py-3 px-5 btn py-2`} href={`${basePath}`}>
               Take Me Back
             </Button>
@@ -637,6 +652,7 @@ const CertificationTrail = () => {
               Forfeit
             </button>
           </div>
+          */}
         </div>
         <Modal
           show={forfeitModalShow}
@@ -660,8 +676,7 @@ const CertificationTrail = () => {
           </Modal.Footer>
         </Modal>
       </div>
-      {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

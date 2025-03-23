@@ -266,6 +266,23 @@ button.modal_delete_button:not(:disabled):not(:disabled):active {
   border: none;
 }
 
+button.modal_cancel_button,
+button.modal_cancel_button:visited {
+  color: #54575E;
+  background-color: #F2F2F2;
+  border: none;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+button.modal_cancel_button:hover,
+button.modal_cancel_button:focus,
+button.modal_cancel_button:not(:disabled):not(:disabled):active {
+  color: #fff;
+  background-color: #99A0A6;
+  border: none;
+}
+
 button.practice_check_button,
 button.practice_check_button:visited {
   color: #000;
@@ -362,6 +379,10 @@ div.progress_bar {
 
 .full_height {
   height: 100vh;
+}
+
+.full_height_2 {
+  height: 75vh;
 }
 
 .show_trail_div_border_top {
