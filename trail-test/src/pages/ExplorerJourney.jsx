@@ -209,9 +209,15 @@ const ExplorerJourney = () => {
               })) : (
               <>
                 <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start mb-2 py-4">
-                  <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/homeuser`}>
-                    {t("explore_nav_explore")}
-                  </Button>
+                  {(userRole === "trail creator" || userRole === "manager") ? (
+                    <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/homeuser`}>
+                      {t("explore_nav_explore")}
+                    </Button>
+                  ) : (
+                    <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}`}>
+                      {t("explore_nav_explore")}
+                    </Button>
+                  )}
                 </div>
               </>
             )}
@@ -229,40 +235,7 @@ const ExplorerJourney = () => {
           <div className='d-none d-lg-block'>
             {certifications.length > 0 ? (
               (certifications).map((certificate) => (
-              <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
-                <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
-                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
-                  <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
-                </div>
-                <div>
-                  <h5 className={`${styles.my_journey_header_text} mb-0`}>
-                    {t("trail_upper")}
-                  </h5>
-                  <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
-                  <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
-                    <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
-                  </h5>
-                </div>
-                <div className='ms-auto d-flex align-items-center'>
-                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")} >{t("get_certificate")}</Button>
-                </div>
-              </div>
-            ))):(
-              <div className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
-                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
-                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#67C4A7" }}>
-                  <img className="text-white fs-5" src={my_journey_apply} placeholder="my_journey_apply"></img>
-                </div>
-                <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>
-              </div>
-            )}
-          </div>
-          {/* Certificates MOBILE */}
-          <div className='d-block d-lg-none'>            
-            {certifications.length > 0 ? (
-            (certifications).map((certificate) => (
-              <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
-                <div className='d-flex flex-row mb-3'>
+                <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
                   <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
                     style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
                     <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
@@ -273,15 +246,48 @@ const ExplorerJourney = () => {
                     </h5>
                     <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
                     <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
-                      <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
+                      <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")} {new Date(certificate.completedAt).toLocaleDateString("sk-SK")}
                     </h5>
                   </div>
+                  <div className='ms-auto d-flex align-items-center'>
+                    <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")} >{t("get_certificate")}</Button>
+                  </div>
                 </div>
-                <div className='d-flex align-items-center'>
-                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")}>{t("get_certificate")}</Button>
+              ))) : (
+              <div className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#67C4A7" }}>
+                  <img className="text-white fs-5" src={my_journey_apply} placeholder="my_journey_apply"></img>
                 </div>
+                <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>
               </div>
-            ))):(
+            )}
+          </div>
+          {/* Certificates MOBILE */}
+          <div className='d-block d-lg-none'>
+            {certifications.length > 0 ? (
+              (certifications).map((certificate) => (
+                <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
+                  <div className='d-flex flex-row mb-3'>
+                    <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
+                      style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
+                      <img className="text-white fs-5" src={my_journey_trail_star} placeholder="my_journey_trail_star"></img>
+                    </div>
+                    <div>
+                      <h5 className={`${styles.my_journey_header_text} mb-0`}>
+                        {t("trail_upper")}
+                      </h5>
+                      <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
+                      <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
+                        <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")} {new Date(certificate.completedAt).toLocaleDateString("sk-SK")}
+                      </h5>
+                    </div>
+                  </div>
+                  <div className='d-flex align-items-center'>
+                    <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")}>{t("get_certificate")}</Button>
+                  </div>
+                </div>
+              ))) : (
               <div className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
                 <div className='d-flex flex-column justify-content-center'>
                   <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>

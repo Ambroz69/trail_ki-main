@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import ReactPaginate from 'react-paginate';
 
 //svg import
 import search_button from '../assets/search_button.svg';
@@ -30,10 +31,12 @@ const Users = () => {
   const [sortOption, setSortOption] = useState('');
   const [userToProcess, setUserToProcess] = useState(null);
   const [verifyModalShow, setVerifyModalShow] = useState(false);
-  const [alert, setAlert] = useState({message: '', type: ''});
+  const [alert, setAlert] = useState({ message: '', type: '' });
   const [newRole, setNewRole] = useState('user');
   const [updateRoleModalShow, setUpdateRoleModalShow] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     const configuration = {
@@ -48,7 +51,7 @@ const Users = () => {
         setUsers(response.data.data);
       })
       .catch((error) => {
-        setAlert({message: `${t('error_load_users')}`, type: 'error'});
+        setAlert({ message: `${t('error_load_users')}`, type: 'error' });
         console.log(error);
       })
   }, []);
@@ -91,12 +94,12 @@ const Users = () => {
     api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, verified: true } : user));
-        setAlert({message: `${t('success_verify_user')}`, type: 'success'});
+        setAlert({ message: `${t('success_verify_user')}`, type: 'success' });
         handleVerifyModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: `${t('error_verify_user')}`, type: 'error'});
+        setAlert({ message: `${t('error_verify_user')}`, type: 'error' });
         handleVerifyModalClose();
       });
   };
@@ -113,12 +116,12 @@ const Users = () => {
     api(configuration)
       .then(response => {
         setUsers(users.map(user => user._id === userToProcess ? { ...user, role: newRole } : user));
-        setAlert({message: `${t('success_role_update')}`, type: 'success'});
+        setAlert({ message: `${t('success_role_update')}`, type: 'success' });
         handleUpdateRoleModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: `${t('error_role_update')}`, type: 'error'});
+        setAlert({ message: `${t('error_role_update')}`, type: 'error' });
         handleUpdateRoleModalClose();
       });
   };
@@ -143,14 +146,23 @@ const Users = () => {
     setUpdateRoleModalShow(false);
   };
 
+  const offset = currentPage * itemsPerPage;
+  const currentUserData = displayedUsers.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(displayedUsers.length / itemsPerPage);
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+    window.scrollTo(0, 0);
+  }
+
   useEffect(() => {
-      if (alert.message) {
-        const timer = setTimeout(() => {
-          setAlert({ message: '', type: '' });
-        }, 3000); // Hide alert after 3 seconds
-        return () => clearTimeout(timer);
-      }
-    }, [alert.message]);
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 3000); // Hide alert after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
@@ -215,9 +227,9 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayedUsers.map((user, index) => (
+                  {currentUserData.map((user, index) => (
                     <tr key={user._id} className={`${styles.table_data}`}>
-                      <td className='ps-4'>{index + 1}</td>
+                      <td className='ps-4'>{index + offset + 1}</td>
                       <td>
                         {user.name}
                       </td>
@@ -266,7 +278,27 @@ const Users = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              {t('showing')} 1 {t('to')} {Object.keys(displayedUsers).length} {t('of')} {Object.keys(displayedUsers).length} {t('entries')}
+              {/* Pagination */}
+              {displayedUsers.length > itemsPerPage && (
+                <ReactPaginate
+                  previousLabel={"←"}
+                  nextLabel={"→"}
+                  breakLabel={"..."}
+                  pageCount={pageCount}
+                  onPageChange={handlePageClick}
+                  containerClassName={"pagination justify-content-center mt-4"}
+                  pageClassName={"page-item"}
+                  pageLinkClassName={"page-link"}
+                  previousClassName={"page-item"}
+                  previousLinkClassName={"page-link"}
+                  nextClassName={"page-item"}
+                  nextLinkClassName={"page-link"}
+                  breakClassName={"page-item"}
+                  breakLinkClassName={"page-link"}
+                  activeClassName={"active"}
+                />
+              )}
+              {/* {t('showing')} 1 {t('to')} {Object.keys(displayedUsers).length} {t('of')} {Object.keys(displayedUsers).length} {t('entries')} */}
             </div>
           </div>
           <Modal
@@ -301,17 +333,17 @@ const Users = () => {
               <h1 className={`${styles.modal_heading}`}>{t('change_user_role')}</h1>
               <p className={`${styles.modal_text} mb-0`}>{t('change_user_role_text')}:</p>
               <select
-                  name="userrole"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                  placeholder={t('user_role')}
-                  className={`${styles.modal_text} `} // please make me beautiful
-                  required
-                >
-                  <option value="explorer">{t('explorer')}</option>
-                  <option value="trail creator">{t('trail_creator')}</option>
-                  <option value="manager">{t('manager')}</option>
-                </select>
+                name="userrole"
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+                placeholder={t('user_role')}
+                className={`${styles.modal_text} `} // please make me beautiful
+                required
+              >
+                <option value="explorer">{t('explorer')}</option>
+                <option value="trail creator">{t('trail_creator')}</option>
+                <option value="manager">{t('manager')}</option>
+              </select>
             </Modal.Body>
             <Modal.Footer className={`${styles.modal_footer} d-flex flex-nowrap justify-content-center pt-0 pb-4`}>
               <Button variant="secondary" onClick={() => handleUpdateRoleModalClose()} className={`${styles.modal_cancel_button} flex-fill ms-5 me-2`}>

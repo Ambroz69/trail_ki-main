@@ -70,7 +70,7 @@ const CertificatesLibrary = () => {
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
   const offset = currentPage * itemsPerPage;
-  const currentPageData = certifications.slice(offset, offset + itemsPerPage);
+  const currentCertificationData = certifications.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(certifications.length / itemsPerPage);
 
   const handlePageClick = ({ selected }) => {
@@ -92,7 +92,7 @@ const CertificatesLibrary = () => {
           {/* Certificates */}
           <div className='d-none d-lg-block'>
             {certifications.length > 0 ? (
-              (currentPageData).map((certificate) => (
+              (currentCertificationData).map((certificate) => (
                 <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
                   <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
                     style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
@@ -104,7 +104,7 @@ const CertificatesLibrary = () => {
                     </h5>
                     <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
                     <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
-                      <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
+                      <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")} {new Date(certificate.completedAt).toLocaleDateString("sk-SK")}
                     </h5>
                   </div>
                   <div className='ms-auto d-flex align-items-center'>
@@ -145,7 +145,7 @@ const CertificatesLibrary = () => {
           {/* Certificates MOBILE */}
           <div className='d-block d-lg-none'>
             {certifications.length > 0 ? (
-              (certifications).map((certificate) => (
+              (currentCertificationData).map((certificate) => (
                 <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
                   <div className='d-flex flex-row mb-3'>
                     <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
@@ -158,7 +158,7 @@ const CertificatesLibrary = () => {
                       </h5>
                       <p className={`${styles.my_journey_body_text_2} my-1`}>{certifications.length > 0 ? certificate.trail.name : certificate.name}</p>
                       <h5 className={`${styles.my_journey_header_text_2} d-flex mb-0`}>
-                        <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")}
+                        <img className="text-white fs-5 me-1" src={my_journey_complete} placeholder="my_journey_complete"></img> {t("complete")} {new Date(certificate.completedAt).toLocaleDateString("sk-SK")}
                       </h5>
                     </div>
                   </div>
@@ -172,6 +172,26 @@ const CertificatesLibrary = () => {
                   <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>
                 </div>
               </div>
+            )}
+            {/* Pagination */}
+            {certifications.length > itemsPerPage && (
+              <ReactPaginate
+                previousLabel={"←"}
+                nextLabel={"→"}
+                breakLabel={"..."}
+                pageCount={pageCount}
+                onPageChange={handlePageClick}
+                containerClassName={"pagination justify-content-center mt-4"}
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                previousClassName={"page-item"}
+                previousLinkClassName={"page-link"}
+                nextClassName={"page-item"}
+                nextLinkClassName={"page-link"}
+                breakClassName={"page-item"}
+                breakLinkClassName={"page-link"}
+                activeClassName={"active"}
+              />
             )}
           </div>
         </div >

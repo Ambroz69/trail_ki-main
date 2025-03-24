@@ -5,9 +5,9 @@ import styles from '../css/TrailGrid.module.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
-import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
+import ReactPaginate from 'react-paginate';
 
 // SVG imports
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -37,10 +37,9 @@ const HomeUser = () => {
   const [localityFilter, setLocalityFilter] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook for translations
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
-  const [menuModalShow, setMenuModalShow] = useState(false);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 9;
 
   const getUserRole = () => {
     try {
@@ -50,10 +49,6 @@ const HomeUser = () => {
       console.error("Error decoding token:", error);
       return "explorer"; // Default role
     }
-  };
-
-  const getFlag = (lang) => {
-    return lang === 'en' ? gb_flag : sk_flag;
   };
 
   const userRole = getUserRole();
@@ -86,14 +81,6 @@ const HomeUser = () => {
       console.error("Error decoding token:", error);
     }
   }, []);
-
-  const closeMenuModalShow = () => {
-    setMenuModalShow(false);
-  };
-
-  const handleMenuModalShow = () => {
-    setMenuModalShow(true);
-  };
 
   const goTo = (url) => {
     navigate(url);
@@ -130,7 +117,15 @@ const HomeUser = () => {
     return filtered;
   };
 
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+    window.scrollTo(0, 400);
+  }
+
   const displayedTrails = getDisplayedTrails();
+  const offset = currentPage * itemsPerPage;
+  const trailPageData = displayedTrails.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(displayedTrails.length / itemsPerPage);
 
   return (
     <div className='row d-flex mx-0 px-0'>
@@ -237,7 +232,7 @@ const HomeUser = () => {
 
         {/* Grid Layout for Trails */}
         <div className={`d-flex row row-cols-1 row-cols-lg-3 pt-4 px-3 px-lg-0`}>
-          {displayedTrails.map((trail) => (
+          {trailPageData.map((trail) => (
             <div className={`col pb-3 pb-lg-4`}>
               <div key={trail._id} className={`${styles.trail_card}`}>
                 <div className={`d-flex flex-column align-items-start`}>
@@ -272,6 +267,29 @@ const HomeUser = () => {
               </div>
             </div>
           ))}
+          
+        </div>
+        <div className='py-3 px-0 offset-lg-2 col-lg-8'>
+          {/* Pagination */}
+          {displayedTrails.length > itemsPerPage && (
+            <ReactPaginate
+              previousLabel={"←"}
+              nextLabel={"→"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination justify-content-center mt-4"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link"}
+              breakClassName={"page-item"}
+              breakLinkClassName={"page-link"}
+              activeClassName={"active"}
+            />
+          )}
         </div>
       </div>
       {/* Footer */}

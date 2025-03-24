@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
-import Navbar from '../Navbar';
 import styles from '../css/TrailShow.module.css';
 import ReactCardFlip from 'react-card-flip';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
-import Hamburger from '../../components/Hamburger';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
 import Button from 'react-bootstrap/Button';
 import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
+import ReactPaginate from 'react-paginate';
 
 import TrailMap from '../../components/TrailMap';
 
@@ -22,10 +21,7 @@ import Cookies from "universal-cookie";
 //svg+png import
 import backup_trail_image from '../../src/assets/backup_trail_image.png';
 import trail_certification_img from '../../src/assets/trail_certification_img.png';
-import trail_qr_code_img from '../../src/assets/trail_qr_code_img.png';
 import trail_apply from '../../src/assets/trail_apply.svg';
-import trail_arrow_show_all from '../../src/assets/trail_arrow_show_all.svg';
-import trail_arrow_start from '../../src/assets/trail_arrow_start.svg';
 import trail_length from '../../src/assets/trail_length.svg';
 import trail_location from '../../src/assets/trail_location.svg';
 import trail_certification from '../../src/assets/trail_certification.svg';
@@ -39,11 +35,6 @@ import trail_qr_code from '../../src/assets/trail_qr_code.svg';
 import trail_rating from '../../src/assets/trail_rating.svg';
 import trail_time from '../../src/assets/trail_time.svg';
 import trail_type from '../../src/assets/trail_type.svg';
-import explore_page_logo from '../../src/assets/explore_page_logo.svg';
-import sk_flag from '../assets/flag-sk.svg';
-import gb_flag from '../assets/flag-gb.svg';
-import hamburger from '../../src/assets/hamburger.svg';
-import profile_photo_placeholder from '../../src/assets/profile_photo_placeholder.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -55,10 +46,9 @@ const ShowTrailUser = () => {
   const { id } = useParams();
   const [cardFlipped, setCardFlipped] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
-  const [menuModalShow, setMenuModalShow] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 3;
 
   const getUserRole = () => {
     try {
@@ -105,7 +95,6 @@ const ShowTrailUser = () => {
     api(configurationRW)
       .then((response) => {
         setReviews(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -121,16 +110,13 @@ const ShowTrailUser = () => {
     setCardFlipped(!cardFlipped);
   }
 
-  const closeMenuModalShow = () => {
-    setMenuModalShow(false);
-  };
+  const offset = currentPage * itemsPerPage;
+  const reviewsPageData = reviews.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(reviews.length / itemsPerPage);
 
-  const handleMenuModalShow = () => {
-    setMenuModalShow(true);
-  };
-
-  const getFlag = (lang) => {
-    return lang === 'en' ? gb_flag : sk_flag;
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+    //window.scrollTo(0, 0);
   };
 
   return (
@@ -302,28 +288,50 @@ const ShowTrailUser = () => {
                   {!reviews || reviews.length === 0 ? (
                     <p className={`${styles.trail_description} mt-3`}>{t('no_reviews')}</p>
                   ) : (
-                    reviews.map((review) => (
-                      <div key={review.id} className="mb-4 d-flex flex-row">
-                        <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                          style={{ width: "50px", height: "50px", backgroundColor: "#D9D9D9" }}>
-                        </div>
-                        <div>
-                          <p className='m-0'>{review.userId.name} </p>
-                          <div className='mb-2'>
-                            {Array.from({ length: 5 }, (_, i) => (
-                              <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
-                            ))}
+                    <>
+                      {reviewsPageData.map((review) => (
+                        <div key={review._id} className="mb-4 d-flex flex-row">
+                          <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style={{ width: "50px", height: "50px", backgroundColor: "#D9D9D9" }}>
                           </div>
-                          {review.comment ? (
-                            <p className={`mb-0`}>
-                              {review.comment}
-                            </p>
-                          ) : (
-                            <></>
-                          )}
+                          <div>
+                            <p className='m-0'>{review.userId.name} </p>
+                            <div className='mb-2'>
+                              {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
+                              ))}
+                            </div>
+                            {review.comment ? (
+                              <p className={`mb-0`}>
+                                {review.comment}
+                              </p>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                      {/* Pagination */}
+                      {reviews.length > itemsPerPage && (
+                        <ReactPaginate
+                          previousLabel={"←"}
+                          nextLabel={"→"}
+                          breakLabel={"..."}
+                          pageCount={pageCount}
+                          onPageChange={handlePageClick}
+                          containerClassName={"pagination justify-content-center mt-4"}
+                          pageClassName={"page-item"}
+                          pageLinkClassName={"page-link"}
+                          previousClassName={"page-item"}
+                          previousLinkClassName={"page-link"}
+                          nextClassName={"page-item"}
+                          nextLinkClassName={"page-link"}
+                          breakClassName={"page-item"}
+                          breakLinkClassName={"page-link"}
+                          activeClassName={"active"}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               </div>

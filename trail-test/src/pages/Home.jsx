@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import ReactPaginate from 'react-paginate';
 
 //svg import
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -41,8 +42,10 @@ const Home = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('');
   const [localityFilter, setLocalityFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [alert, setAlert] = useState({message: '', type: ''});
+  const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 9;
 
   const getUserRole = () => {
     try {
@@ -53,7 +56,7 @@ const Home = () => {
       return "user"; // Default role
     }
   };
-  
+
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
@@ -73,7 +76,7 @@ const Home = () => {
         setTrail(response.data.data);
       })
       .catch((error) => {
-        setAlert({message: `${t('error_trail')}`, type: 'error'});
+        setAlert({ message: `${t('error_trail')}`, type: 'error' });
         console.log(error);
       });
   }, []);
@@ -90,12 +93,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: true } : trail));
-        setAlert({message: `${t('success_publish')}`, type: 'success'});
+        setAlert({ message: `${t('success_publish')}`, type: 'success' });
         handlePublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: `${t('error_publish')}`, type: 'error'});
+        setAlert({ message: `${t('error_publish')}`, type: 'error' });
         handlePublishModalClose();
       });
   };
@@ -112,12 +115,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail(trails.map(trail => trail._id === trailToProcess ? { ...trail, published: false } : trail));
-        setAlert({message: `${t('success_unpublish')}`, type: 'success'});
+        setAlert({ message: `${t('success_unpublish')}`, type: 'success' });
         handleUnpublishModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: `${t('error_unpublish')}`, type: 'error'});
+        setAlert({ message: `${t('error_unpublish')}`, type: 'error' });
         handleUnpublishModalClose();
       });
   };
@@ -133,12 +136,12 @@ const Home = () => {
     api(configuration)
       .then(response => {
         setTrail([...trails, response.data.trail]);
-        setAlert({message: `${t('success_duplicate')}`, type: 'success'});
+        setAlert({ message: `${t('success_duplicate')}`, type: 'success' });
         handleCloneModalClose();
       })
       .catch(error => {
         console.log(error);
-        setAlert({message: `${t('error_duplicate')}`, type: 'error'});
+        setAlert({ message: `${t('error_duplicate')}`, type: 'error' });
         handleCloneModalClose();
       });
   };
@@ -156,12 +159,12 @@ const Home = () => {
     api(configuration)
       .then((response) => {
         setTrail(trails.filter(trail => trail._id !== trailToProcess));
-        setAlert({message: `${t('success_delete')}`, type: 'success'});
+        setAlert({ message: `${t('success_delete')}`, type: 'success' });
         handleDeleteModalClose();
       })
       .catch((error) => {
         console.log(error);
-        setAlert({message: `${t('error_delete')}`, type: 'error'});
+        setAlert({ message: `${t('error_delete')}`, type: 'error' });
         handleDeleteModalClose();
       });
   };
@@ -266,15 +269,23 @@ const Home = () => {
   };
 
   const userId = getUserIdFromToken(token);
+  const offset = currentPage * itemsPerPage;
+  const trailPageData = displayedTrails.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(displayedTrails.length / itemsPerPage);
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+    window.scrollTo(0, 0);
+  }
 
   useEffect(() => {
-      if (alert.message) {
-        const timer = setTimeout(() => {
-          setAlert({ message: '', type: '' });
-        }, 3000); // Hide alert after 3 seconds
-        return () => clearTimeout(timer);
-      }
-    }, [alert.message]);
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 3000); // Hide alert after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <div className='d-flex container-fluid mx-0 px-0'>
@@ -348,7 +359,7 @@ const Home = () => {
                     })}
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item key="reset" onClick={() => { setStatusFilter(''); setDifficultyFilter(''); setLocalityFilter(''); }} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
-                    {t('reset_filter')}
+                      {t('reset_filter')}
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -387,9 +398,9 @@ const Home = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayedTrails.map((trail, index) => (
+                  {trailPageData.map((trail, index) => (
                     <tr key={trail._id} className={`${styles.table_data}`}>
-                      <td className='ps-4'>{index + 1}</td>
+                      <td className='ps-4'>{index + offset + 1}</td>
                       <td>
                         <div className='d-flex align-items-center'>
                           <img src={`${backendUrl}/${trail.thumbnail}`} alt="trail_img" style={{ width: '4rem', height: '4rem' }} className='me-2' onError={addDefaultImg} />
@@ -458,7 +469,27 @@ const Home = () => {
               </table>
             </div>
             <div className={`${styles.table_bottom} mt-1 mb-4 ms-4`}>
-              {t('showing')} 1 {t('to')} {Object.keys(displayedTrails).length} {t('of')} {Object.keys(displayedTrails).length} {t('entries')}
+              {/* Pagination */}
+              {displayedTrails.length > itemsPerPage && (
+                <ReactPaginate
+                  previousLabel={"←"}
+                  nextLabel={"→"}
+                  breakLabel={"..."}
+                  pageCount={pageCount}
+                  onPageChange={handlePageClick}
+                  containerClassName={"pagination justify-content-center mt-4"}
+                  pageClassName={"page-item"}
+                  pageLinkClassName={"page-link"}
+                  previousClassName={"page-item"}
+                  previousLinkClassName={"page-link"}
+                  nextClassName={"page-item"}
+                  nextLinkClassName={"page-link"}
+                  breakClassName={"page-item"}
+                  breakLinkClassName={"page-link"}
+                  activeClassName={"active"}
+                />
+              )}
+              {/*{t('showing')} 1 {t('to')} {Object.keys(displayedTrails).length} {t('of')} {Object.keys(displayedTrails).length} {t('entries')} */}
             </div>
           </div>
 
