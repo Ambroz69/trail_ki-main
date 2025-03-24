@@ -33,17 +33,6 @@ const ExplorerJourney = () => {
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook for translations
 
-  // Dummy certificates data
-  const dummyCertificates = [
-    { id: 1, name: "Bratislava Zoo Wildlife Adventure" },
-    { id: 2, name: "Bojnice Zoo Adventure" },
-    { id: 3, name: "Discover Nitra: A Journey Through History and Nature" },
-  ];
-
-  const dummyProgress = [
-    { id: 1, name: "Bratislava Zoo Wildlife Adventure", thumbnail: "uploads\\1735493628497-trailforrest.jpg" }
-  ]
-
   const getUserRole = () => {
     try {
       const tokenPayload = JSON.parse(atob(token.split(".")[1]));
@@ -77,10 +66,14 @@ const ExplorerJourney = () => {
               return unique.filter(item => item.trail._id !== cert.trail._id).concat(cert);
             }
             return unique;
-          }, []);
-        const inProgress = allCertifications.filter(cert => cert.status === null); // filter certifications in progress
+          }, [])
+          .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt)) // sort by most recent
+          .slice(0, 3); // limit to last 3 certificates
+        const inProgress = allCertifications.filter(cert => cert.status === null);
+        const latestInProgress = inProgress.length > 1
+          ? inProgress.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0] : null;
         setCertifications(completedCertifications);
-        setInProgressCertifications(inProgress);
+        setInProgressCertifications(latestInProgress || inProgress);
       })
       .catch((error) => {
         setAlert({ message: `${t('error_trail')}`, type: 'error' });
@@ -184,7 +177,7 @@ const ExplorerJourney = () => {
               </div>
             </Button>
           </div>
-          {/* Current Certification Progress - musím opraviť certifikáciu, aby som robil medziprogress, zatiaľ dummyMe */}
+          {/* Current Certification Progress */}
           <h2 className="d-flex flex-row fs-5 pb-2">
             <img src={my_journey_keep_up} alt="my_journey_keep_up" className='me-3' width={16}></img>
             {t("keep_up_the_great_work")}
@@ -193,26 +186,35 @@ const ExplorerJourney = () => {
             <div>
               <img src={my_journey_certification} alt="my_journey_certification" className='' />
             </div>
-            {(inProgressCertifications.length > 0 ? inProgressCertifications : dummyProgress).map((certificate) => {
-              const totalQuest = certificate?.trail?.points?.length || 1;
-              const answeredQuest = certificate?.answers?.length;
-              const progress = Math.round((answeredQuest / totalQuest) * 100);
-              return (
-                <>
-                  <div className='d-flex my-3 mb-lg-4 '>
-                    <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
-                    <h2 className={`${styles.trail_heading} font-bold ps-2 col-lg-8 align-self-center`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
-                  </div>
-                  <p className='mb-1 font-bold'>{t("overall_progress")}</p>
-                  <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start mb-2">
-                    <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-12 col-lg-8 mb-3 m-lg-0" />
-                    <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/trails/certification/${certificate?.trail?._id}`}>
-                      {t("keep_making_progress")}
-                    </Button>
-                  </div>
-                </>
-              )
-            })}
+            {inProgressCertifications.length > 0 ? (
+              (inProgressCertifications).map((certificate) => {
+                const totalQuest = certificate?.trail?.points?.length || 1;
+                const answeredQuest = certificate?.answers?.length;
+                const progress = Math.round((answeredQuest / totalQuest) * 100);
+                return (
+                  <>
+                    <div className='d-flex my-3 mb-lg-4 '>
+                      <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
+                      <h2 className={`${styles.trail_heading} font-bold ps-2 col-lg-8 align-self-center`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
+                    </div>
+                    <p className='mb-1 font-bold'>{t("overall_progress")}</p>
+                    <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start mb-2">
+                      <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-12 col-lg-8 mb-3 m-lg-0" />
+                      <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/trails/certification/${certificate?.trail?._id}`}>
+                        {t("keep_making_progress")}
+                      </Button>
+                    </div>
+                  </>
+                )
+              })) : (
+              <>
+                <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start mb-2 py-4">
+                  <Button className={`${styles.my_journey_button} px-4 py-2`} href={`${basePath}/homeuser`}>
+                    {t("explore_nav_explore")}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Completed Trails & Certificates */}
@@ -225,7 +227,8 @@ const ExplorerJourney = () => {
           </h2>
           {/* Certificates */}
           <div className='d-none d-lg-block'>
-            {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
+            {certifications.length > 0 ? (
+              (certifications).map((certificate) => (
               <div key={certificate._id} className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
                 <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
                   style={{ minWidth: "50px", height: "50px", backgroundColor: "#4D938B" }}>
@@ -241,14 +244,23 @@ const ExplorerJourney = () => {
                   </h5>
                 </div>
                 <div className='ms-auto d-flex align-items-center'>
-                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`,"_blank")} >{t("get_certificate")}</Button>
+                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")} >{t("get_certificate")}</Button>
                 </div>
               </div>
-            ))}
+            ))):(
+              <div className={`${styles.my_journey_card} card d-flex flex-row p-3 p-lg-4 mb-3`}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
+                  style={{ minWidth: "50px", height: "50px", backgroundColor: "#67C4A7" }}>
+                  <img className="text-white fs-5" src={my_journey_apply} placeholder="my_journey_apply"></img>
+                </div>
+                <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>
+              </div>
+            )}
           </div>
           {/* Certificates MOBILE */}
-          <div className='d-block d-lg-none'>
-            {(certifications.length > 0 ? certifications : dummyCertificates).map((certificate) => (
+          <div className='d-block d-lg-none'>            
+            {certifications.length > 0 ? (
+            (certifications).map((certificate) => (
               <div key={certificate.id} className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
                 <div className='d-flex flex-row mb-3'>
                   <div className="rounded-circle d-flex align-items-center justify-content-center me-3 align-self-center"
@@ -269,7 +281,13 @@ const ExplorerJourney = () => {
                   <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} href="#">{t("get_certificate")}</Button>
                 </div>
               </div>
-            ))}
+            ))):(
+              <div className={`${styles.my_journey_card} card d-flex flex-column p-3 mb-3`}>
+                <div className='d-flex flex-column justify-content-center'>
+                  <p className={`${styles.my_journey_body_text} m-0`}>{t("no_certificates")}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

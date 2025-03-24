@@ -21,7 +21,7 @@ const Register = () => {
   const [country, setCountry] = useState("Slovakia");
   const [register, setRegister] = useState(false);
   const [name, setName] = useState("");
-  const [primaryLanguage, setPrimaryLanguage] = useState("");
+  const [primaryLanguage, setPrimaryLanguage] = useState('Slovak');
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
   const { t } = useTranslation(); // Hook to access translations
@@ -49,9 +49,9 @@ const Register = () => {
         setRegister(true);
         setAlert({ message: `${t('success_registration')}`, type: 'success' });
         // redirect user to the login page
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
+        //setTimeout(() => {
+        //  navigate('/');
+        //}, 3000);
       })
       .catch((error) => {
         error = new Error();
@@ -69,14 +69,14 @@ const Register = () => {
     return lang === 'en' ? gb_flag : sk_flag;
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (alert.message) {
       const timer = setTimeout(() => {
         setAlert({ message: '', type: '' });
       }, 5000); // Hide alert after 5 seconds
       return () => clearTimeout(timer);
     }
-  }, [alert.message]);
+  }, [alert.message]);*/
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
@@ -171,13 +171,24 @@ const Register = () => {
               )}
               {/* submit button */}
               <div className="d-grid mt-1">
-                <Button
-                  type="submit"
-                  className={`${styles.login_button} mt-3 btn-block rounded-3`}
-                  onClick={(e) => handleSubmit(e)}
-                >
-                  {t('create_account')}
-                </Button>
+                {register ? (
+                  <Button
+                    type="submit"
+                    className={`${styles.login_button} mt-3 btn-block rounded-3`}
+                    href="/"
+                  >
+                    {t('back')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className={`${styles.login_button} mt-3 btn-block rounded-3`}
+                    onClick={(e) => handleSubmit(e)}
+                  >
+                    {t('create_account')}
+                  </Button>
+                )}
+
               </div>
 
               <div className='d-flex flex-row align-items-center justify-content-center mt-3'>
@@ -204,11 +215,11 @@ const Register = () => {
             </Form>
           </div>
         </Col>
-      </Row>
+      </Row >
       {/*<Row className={`${styles.footer_width}`}>
         <img src={footer_logo} alt="footer_logo" className={`${styles.footer_img}`} />
       </Row>*/}
-    </Container>
+    </Container >
   );
 };
 

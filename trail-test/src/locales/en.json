@@ -315,5 +315,7 @@
   "print_certificate": "Print Certificate",
   "primary_language": "Primary Language",
   "czechis": "Czech",
-  "select_primary_language": "Select Primary Language"
+  "select_primary_language": "Select Primary Language",
+  "no_certificates": "Keep exploring trails to unlock certificates",
+  "back": "Back"
 }

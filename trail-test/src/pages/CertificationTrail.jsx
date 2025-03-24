@@ -57,6 +57,7 @@ const CertificationTrail = () => {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [updatedAnswer, setUpdatedAnswer] = useState(null);
   const [newScore, setNewScore] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -218,7 +219,7 @@ const CertificationTrail = () => {
     }
 
     // add users answer to state
-    setUpdatedAnswer({ questionId, providedAnswer: tempAnswer, isCorrect, });
+    //setUpdatedAnswer({ questionId, providedAnswer: tempAnswer, isCorrect, });
     setUserAnswers((prev) => [
       ...prev,
       {
@@ -238,7 +239,7 @@ const CertificationTrail = () => {
     setShowFeedback(true);
   };
 
-  const saveAnswerToDatabase = async (updatedAnswer, newScore, newAnswers) => {
+  const saveAnswerToDatabase = async (newScore, newAnswers) => {
     const certificationData = {
       userId: token ? JSON.parse(atob(token.split('.')[1])).userId : null,
       trail: id,
@@ -309,7 +310,7 @@ const CertificationTrail = () => {
       });
   };
 
-  const progress = 0;
+  //const progress = 0;
   const getUserRole = () => {
     try {
       const tokenPayload = JSON.parse(atob(token.split(".")[1]));
@@ -361,11 +362,12 @@ const CertificationTrail = () => {
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
     setShowFeedback(false);
+    setProgress(Math.round((userAnswers.length/trail.points.length)*100));
     // check if user already has all questions answered, if not, save progress
-    if (userAnswers.length + 1 === trail.points.length) {
-      submitCertificationResults([...userAnswers, updatedAnswer], newScore);
+    if (userAnswers.length === trail.points.length) {
+      submitCertificationResults([...userAnswers], newScore);
     } else {
-      saveAnswerToDatabase(updatedAnswer, newScore, [...userAnswers, updatedAnswer]);
+      saveAnswerToDatabase(newScore, [...userAnswers]);
     }
   }
 
@@ -453,7 +455,11 @@ const CertificationTrail = () => {
                                 className="form-control"
                                 value={reviewText}
                                 onChange={(e) => setReviewText(e.target.value)}
+                                maxLength={100}
                               />
+                              <small className="text-muted d-block text-end">
+                                {reviewText.length}/100
+                              </small>
                               <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                 <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
                                   <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
@@ -482,7 +488,7 @@ const CertificationTrail = () => {
                       <>
                         {point?.quiz ? (
                           <>
-                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task X: {point?.title}</p>
+                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task {userAnswers?.length+1||1}: {point?.title}</p>
                           </>
                         ) : (point ? (
                           <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
