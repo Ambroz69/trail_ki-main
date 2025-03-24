@@ -85,7 +85,7 @@ function Hamburger({ userLoggedIn, menuModalShow, closeMenuModalShow }) {
             <a className={`${styles.hamburger_link}`} href={`${basePath}/leaderboard`}>{t('hall_of_fame')}</a>
           </li>
           <li className="py-2 mt-1">
-            <a className={`${styles.hamburger_link}`} href="#certificates">{t('explore_nav_certificates')}</a>
+            <a className={`${styles.hamburger_link}`} href={`${basePath}/certificates`}>{t('explore_nav_certificates')}</a>
           </li>
           <li className="py-2 mt-1">
             <a className={`${styles.hamburger_link}`} href={`${basePath}/profile`} >{t('profile')}</a>

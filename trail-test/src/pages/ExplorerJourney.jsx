@@ -221,7 +221,7 @@ const ExplorerJourney = () => {
           <h2 className="d-flex flex-row fs-5 pb-2">
             <img src={my_journey_mission} alt="my_journey_mission" className='me-3' width={16}></img>
             {t("mission_accomplished")}
-            <a href="#" className={`${styles.my_journey_library_link} ms-auto me-lg-4`}>
+            <a href={`${basePath}/certificates`} className={`${styles.my_journey_library_link} ms-auto me-lg-4`}>
               {t("see_all_in_my_library")}
             </a>
           </h2>
@@ -278,7 +278,7 @@ const ExplorerJourney = () => {
                   </div>
                 </div>
                 <div className='d-flex align-items-center'>
-                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} href="#">{t("get_certificate")}</Button>
+                  <Button className={`${styles.my_journey_button_certificate} px-4 py-2`} onClick={() => window.open(`${basePath}/certificate/${certificate?.trail?._id}`, "_blank")}>{t("get_certificate")}</Button>
                 </div>
               </div>
             ))):(

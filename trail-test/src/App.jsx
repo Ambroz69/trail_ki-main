@@ -19,6 +19,7 @@ import ExplorerJourney from './pages/ExplorerJourney';
 import Leaderboard from './pages/Leaderboard';
 import Practice from './pages/Practice';
 import Certificate from './pages/Certificate';
+import CertificatesLibrary from './pages/CertificatesLibrary';
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
         <Route path='certificate/:id' element={<Certificate />} />
+        <Route path='certificates' element={<CertificatesLibrary />} />
       </Route>
 
       {/* Trail Creator Routes */}
@@ -60,6 +62,7 @@ const App = () => {
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
         <Route path='certificate/:id' element={<Certificate />} />
+        <Route path='certificates' element={<CertificatesLibrary />} />
       </Route>
 
       {/* Manager Routes */}
@@ -77,6 +80,7 @@ const App = () => {
         <Route path='leaderboard' element={<Leaderboard />} />
         <Route path='practice' element={<Practice />} />
         <Route path='certificate/:id' element={<Certificate />} />
+        <Route path='certificates' element={<CertificatesLibrary />} />
       </Route>
 
       {/* Default Redirect */}

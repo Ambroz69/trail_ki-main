@@ -183,8 +183,8 @@ function NavbarExplorer() {
         )}
         </div>
         <div className={`pe-4 py-4`}>
-          <NavLink to="#" end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item}` // change to nav_2_item_current when active link
+          <NavLink to={`${basePath}/certificates`} end aria-current="page" className={({ isActive }) =>
+            isActive ? `${styles.nav_2_item_current}` 
               : `${styles.nav_2_item}`
           }>
             {t("explore_nav_certificates")}
@@ -192,7 +192,7 @@ function NavbarExplorer() {
         </div>
         <div className={`pe-4 py-4`}>
           <NavLink to={`${basePath}/leaderboard`} end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item}` // change to nav_2_item_current when active link
+            isActive ? `${styles.nav_2_item_current}` 
               : `${styles.nav_2_item}`
           }>
             {t("explore_nav_hall_of_fame")}
