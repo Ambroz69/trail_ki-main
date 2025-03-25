@@ -153,8 +153,12 @@ const CertificationTrail = () => {
   };
 
   const handleProximityTask = (pointProximity) => {
-    setPoint(pointProximity);
-    setOnPoint(true);
+    if (pointProximity === null) {
+      setPoint(null);
+    } else {
+      setPoint(pointProximity);
+      setOnPoint(true);
+    }
     //setFeedback(null); // clear feedback on new point
     //setTempAnswer(null); // clear temp answer
   }
@@ -370,8 +374,9 @@ const CertificationTrail = () => {
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
     setShowFeedback(false);
-    setTempAnswer(null);    
+    setTempAnswer(null);
     setOnPoint(false);
+    setPoint(false);
     setProgress(Math.round((userAnswers.length / trail.points.length) * 100));
     // check if user already has all questions answered, if not, save progress
     if (userAnswers.length === trail.points.length) {
@@ -445,7 +450,7 @@ const CertificationTrail = () => {
                 <h5 className='fs-5 font-bold text-center mb-3 mt-4'>{trail?.name}</h5>
                 <div className='px-3 px-lg-4 mt-5 mb-3'>
                   <button className={`${styles.show_all_button} d-none d-lg-inline py-3 px-5 btn py-2`} onClick={() => handleForfeitModalShow()}>
-                    Forfeit
+                    {t('forfeit')}
                   </button>
                 </div>
                 <ProgressBar now={progress} label={`${progress}%`} className={`${styles.progress_bar} col-12 mb-3 m-lg-0`} />
@@ -472,7 +477,7 @@ const CertificationTrail = () => {
                               <Rating onRate={setRating} />
                             </div>
                             <div className='col-12'>
-                              <p className={`${styles.accordion_text_gray} mb-1 mt-4`} >Leave a comment (optional)</p>
+                              <p className={`${styles.accordion_text_gray} mb-1 mt-4`} >{t('leave_comment')}</p>
                               <textarea
                                 className="form-control"
                                 value={reviewText}
@@ -484,7 +489,7 @@ const CertificationTrail = () => {
                               </small>
                               <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                 <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
-                                  <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
+                                  <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
                                   <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleSubmitReview}>
                                     {t('submit_review')}
                                   </button>
@@ -497,9 +502,9 @@ const CertificationTrail = () => {
                             <p className={`${styles.accordion_text_gray}`} >{t('thank_you_review')}</p>
                             <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                               <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
-                                <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
+                                <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
                                 <Button className={`${styles.practice_check_button} px-4 py-3`} href={`${basePath}`}>
-                                  Finish
+                                  {t('finish')}
                                 </Button>
                               </div>
                             </div>
@@ -510,7 +515,7 @@ const CertificationTrail = () => {
                       <>
                         {point?.quiz ? (
                           <>
-                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task {userAnswers?.length + 1 || 1}: {point?.title}</p>
+                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>{t('task')} {userAnswers?.length + 1 || 1}: {point?.title}</p>
                           </>
                         ) : (point ? (
                           <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
@@ -518,9 +523,18 @@ const CertificationTrail = () => {
                           </button>
                         ) : (
                           <div className='d-flex flex-column pt-4'>
-                            <p className={`${styles.accordion_point_title} mb-2`}>Task 0: Head to the starting point of the trail to begin your journey.</p>
+                            <p className={`${styles.accordion_point_title} mb-2`}>
+                              {answeredQuestions.size !== 0 ? (
+                                <>
+                                  {t('task')} {userAnswers?.length + 1 || 1}: {t('continue_journey')}
+                                </>
+                              ) : (
+                                <>
+                                  {t('task')} 0: {t('head_to_start')}
+                                </>
+                              )}</p>
                             <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
-                              <p className={`${styles.form_label_2} mb-0`}>Follow the path and uncover unique spots that make this journey special.</p>
+                              <p className={`${styles.form_label_2} mb-0`}>{t('follow_the_path')}</p>
                             </div>
                           </div>
                         )
@@ -619,9 +633,9 @@ const CertificationTrail = () => {
                                             </div>
                                             <p className={`${styles.feedback_correct} mb-0 me-2 me-lg-0`}>{feedback}</p>
                                           </div>
-                                          <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 px-2`}>CLICK BUTTON TO</p>
+                                          <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
                                           <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
-                                            Continue
+                                            {t('continue')}
                                           </button>
                                         </div>
                                       </div>
@@ -635,9 +649,9 @@ const CertificationTrail = () => {
                                             </div>
                                             <p className={`${styles.feedback_incorrect} mb-0 me-2 me-lg-0`}>{feedback}</p>
                                           </div>
-                                          <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 px-2`}>CLICK BUTTON TO</p>
+                                          <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
                                           <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
-                                            Continue
+                                            {t('continue')}
                                           </button>
                                         </div>
                                       </div>
@@ -646,9 +660,9 @@ const CertificationTrail = () => {
                                     <>
                                       <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                         <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
-                                          <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
+                                          <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
                                           <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={!onPoint}>
-                                            Check
+                                            {t('check')}
                                           </button>
                                         </div>
                                       </div>

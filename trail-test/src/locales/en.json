@@ -318,5 +318,13 @@
   "select_primary_language": "Select Primary Language",
   "no_certificates": "Keep exploring trails to unlock certificates",
   "back": "Back",
-  "missing_answer": "Please give an answer"
+  "missing_answer": "Please give an answer",
+  "leave_comment": "Leave a comment (optional)",
+  "click_button_to": "CLICK BUTTON TO",
+  "finish": "Finish",
+  "continue_journey": "Continue your journey to next point",
+  "head_to_start": "Head to the starting point of the trail to begin your journey.",
+  "follow_the_path": "Follow the path and uncover unique spots that make this journey special.",
+  "continue": "Continue",
+  "check": "Check"
 }
