@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuill } from 'react-quilljs';
-import 'quill/dist/quill.snow.css';
+//import { useQuill } from 'react-quilljs';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import Navbar from '../Navbar';
 import styles from '../css/TrailCreate.module.css';
 import Tab from 'react-bootstrap/Tab';
@@ -40,7 +41,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const descriptionRef = useRef(description); // useRef to prevent rerenders
+  //const descriptionRef = useRef(description); // useRef to prevent rerenders
   const [difficulty, setDifficulty] = useState('Easy');
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
@@ -53,13 +54,13 @@ const CreateTrail = () => {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
-  const { quill: quillDescription, quillRef: quillRefDescription } = useQuill();
-  const { quill: quillContent, quillRef: quillRefContent } = useQuill();
+  //const { quill: quillDescription, quillRef: quillRefDescription } = useQuill();
+  //const { quill: quillContent, quillRef: quillRefContent } = useQuill();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const contentRef = useRef(content); // useRef to prevent rerenders
+  //const contentRef = useRef(content); // useRef to prevent rerenders
   const [question, setQuestion] = useState('');
-  const [ppoints, setPpoints] = useState('');
+  const [ppoints, setPpoints] = useState(0);
   const [quizType, setQuizType] = useState('single');
   const [correctFeedback, setCorrectFeedback] = useState('');
   const [incorrectFeedback, setIncorrectFeedback] = useState('');
@@ -87,7 +88,7 @@ const CreateTrail = () => {
   const [audioB, setAudioB] = useState(null);
   const [translations, setTranslations] = useState([]);
   const [languageVersion, setLanguageVersion] = useState('');
-  const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('');
+  const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
   const [originalTrail, setOriginalTrail] = useState(null);
   const [storedOriginalTrail, setStoredOriginalTrail] = useState({ name: '', description: '' });
 
@@ -274,7 +275,7 @@ const CreateTrail = () => {
   }, [id]);
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (quillDescription) {
       if (!hasLoadedInitialContent.current && description) {
         quillDescription.clipboard.dangerouslyPasteHTML(description); // Set the initial description
@@ -290,9 +291,9 @@ const CreateTrail = () => {
         }
       });
     }
-  }, [quillDescription, description]);
+  }, [quillDescription, description]);*/
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (quillContent) {
       if (!hasLoadedInitialContent.current && content) {
         quillContent.clipboard.dangerouslyPasteHTML(content); // Set the initial description
@@ -308,7 +309,7 @@ const CreateTrail = () => {
         }
       });
     }
-  }, [quillContent, content]);
+  }, [quillContent, content]);*/
 
   const handleConfirmDelete = () => {
     setPoints(points => {
@@ -447,7 +448,7 @@ const CreateTrail = () => {
     setLongitude('');
     setLatitude('');
     setContent('');
-    if (quillContent) { quillContent.root.innerHTML = ''; }
+    //if (quillContent) { quillContent.root.innerHTML = ''; }
     setQuizChecked(false);
     setQuestion('');
     setPpoints('');
@@ -504,7 +505,7 @@ const CreateTrail = () => {
       setLongitude(pointToEdit.longitude || '');
       setLatitude(pointToEdit.latitude || '');
       setContent(pointToEdit.content || '');
-      if (quillContent) { quillContent.clipboard.dangerouslyPasteHTML(pointToEdit.content || ''); }
+      //if (quillContent) { quillContent.clipboard.dangerouslyPasteHTML(pointToEdit.content || ''); }
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
       setQuizType(pointToEdit.quiz?.type || 'single');
@@ -609,17 +610,17 @@ const CreateTrail = () => {
     if (newLang === language) {
       setName(storedOriginalTrail?.name || '');
       setDescription(storedOriginalTrail?.description || '');
-      if (quillDescription) { quillDescription.root.innerHTML = storedOriginalTrail?.description; }
+      //if (quillDescription) { quillDescription.root.innerHTML = storedOriginalTrail?.description; }
     } else {
       const translation = translations.find(t => t.language === newLang);
       if (translation) {
         setName(translation.name);
         setDescription(translation.description);
-        if (quillDescription) { quillDescription.root.innerHTML = translation.description; }
+        //if (quillDescription) { quillDescription.root.innerHTML = translation.description; }
       } else {
         setName('');
         setDescription('');
-        if (quillDescription) { quillDescription.root.innerHTML = ''; }
+        //if (quillDescription) { quillDescription.root.innerHTML = ''; }
       }
     }
   };
@@ -632,6 +633,20 @@ const CreateTrail = () => {
       return () => clearTimeout(timer);
     }
   }, [alert.message]);
+
+  // Quill modules
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video'],
+      ['clean']
+    ]
+  };
 
   return (
     <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
@@ -646,14 +661,14 @@ const CreateTrail = () => {
               <p className={`${styles.new_trail_text}`}>{t('new_trail_text')}</p>
             </div>
             <div>
-              {/* Language Selection */}
-              <select value={selectedLanguageVersion} onChange={handleLanguageChange} className="form-select">
+              {/* Language Selection - not ready */}
+              {/*<select value={selectedLanguageVersion} onChange={handleLanguageChange} className="form-select">
                 <option value={language}>{language} (Original)</option>
                 {/*translations.map(t => (
                   <option key={t.language} value={t.language}>{t.language}</option>
                 ))*/}
-                <option value={language === 'English' ? 'Slovak' : 'English'}>{language === 'English' ? 'Slovak' : 'English'}</option>
-              </select>
+              {/*}  <option value={language === 'English' ? 'Slovak' : 'English'}>{language === 'English' ? 'Slovak' : 'English'}</option>
+              </select>*/}
             </div>
             <div className='d-flex align-items-center pb-4'>
               <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>{t('save_draft')}</button>
@@ -740,7 +755,8 @@ const CreateTrail = () => {
                   <div className='mb-3'>
                     <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
                     <div>
-                      <div ref={quillRefDescription} className={`${styles.description_input}`} />
+                      {/*<div ref={quillRefDescription} className={`${styles.description_input}`} />*/}
+                      <ReactQuill theme="snow" value={description} onChange={setDescription} modules={modules} className={`${styles.description_input}`} />
                     </div>
                   </div>
                 </div>
@@ -766,7 +782,8 @@ const CreateTrail = () => {
                       </div>
                       <div className='mb-3'>
                         <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
-                        <div ref={quillRefContent} className={`${styles.description_input}`} />
+                        {/*<div ref={quillRefContent} className={`${styles.description_input}`} />*/}
+                        <ReactQuill theme="snow" value={content} onChange={setContent} modules={modules} className={`${styles.description_input}`} />
                         {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
                       </div>
                       <div className='mb-3'>
@@ -997,7 +1014,7 @@ const CreateTrail = () => {
                                   <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? `${t('hide_content')}` : `${t('show_content')}`}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
-                                  <p className={`${styles.accordion_text_gray}`}>{point.content}</p>
+                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point.content}}></p>
                                 </div>
                                 {point.quiz ? (
                                   <>

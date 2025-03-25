@@ -71,7 +71,6 @@ button.save_button {
 }
 
 .description_input {
-  min-height: 10rem;
   border: 1px solid #DDDDDD;
   border-radius: 0 0 0.5rem 0.5rem;
 }

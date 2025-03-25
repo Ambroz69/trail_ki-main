@@ -317,5 +317,6 @@
   "czechis": "Czech",
   "select_primary_language": "Select Primary Language",
   "no_certificates": "Keep exploring trails to unlock certificates",
-  "back": "Back"
+  "back": "Back",
+  "missing_answer": "Please give an answer"
 }
