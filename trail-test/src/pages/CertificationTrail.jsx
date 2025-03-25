@@ -20,6 +20,7 @@ import OrderComponent from '../../components/quiztypes/OrderComponent';
 import NavbarExplorer from '../NavbarExplorer';
 import Footer from '../../components/Footer';
 import Rating from "../../components/Rating";
+import AlertComponent from '../../components/AlertComponent';
 
 // svg import
 import accordion_points from '../assets/accordion_points.svg';
@@ -58,6 +59,8 @@ const CertificationTrail = () => {
   const [updatedAnswer, setUpdatedAnswer] = useState(null);
   const [newScore, setNewScore] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [onPoint, setOnPoint] = useState(false); // to enable check button
+  const [alert, setAlert] = useState({ message: '', type: '' });
 
   useEffect(() => {
     // set configurations for the API call here
@@ -151,12 +154,17 @@ const CertificationTrail = () => {
 
   const handleProximityTask = (pointProximity) => {
     setPoint(pointProximity);
-    setFeedback(null); // clear feedback on new point
-    setTempAnswer(null); // clear temp answer
+    setOnPoint(true);
+    //setFeedback(null); // clear feedback on new point
+    //setTempAnswer(null); // clear temp answer
   }
 
   const handleAnswerSubmit = () => {
     if (!point || !point.quiz) return;
+    if (tempAnswer === null) {
+      setAlert({ message: `${t('missing_answer')}`, type: 'error' });
+      return;
+    }
     const questionId = point.quiz._id;
     // prevent answering the same question multiple times
     if (answeredQuestions.has(questionId)) {
@@ -362,7 +370,9 @@ const CertificationTrail = () => {
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
     setShowFeedback(false);
-    setProgress(Math.round((userAnswers.length/trail.points.length)*100));
+    setTempAnswer(null);    
+    setOnPoint(false);
+    setProgress(Math.round((userAnswers.length / trail.points.length) * 100));
     // check if user already has all questions answered, if not, save progress
     if (userAnswers.length === trail.points.length) {
       submitCertificationResults([...userAnswers], newScore);
@@ -403,6 +413,15 @@ const CertificationTrail = () => {
     }
   };
 
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 5000); // Hide alert after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
+
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
@@ -430,6 +449,9 @@ const CertificationTrail = () => {
                   </button>
                 </div>
                 <ProgressBar now={progress} label={`${progress}%`} className={`${styles.progress_bar} col-12 mb-3 m-lg-0`} />
+                {alert.message && (
+                  <AlertComponent message={alert.message} type={alert.type} />
+                )}
                 <div className={`col-12 pt-0`}>
                   <div className='d-flex flex-column w-100'>
                     {showSummary ? (
@@ -488,7 +510,7 @@ const CertificationTrail = () => {
                       <>
                         {point?.quiz ? (
                           <>
-                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task {userAnswers?.length+1||1}: {point?.title}</p>
+                            <p className={`${styles.accordion_point_title} mb-2 mt-3`}>Task {userAnswers?.length + 1 || 1}: {point?.title}</p>
                           </>
                         ) : (point ? (
                           <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
@@ -625,7 +647,7 @@ const CertificationTrail = () => {
                                       <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                         <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
                                           <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
-                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>
+                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={!onPoint}>
                                             Check
                                           </button>
                                         </div>
