@@ -269,7 +269,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
             positionSourceRef.current.clear();
             positionSourceRef.current.addFeature(positionFeature);
             // check proximity to points
-            const foundPoint = false;
+            let foundPoint = false;
             points.forEach((point) => {
               const distance = haversineDistance(latitude, longitude, point.latitude, point.longitude);
               if (distance <= 10) { // proximity radius in meters
