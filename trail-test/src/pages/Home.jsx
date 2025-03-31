@@ -432,7 +432,7 @@ const Home = () => {
                             <Dropdown.Item href="#" onClick={() => handleCloneModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_duplicate} alt="duplicate" className='pe-2' />{t('duplicate')}
                             </Dropdown.Item>
-                            {trail.creator === userId && (
+                            {(trail.creator === userId || userRole === "manager") && (
                               <>
                                 {trail.published ? ( // change icon
                                   <Dropdown.Item href="#" onClick={() => handleUnpublishModalShow(trail._id)} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
@@ -448,7 +448,7 @@ const Home = () => {
                             <Dropdown.Item href={`${basePath}/trails/details/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
                               <img src={table_action_show} alt="show" className='pe-2' />{t('show_trail')}
                             </Dropdown.Item>
-                            {trail.creator === userId && (
+                            {(trail.creator === userId || userRole === "manager") && (
                               <>
                                 {(!trail.published) && (
                                   <Dropdown.Item href={`${basePath}/trails/edit/${trail._id}`} className={`${styles.table_action_dropdown_item} ps-4 d-flex`}>
