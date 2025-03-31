@@ -324,7 +324,9 @@
   "finish": "Dokončenie",
   "continue_journey": "Pokračuj na trase k ďalšiemu bodu",
   "head_to_start": "Zamier k počiatočnému bodu trasy a začni dobrodružstvo.",
-  "follow_the_path": "Nasleduj trasu a odhaľuj jedinečné meista, ktoré robia túto trasu výnimočnou.",
+  "follow_the_path": "Nasleduj trasu a odhaľuj jedinečné miesta, ktoré robia túto trasu výnimočnou.",
   "continue": "Pokračovanie",
-  "check": "Overenie"
+  "check": "Overenie",
+  "feedback_content": "Spätná väzba",
+  "get_question": "Zobrazenie otázky"
 }

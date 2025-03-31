@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
-//import { useQuill } from 'react-quilljs';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Navbar from '../Navbar';
@@ -41,7 +40,6 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const CreateTrail = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  //const descriptionRef = useRef(description); // useRef to prevent rerenders
   const [difficulty, setDifficulty] = useState('Easy');
   const [locality, setLocality] = useState('Slovakia');
   const [season, setSeason] = useState('All Seasons');
@@ -54,16 +52,14 @@ const CreateTrail = () => {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); // because of the possibility to edit already created point
   const [currentPoint, setCurrentPoint] = useState(null);
-  //const { quill: quillDescription, quillRef: quillRefDescription } = useQuill();
-  //const { quill: quillContent, quillRef: quillRefContent } = useQuill();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  //const contentRef = useRef(content); // useRef to prevent rerenders
   const [question, setQuestion] = useState('');
   const [ppoints, setPpoints] = useState(0);
   const [quizType, setQuizType] = useState('single');
   const [correctFeedback, setCorrectFeedback] = useState('');
   const [incorrectFeedback, setIncorrectFeedback] = useState('');
+  const [feedbackContent, setFeedbackContent] = useState('');
   const [quizChecked, setQuizChecked] = useState(false);
   const [pointCreated, setPointCreated] = useState(false);
   const [answers, setAnswers] = useState([{ text: '', isCorrect: true }]);
@@ -86,11 +82,12 @@ const CreateTrail = () => {
   const [tempAudios, setTempAudios] = useState({});
   const [tempPointId, setTempPointId] = useState(null);
   const [audioB, setAudioB] = useState(null);
-  const [translations, setTranslations] = useState([]);
   const [languageVersion, setLanguageVersion] = useState('');
   const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
-  const [originalTrail, setOriginalTrail] = useState(null);
   const [storedOriginalTrail, setStoredOriginalTrail] = useState({ name: '', description: '' });
+  const [trailTranslation, setTrailTranslation] = useState({ language: '', name: null, description: null });
+  const [storedOriginalPoint, setStoredOriginalPoint] = useState({ title: '', content: '' });
+  const [pointTranslation, setPointTranslation] = useState({ language: '', title: null, content: null });
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -182,7 +179,7 @@ const CreateTrail = () => {
       audioPath: uploadedAudios[point.id] || uploadedAudios[point._id] || point.audioPath || null,
     }));
 
-    if (language !== selectedLanguageVersion && (translations[0]?.language === "")) {
+    if (language !== selectedLanguageVersion) {
       const tempTranslation = { language: '', name: '', description: '' }
       tempTranslation.name = name;
       tempTranslation.description = description;
@@ -192,14 +189,12 @@ const CreateTrail = () => {
       formData.append('translation', JSON.stringify(tempTranslation))
       console.log(JSON.stringify(tempTranslation));
     } else {
-      if (language !== selectedLanguageVersion) {
-        formData.append('name', storedOriginalTrail.name);
-        formData.append('description', storedOriginalTrail.description);
-        formData.append('translation', JSON.stringify(translations));
+      formData.append('name', name);
+      formData.append('description', description);
+      if (trailTranslation.language !== "") {
+        formData.append('translation', JSON.stringify(trailTranslation));
       } else {
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('translation', JSON.stringify(translations));
+        formData.append('translation', null);
       }
     }
     console.log(selectedLanguageVersion);
@@ -212,7 +207,7 @@ const CreateTrail = () => {
     formData.append('language', language);
     formData.append('points', JSON.stringify(updatedPoints));
 
-    console.log(JSON.stringify(translations));
+    console.log(JSON.stringify(trailTranslation));
     const url = id
       ? `${backendUrl}/trails/${id}`
       : `${backendUrl}/trails`;
@@ -242,6 +237,7 @@ const CreateTrail = () => {
       });
   };
 
+  // If editing, load existing trail
   useEffect(() => {
     if (id) {
       const configuration = {
@@ -255,7 +251,6 @@ const CreateTrail = () => {
         .then(response => {
           // Load data into state for editing
           const data = response.data;
-          setOriginalTrail(data);
           setName(data.name);
           setDescription(data.description);
           setLocality(data.locality);
@@ -265,7 +260,12 @@ const CreateTrail = () => {
           setPoints(data.points || []);
           setEstimatedTime(data.estimatedTime);
           setLanguage(data.language);
-          setTranslations(data.translation || [])
+          //setTranslations(data.translation || [])
+          if (data.translation) {
+            setTrailTranslation({ language: data.translation[0].language || '', name: data.translation[0]?.name || null, description: data.translation[0]?.description || null });
+          } else {
+            setTrailTranslation({ language: '', name: null, description: null });
+          }
           setSelectedLanguageVersion(data.language);
           //loadExistingPoints(response.data.points || []);
         }).catch(error => {
@@ -273,43 +273,6 @@ const CreateTrail = () => {
         });
     }
   }, [id]);
-
-
-  /*useEffect(() => {
-    if (quillDescription) {
-      if (!hasLoadedInitialContent.current && description) {
-        quillDescription.clipboard.dangerouslyPasteHTML(description); // Set the initial description
-        hasLoadedInitialContent.current = true;
-      }
-      quillDescription.on('text-change', (delta, oldDelta, source) => {
-        const currentContent = quillDescription.root.innerHTML;
-
-        // Only update state if the content has actually changed
-        if (descriptionRef.current !== currentContent) {
-          descriptionRef.current = currentContent;
-          setDescription(currentContent);
-        }
-      });
-    }
-  }, [quillDescription, description]);*/
-
-  /*useEffect(() => {
-    if (quillContent) {
-      if (!hasLoadedInitialContent.current && content) {
-        quillContent.clipboard.dangerouslyPasteHTML(content); // Set the initial description
-        hasLoadedInitialContent.current = true;
-      }
-      quillContent.on('text-change', (delta, oldDelta, source) => {
-        const currentContent = quillContent.root.innerHTML;
-
-        // Only update state if the content has actually changed
-        if (contentRef.current !== currentContent) {
-          contentRef.current = currentContent;
-          setContent(currentContent);
-        }
-      });
-    }
-  }, [quillContent, content]);*/
 
   const handleConfirmDelete = () => {
     setPoints(points => {
@@ -408,11 +371,18 @@ const CreateTrail = () => {
 
   const handleSave = () => {
     if (title) {
+      let tempTranslation = { language: null, title: null, content: null };
+      if (selectedLanguageVersion !== language) {
+        tempTranslation.language = pointTranslation.language || selectedLanguageVersion;
+        tempTranslation.title = title;
+        tempTranslation.content = content;
+      }
       const pointData = {
-        title,
+        title: selectedLanguageVersion !== language ? storedOriginalPoint.title : title,
         longitude,
         latitude,
-        content
+        content: selectedLanguageVersion !== language ? storedOriginalPoint.content : content,
+        translation: null //selectedLanguageVersion !== language ? tempTranslation : pointTranslation - ready for translation
       };
 
       if (quizChecked) {
@@ -430,10 +400,12 @@ const CreateTrail = () => {
             correct: correctFeedback,
             incorrect: incorrectFeedback,
           },
+          feedbackContent: feedbackContent,
         };
       } else {
         pointData.quiz = null;
       }
+      console.log(pointData);
       handleSavePoint(pointData, audioB);
       resetContent();
       //onClose();
@@ -448,7 +420,6 @@ const CreateTrail = () => {
     setLongitude('');
     setLatitude('');
     setContent('');
-    //if (quillContent) { quillContent.root.innerHTML = ''; }
     setQuizChecked(false);
     setQuestion('');
     setPpoints('');
@@ -459,7 +430,10 @@ const CreateTrail = () => {
     setSliderMaxValue(100);
     setCorrectFeedback('');
     setIncorrectFeedback('');
+    setFeedbackContent('');
     setTempPoint(null);
+    setStoredOriginalPoint({ title: '', content: '' });
+    setPointTranslation({ language: '', title: null, content: null });
     //setPreviousAnswers({});
   };
 
@@ -500,12 +474,20 @@ const CreateTrail = () => {
   const handleAccordionClick = (pointId) => {
     const pointToEdit = points.find((point) => point.id === pointId || point._id === pointId);
     console.log('accordion id:', pointId);
+    console.log(pointToEdit);
     if (pointToEdit) {
-      setTitle(pointToEdit.title || '');
+      if (selectedLanguageVersion !== language) {
+        setTitle(pointToEdit.translation.title || '');
+        setContent(pointToEdit.translation.content || '');
+      } else {
+        setTitle(pointToEdit.title || '');
+        setContent(pointToEdit.content || '');
+      }
+      setStoredOriginalPoint({ title: pointToEdit.title, content: pointToEdit.content });
       setLongitude(pointToEdit.longitude || '');
       setLatitude(pointToEdit.latitude || '');
-      setContent(pointToEdit.content || '');
-      //if (quillContent) { quillContent.clipboard.dangerouslyPasteHTML(pointToEdit.content || ''); }
+      //setPointTranslation({ language: pointToEdit.translation?.language || pointToEdit.translation[0]?.language, title: pointToEdit.translation?.title || pointToEdit.translation[0]?.title, content: pointToEdit.translation?.content || pointToEdit.translation[0]?.content } || { language: '', title: null, content: null })
+      setPointTranslation({ language: '', title: null, content: null })
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
       setQuizType(pointToEdit.quiz?.type || 'single');
@@ -513,6 +495,7 @@ const CreateTrail = () => {
       setAnswers(pointToEdit.quiz?.answers || [{ text: '', isCorrect: true }]);
       setCorrectFeedback(pointToEdit.quiz?.feedback?.correct || '');
       setIncorrectFeedback(pointToEdit.quiz?.feedback?.incorrect || '');
+      setFeedbackContent(pointToEdit.quiz?.feedbackContent || '');
       setSliderCorrectValue(pointToEdit.quiz?.answers[0]?.text || 50);
       setSliderMinValue(pointToEdit.quiz?.answers[0]?.minValue || 0);
       setSliderMaxValue(pointToEdit.quiz?.answers[0]?.maxValue || 100);
@@ -573,57 +556,51 @@ const CreateTrail = () => {
     console.log("Audio saved for point:", pointId);
   };
 
-  const handleAddTranslation = () => {
-    const newLang = prompt("Enter the new language");
-    if (newLang) {
-      setTranslations([...translations, { language: newLang, name: '', description: '' }]);
-    }
-  };
-
-  const handleTranslationChange = (index, field, value) => {
-    setTranslations(translations.map((t, i) => (i === index ? { ...t, [field]: value } : t)));
-    setSelectedLanguageVersion(value);
-  };
-
   const handleLanguageChange = (event) => {
     const newLang = event.target.value;
 
     // Store the current input before switching
-    /*setTranslations(prevTranslations => {
-        const updatedTranslations = prevTranslations.filter(t => t.language !== selectedLanguageVersion);
-        console.log(updatedTranslations);
-        return [...updatedTranslations, { language: selectedLanguageVersion, name, description }];
-    });*/
     if (selectedLanguageVersion !== language && name.trim() && description.trim()) {
-      setTranslations(prevTranslations => {
-        const filteredTranslations = prevTranslations
-          .filter(t => t.language !== selectedLanguageVersion && t.language !== "") // Remove empty and duplicates
-          .filter(t => t.language !== language); // Ensure the original is NOT in translations
-        return [...filteredTranslations, { language: selectedLanguageVersion, name, description }];
-      });
+      setTrailTranslation({ language: selectedLanguageVersion, name, description });
+      console.log(trailTranslation);
+    }
+
+    if (selectedLanguageVersion !== language && title.trim() && content.trim()) {
+      setPointTranslation({ language: selectedLanguageVersion, title, content });
+      console.log(pointTranslation);
     }
 
     setSelectedLanguageVersion(newLang);
     if (newLang !== language) {
       setStoredOriginalTrail({ name, description }); // store original input before switching
+      setStoredOriginalPoint({ title, content }); // store original point before switching
     }
     if (newLang === language) {
       setName(storedOriginalTrail?.name || '');
       setDescription(storedOriginalTrail?.description || '');
-      //if (quillDescription) { quillDescription.root.innerHTML = storedOriginalTrail?.description; }
+      setTitle(storedOriginalPoint?.title || '');
+      setContent(storedOriginalPoint?.content || '');
     } else {
-      const translation = translations.find(t => t.language === newLang);
-      if (translation) {
-        setName(translation.name);
-        setDescription(translation.description);
-        //if (quillDescription) { quillDescription.root.innerHTML = translation.description; }
+      if (trailTranslation.name !== null) {
+        setName(trailTranslation.name);
+        setDescription(trailTranslation.description);
       } else {
         setName('');
         setDescription('');
-        //if (quillDescription) { quillDescription.root.innerHTML = ''; }
+      }
+      if (pointTranslation.title !== null) {
+        setTitle(pointTranslation.title);
+        setContent(pointTranslation.content);
+      } else {
+        setTitle('');
+        setContent('');
       }
     }
   };
+
+  useEffect(() => {
+    setSelectedLanguageVersion(language);
+  }, [language]);
 
   useEffect(() => {
     if (alert.message) {
@@ -664,10 +641,9 @@ const CreateTrail = () => {
               {/* Language Selection - not ready */}
               {/*<select value={selectedLanguageVersion} onChange={handleLanguageChange} className="form-select">
                 <option value={language}>{language} (Original)</option>
-                {/*translations.map(t => (
-                  <option key={t.language} value={t.language}>{t.language}</option>
-                ))*/}
-              {/*}  <option value={language === 'English' ? 'Slovak' : 'English'}>{language === 'English' ? 'Slovak' : 'English'}</option>
+                <option value={trailTranslation.language || (language === 'English' ? 'Slovak' : 'English')}>
+                  {trailTranslation.language || (language === 'English' ? 'Slovak' : 'English')}
+                </option>
               </select>*/}
             </div>
             <div className='d-flex align-items-center pb-4'>
@@ -755,7 +731,6 @@ const CreateTrail = () => {
                   <div className='mb-3'>
                     <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
                     <div>
-                      {/*<div ref={quillRefDescription} className={`${styles.description_input}`} />*/}
                       <ReactQuill theme="snow" value={description} onChange={setDescription} modules={modules} className={`${styles.description_input}`} />
                     </div>
                   </div>
@@ -782,7 +757,6 @@ const CreateTrail = () => {
                       </div>
                       <div className='mb-3'>
                         <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
-                        {/*<div ref={quillRefContent} className={`${styles.description_input}`} />*/}
                         <ReactQuill theme="snow" value={content} onChange={setContent} modules={modules} className={`${styles.description_input}`} />
                         {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
                       </div>
@@ -901,6 +875,10 @@ const CreateTrail = () => {
                             <label className={`${styles.form_label} form-label mb-1`}>{t('incorrect_answer_feedback')}</label>
                             <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
                           </div>
+                          <div className='mb-3'>
+                            <label className={`${styles.form_label} form-label mb-1`}>{t('feedback_content')}</label>
+                            <ReactQuill theme="snow" value={feedbackContent} onChange={setFeedbackContent} modules={modules} className={`${styles.description_input}`} />
+                          </div>
                         </>
                       )
                         : <></>
@@ -1014,7 +992,7 @@ const CreateTrail = () => {
                                   <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? `${t('hide_content')}` : `${t('show_content')}`}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
-                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point.content}}></p>
+                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point.content }}></p>
                                 </div>
                                 {point.quiz ? (
                                   <>
@@ -1125,6 +1103,9 @@ const CreateTrail = () => {
                                           </div>
                                           <div className={(point.quiz.feedback.incorrect !== "" && point.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
                                             <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect}</p>
+                                          </div>
+                                          <div className='my-1'>
+                                            <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: point.quiz.feedbackContent }}></p>
                                           </div>
                                         </div>
                                       </>

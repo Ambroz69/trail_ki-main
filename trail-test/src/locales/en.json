@@ -326,5 +326,7 @@
   "head_to_start": "Head to the starting point of the trail to begin your journey.",
   "follow_the_path": "Follow the path and uncover unique spots that make this journey special.",
   "continue": "Continue",
-  "check": "Check"
+  "check": "Check",
+  "feedback_content": "Feedback Content",
+  "get_question": "Get Question"
 }
