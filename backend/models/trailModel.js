@@ -58,6 +58,10 @@ const translationQuizSchema = new mongoose.Schema({
             type: String,
             required: false,
         }
+    },
+    feedbackContent: {
+        type: String,
+        required: false
     }
 });
 
@@ -95,6 +99,10 @@ const quizSchema = new mongoose.Schema({
             type: String,
             required: false,
         }
+    },
+    feedbackContent: {
+        type: String,
+        required: false,
     },
     translation: [translationQuizSchema],
 });
