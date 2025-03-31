@@ -45,8 +45,8 @@ const CertificationTrail = () => {
   const [tempAnswer, setTempAnswer] = useState(null);
   const [rightPairAnswer, setRightPairAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [showFeedback, setShowFeedback] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [viewState, setViewState] = useState('point'); // 'point' | 'question' | 'feedback'
   const { id } = useParams();
   const { t } = useTranslation(); // Hook to access translations
   const [certificationId, setCertificationId] = useState(null); // store id if exists
@@ -155,6 +155,7 @@ const CertificationTrail = () => {
   const handleProximityTask = (pointProximity) => {
     if (pointProximity === null) {
       setPoint(null);
+      setOnPoint(false);
     } else {
       setPoint(pointProximity);
       setOnPoint(true);
@@ -248,7 +249,7 @@ const CertificationTrail = () => {
     } else {
       setFeedback(point.quiz.feedback.incorrect);
     }
-    setShowFeedback(true);
+    setViewState('feedback');
   };
 
   const saveAnswerToDatabase = async (newScore, newAnswers) => {
@@ -369,11 +370,15 @@ const CertificationTrail = () => {
     //setReviewSubmitted(false);
   };
 
+  const handleGetQuestion = () => {
+    setViewState('question');
+  };
+
   const handleNextQuestion = () => {
     const questionId = point.quiz._id;
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
-    setShowFeedback(false);
+    setViewState('point');
     setTempAnswer(null);
     setOnPoint(false);
     setPoint(false);
@@ -513,14 +518,10 @@ const CertificationTrail = () => {
                       </>
                     ) : (
                       <>
-                        {point?.quiz ? (
+                        {point ? (
                           <>
                             <p className={`${styles.accordion_point_title} mb-2 mt-3`}>{t('task')} {userAnswers?.length + 1 || 1}: {point?.title}</p>
                           </>
-                        ) : (point ? (
-                          <button className="btn btn-secondary mt-3" onClick={handleSkipPOI}>
-                            {t('skip_this_poi')}
-                          </button>
                         ) : (
                           <div className='d-flex flex-column pt-4'>
                             <p className={`${styles.accordion_point_title} mb-2`}>
@@ -537,14 +538,17 @@ const CertificationTrail = () => {
                               <p className={`${styles.form_label_2} mb-0`}>{t('follow_the_path')}</p>
                             </div>
                           </div>
-                        )
                         )}
                         <div className='pt-0'>
-                          <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
-                            <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point?.content }}></p>
-                          </div>
-                          {point?.audioPath && (
-                            <audio controls src={backendUrl + point?.audioPath} type="audio/wav"></audio>
+                          {viewState === 'point' && (
+                            <>
+                              <div className={`${styles.show_trail_div_border_top} d-flex pt-3`}>
+                                <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point?.content }}></p>
+                              </div>
+                              {point?.audioPath && (
+                                <audio controls src={backendUrl + point?.audioPath} type="audio/wav"></audio>
+                              )}
+                            </>
                           )}
                           {answeredQuestions.has(point?.quiz?._id) ? (
                             <div className={`${styles.accordion_divider_top}`}>
@@ -554,7 +558,7 @@ const CertificationTrail = () => {
                             </div>
                           ) : (
                             <>
-                              {point?.quiz ? (
+                              {point?.quiz && viewState === 'question' && (
                                 <>
                                   <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                                     <p className={`${styles.accordion_text_gray} my-2`}>{point?.quiz.question}</p>
@@ -617,58 +621,61 @@ const CertificationTrail = () => {
                                           </>);
                                         default: return (<></>);
                                       }
-
                                     }
                                     )()}
                                   </div>
-                                  {showFeedback ? (
-                                    <>
-                                      {/* CORRECT feedback */}
-                                      <div className={`${feedback === point?.quiz?.feedback?.correct ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
-                                        <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
-                                          <div className='me-auto d-flex flex-row align-items-center'>
-                                            <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
-                                              style={{ minWidth: "50px", height: "50px", backgroundColor: "#05192D" }}>
-                                              <img className="text-white fs-5" src={practice_correct} placeholder="practice_correct"></img>
-                                            </div>
-                                            <p className={`${styles.feedback_correct} mb-0 me-2 me-lg-0`}>{feedback}</p>
-                                          </div>
-                                          <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
-                                          <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
-                                            {t('continue')}
-                                          </button>
+                                </>)}
+                              {viewState === 'feedback' ? (
+                                <>
+                                  <p className={`${styles.accordion_text_gray} my-2`} dangerouslySetInnerHTML={{ __html: point?.quiz.feedbackContent }}></p>
+                                  {/* CORRECT feedback */}
+                                  <div className={`${feedback === point?.quiz?.feedback?.correct ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                    <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
+                                      <div className='me-auto d-flex flex-row align-items-center'>
+                                        <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
+                                          style={{ minWidth: "50px", height: "50px", backgroundColor: "#05192D" }}>
+                                          <img className="text-white fs-5" src={practice_correct} placeholder="practice_correct"></img>
                                         </div>
+                                        <p className={`${styles.feedback_correct} mb-0 me-2 me-lg-0`}>{feedback}</p>
                                       </div>
-                                      {/* INCORRECT feedback */}
-                                      <div className={`${feedback === point?.quiz?.feedback?.incorrect ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
-                                        <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
-                                          <div className='me-auto d-flex flex-row align-items-center'>
-                                            <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
-                                              style={{ minWidth: "50px", height: "50px", backgroundColor: "#FCEAFF" }}>
-                                              <img className="text-white fs-5" src={practice_incorrect} placeholder="practice_incorrect"></img>
-                                            </div>
-                                            <p className={`${styles.feedback_incorrect} mb-0 me-2 me-lg-0`}>{feedback}</p>
-                                          </div>
-                                          <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
-                                          <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
-                                            {t('continue')}
-                                          </button>
+                                      <p className={`${styles.feedback_correct} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
+                                      <button className={`${styles.practice_check_button_correct} px-4 py-3`} onClick={handleNextQuestion}>
+                                        {t('continue')}
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {/* INCORRECT feedback */}
+                                  <div className={`${feedback === point?.quiz?.feedback?.incorrect ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                    <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
+                                      <div className='me-auto d-flex flex-row align-items-center'>
+                                        <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
+                                          style={{ minWidth: "50px", height: "50px", backgroundColor: "#FCEAFF" }}>
+                                          <img className="text-white fs-5" src={practice_incorrect} placeholder="practice_incorrect"></img>
                                         </div>
+                                        <p className={`${styles.feedback_incorrect} mb-0 me-2 me-lg-0`}>{feedback}</p>
                                       </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
-                                        <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
-                                          <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
-                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={!onPoint}>
-                                            {t('check')}
-                                          </button>
-                                        </div>
+                                      <p className={`${styles.feedback_incorrect} d-none d-lg-block mb-0 px-2`}>{t('click_button_to')}</p>
+                                      <button className={`${styles.practice_check_button_incorrect} px-4 py-3`} onClick={handleNextQuestion}>
+                                        {t('continue')}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  {viewState === 'question' && (
+                                    <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                      <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
+                                        <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
+                                        <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={!onPoint}>
+                                          {t('check')}
+                                        </button>
                                       </div>
-                                    </>
+                                    </div>
                                   )}
-                                  {/*showFeedback ? (
+                                </>
+                              )}
+                              {/*showFeedback ? (
                                     <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                                       <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                                       <div className={feedback === point.quiz.feedback.correct ? 'my-1' : 'my-1 d-none'}>
@@ -681,10 +688,33 @@ const CertificationTrail = () => {
                                   ) : (
                                     <button className='btn btn-primary mt-3' onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>{t('submit_answer')}</button>
                                   )*/}
-                                </>
-                              ) : (
-                                <></>
-                              )}
+                              <>
+                                {onPoint && viewState === 'point' && ( // show question after clicking on button
+                                  <>
+                                    {point?.quiz ? (
+                                      <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                        <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
+                                          <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
+                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleGetQuestion} >
+                                            {t('get_question')}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                        <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
+                                          <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
+                                          <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleSkipPOI} >
+                                            {t('skip_this_poi')}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
+
+                                )}
+                              </>
+                              {/*)*/}
                             </>
                           )}
                         </div>
