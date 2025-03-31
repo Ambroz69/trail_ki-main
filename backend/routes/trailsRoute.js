@@ -135,8 +135,10 @@ router.put('/:id', auth, upload.single('thumbnail'), async (request, response) =
       });
     }
 
-    if (existingTrail.creator.toString() !== request.user.userId) {
-      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    if (request.user.userRole !== "manager") {
+      if (existingTrail.creator.toString() !== request.user.userId) {
+        return response.status(403).json({ message: 'You are not authorized to perform this action' });
+      }
     }
 
     let newThumbnail = existingTrail.thumbnail; // if there is no change, keep the old one
@@ -171,8 +173,10 @@ router.put('/publish/:id', auth, async (request, response) => {
   try {
     const { id } = request.params;
     let existingTrail = await Trail.findById(id);
-    if (existingTrail.creator.toString() !== request.user.userId) {
-      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    if (request.user.userRole !== "manager") {
+      if (existingTrail.creator.toString() !== request.user.userId) {
+        return response.status(403).json({ message: 'You are not authorized to perform this action' });
+      }
     }
     const { published } = request.body;
     const updatedTrail = await Trail.findByIdAndUpdate(
@@ -241,8 +245,10 @@ router.delete('/:id', auth, async (request, response) => {
   try {
     const { id } = request.params;
     let existingTrail = await Trail.findById(id);
-    if (existingTrail.creator.toString() !== request.user.userId) {
-      return response.status(403).json({ message: 'You are not authorized to perform this action' });
+    if (request.user.userRole !== "manager") {
+      if (existingTrail.creator.toString() !== request.user.userId) {
+        return response.status(403).json({ message: 'You are not authorized to perform this action' });
+      }
     }
     // delete associated audio files
     existingTrail.points.forEach(point => {
