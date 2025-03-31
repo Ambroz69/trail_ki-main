@@ -6,6 +6,7 @@ import DeleteTrail from './pages/DeleteTrail';
 import ShowTrail from './pages/ShowTrail';
 import CertificationTrail from './pages/CertificationTrail';
 import Register from './pages/Register';
+import RegisterSuccess from './pages/RegisterSuccess';
 import Login from './pages/Login';
 import ProtectedRoute from "./ProtectedRoute";
 import Users from "./pages/Users";
@@ -26,6 +27,7 @@ const App = () => {
     <Routes>
       {/* Public Routes*/}
       <Route path='users/register' element={<Register />} />
+      <Route path='users/register/success' element={<RegisterSuccess />} />
       <Route path='users/login' element={<Login />} />
       <Route path='/reset-password/:token' element={<ResetPassword />} />
       <Route path='/forgot-password' element={<ForgottenPassword />} />

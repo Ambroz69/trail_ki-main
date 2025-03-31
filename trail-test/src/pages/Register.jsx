@@ -48,10 +48,10 @@ const Register = () => {
       .then((result) => {
         setRegister(true);
         setAlert({ message: `${t('success_registration')}`, type: 'success' });
-        // redirect user to the login page
-        //setTimeout(() => {
-        //  navigate('/');
-        //}, 3000);
+        // redirect user to the success page
+        setTimeout(() => {
+          navigate('/users/register/success');
+        }, 3000);
       })
       .catch((error) => {
         error = new Error();
