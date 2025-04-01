@@ -58,7 +58,8 @@ const ExplorerJourney = () => {
     api(configuration)
       .then((response) => {
         const allCertifications = response.data.data;
-        const completedCertifications = allCertifications
+        const filteredCerts = allCertifications.filter(cert => cert.trail);
+        const completedCertifications = filteredCerts
           .filter(cert => cert.status === "Passed")
           .reduce((unique, cert) => {
             const existing = unique.find(item => item.trail._id === cert.trail._id);
