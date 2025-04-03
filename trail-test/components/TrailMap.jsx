@@ -17,7 +17,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => { } }) => {
+const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => { }, answeredQuestions = new Set() }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
@@ -180,11 +180,12 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     const updateMapPoints = (points) => {
       points?.forEach((point) => {
         let feature = vectorSourceRef.current.getFeatureById(point.id || point._id);
+        const isAnswered = point.quiz && answeredQuestions.has(point.quiz._id);
 
         const pointStyle = new Style({
           image: new CircleStyle({
             radius: 6,
-            fill: new Fill({ color: 'blue' }),
+            fill: new Fill({ color: isAnswered ? 'green' : 'blue' }),
             stroke: new Stroke({ color: 'white', width: 2 }),
           }),
           text: !editable ? new TextStyle({

@@ -449,6 +449,7 @@ const CertificationTrail = () => {
                   editable={false}
                   useGPS={true}
                   onProximityTask={handleProximityTask}
+                  answeredQuestions={answeredQuestions}
                 />
               </div>
               <div className={`${styles.full_height} col-lg-10 offset-lg-1`}>
