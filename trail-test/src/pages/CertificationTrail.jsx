@@ -432,6 +432,15 @@ const CertificationTrail = () => {
     }
   }, [alert.message]);
 
+  useEffect(() => {
+    if (!trail || userAnswers.length === 0) return;
+  
+    const totalQuestions = trail.points.filter(p => p.quiz).length;
+    const answered = userAnswers.length;
+    const progressPercent = Math.round((answered / totalQuestions) * 100);
+    setProgress(progressPercent);
+  }, [trail, userAnswers]);
+
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
