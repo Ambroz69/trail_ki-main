@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
@@ -61,6 +61,7 @@ const CertificationTrail = () => {
   const [progress, setProgress] = useState(0);
   const [onPoint, setOnPoint] = useState(false); // to enable check button
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const soundPlayedPoints = useRef([]);
 
   useEffect(() => {
     // set configurations for the API call here
@@ -156,10 +157,22 @@ const CertificationTrail = () => {
     if (pointProximity === null) {
       setPoint(null);
       setOnPoint(false);
-    } else {
-      setPoint(pointProximity);
-      setOnPoint(true);
+      return;
     }
+    setPoint(pointProximity);
+    setOnPoint(true);
+    const pointId = pointProximity._id || pointProximity.id;
+    if (!soundPlayedPoints.current.includes(pointId)) { // only play notification if i have not already visited the point
+      const audio = document.getElementById('proximity-sound');
+      if (audio) {
+        audio.play().catch(error => {
+          console.warn("Audio could not be played:", error);
+        })
+      }
+      soundPlayedPoints.current.push(pointId);
+      console.log(soundPlayedPoints);
+    }
+
     //setFeedback(null); // clear feedback on new point
     //setTempAnswer(null); // clear temp answer
   }
@@ -434,7 +447,7 @@ const CertificationTrail = () => {
 
   useEffect(() => {
     if (!trail || userAnswers.length === 0) return;
-  
+
     const totalQuestions = trail.points.filter(p => p.quiz).length;
     const answered = userAnswers.length;
     const progressPercent = Math.round((answered / totalQuestions) * 100);
@@ -460,6 +473,7 @@ const CertificationTrail = () => {
                   onProximityTask={handleProximityTask}
                   answeredQuestions={answeredQuestions}
                 />
+                <audio id="proximity-sound" src="/notification.wav" preload="auto"></audio>
               </div>
               <div className={`${styles.full_height} col-lg-10 offset-lg-1`}>
                 <h5 className='fs-5 font-bold text-center mb-3 mt-4'>{trail?.name}</h5>
