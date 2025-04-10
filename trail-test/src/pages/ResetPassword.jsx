@@ -13,7 +13,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 function ResetPassword() {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState('');
-  const [alert, setAlert] = useState({message: '', type: ''});
+  const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
   const { t } = useTranslation(); // Hook to access translations
 
@@ -24,29 +24,35 @@ function ResetPassword() {
         token,
         newPassword,
       });
-      setAlert({message: `${t('success_reset')}`, type: 'success'});
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
+      if (response.status === 200) {
+        setAlert({ message: `${t('success_reset')}`, type: 'success' });
+        setTimeout(() => {
+          navigate('/users/login');
+        }, 3000);
+      }
     } catch (error) {
       console.log(error);
-      setAlert({message: `${t('error_reset')}`, type: 'error'});
+      if(error.response?.status === 400 && error.response?.data === 'Invalid token or user not found.') {
+        setAlert({ message: 'Invalid token or user not found.', type: 'error' });
+      } else {
+        setAlert({ message: `${t('error_reset')}`, type: 'error' });
+      }
     }
   };
 
   useEffect(() => {
-      if (alert.message) {
-        const timer = setTimeout(() => {
-          setAlert({ message: '', type: '' });
-        }, 5000); // Hide alert after 5 seconds
-        return () => clearTimeout(timer);
-      }
-    }, [alert.message]);
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({ message: '', type: '' });
+      }, 5000); // Hide alert after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alert.message]);
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
       <Row>
-        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2}} xl={{ span: 4, offset: 4 }}>
+        <Col xs={{ span: 12, offset: 0 }} md={{ span: 8, offset: 2 }} xl={{ span: 4, offset: 4 }}>
           <div className='d-flex flex-column align-items-center justify-content-center'>
             <a href="/"><img src={logo} alt="logo" /></a>
             <h2 className={`${styles.login_header}`}>{t('reset_password')}</h2>

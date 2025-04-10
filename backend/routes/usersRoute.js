@@ -222,6 +222,9 @@ router.post("/reset-password", async (request, response) => {
     const { token, newPassword } = request.body;
     const decoded = jwt.verify(token, process.env.FORGOTTEN_SECRET);
 
+    console.log("Token expires at:", new Date(decoded.exp * 1000));
+    console.log("Server time now:", new Date());
+
     // find user by token
     const user = await User.findOne({
       email: decoded.email,
@@ -239,8 +242,8 @@ router.post("/reset-password", async (request, response) => {
     user.resetPasswordToken = null;
     await user.save();
 
-    //return response.status(200).json({ message: 'Password has been reset successfully.'});
-    return response.redirect(`${process.env.FRONTEND_URL}/users/login`);
+    return response.status(200).json({ message: 'Password has been reset successfully.'});
+    //return response.redirect(`${process.env.FRONTEND_URL}/users/login`);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ message: 'Error resetting password', error });
