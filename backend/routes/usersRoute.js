@@ -271,6 +271,10 @@ router.post("/login", (request, response) => {
             });
           }
 
+          // last login
+          user.lastLogin = new Date();
+          user.save().catch(error => console.log('Error updating last login:', error));
+
           //   create JWT token
           const token = jwt.sign(
             {

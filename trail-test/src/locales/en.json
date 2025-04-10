@@ -328,5 +328,6 @@
   "continue": "Continue",
   "check": "Check",
   "feedback_content": "Feedback Content",
-  "get_question": "Get Question"
+  "get_question": "Get Question",
+  "last_login": "Last Login"
 }

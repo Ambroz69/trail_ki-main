@@ -223,6 +223,7 @@ const Users = () => {
                     <th className=''>{t('country')}</th>
                     <th className=''>{t('role')}</th>
                     <th className=''>{t('status')}</th>
+                    <th className=''>{t('last_login')}</th>
                     <th className=''>{t('action')}</th>
                   </tr>
                 </thead>
@@ -248,6 +249,9 @@ const Users = () => {
                         ) : (
                           <button className={`${styles.status_unverified} btn disabled`}>{t('not_verified')}</button>
                         )}
+                      </td>
+                      <td>
+                        {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : t('never')}
                       </td>
                       <td className='ps-3'>
                         <Dropdown>

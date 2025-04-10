@@ -42,6 +42,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  lastLogin: {
+    type: Date,
+    default: null,
+  }
 })
 
 export const User = mongoose.model.User || mongoose.model('User', UserSchema);
