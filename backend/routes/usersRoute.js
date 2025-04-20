@@ -427,4 +427,22 @@ router.put('/updateRole/:id', auth, async (request, response) => {
   }
 });
 
+// Route for adding xp for completing trail
+router.put('/add-xp/:id', auth, async(request, response) => {
+  const { id } = request.params;
+  const { xp } = request.body;
+  try {
+    const user = await User.findById(id);
+    if (!user) return response.status(404).send('User not found');
+
+    user.totalXP = (user.totalXP || 0) + xp;
+    await user.save();
+
+    response.status(200).json({ message: 'XP updated', totalXP: user.totalXP });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: 'Failed to update XP', error});
+  }
+});
+
 export default router;

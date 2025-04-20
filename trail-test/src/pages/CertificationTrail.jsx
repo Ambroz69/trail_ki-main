@@ -329,6 +329,16 @@ const CertificationTrail = () => {
 
     api(configuration)
       .then(() => {
+        // add xp to user
+        if(status==='Passed') {
+          let userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+          api({
+            method: 'put',
+            url: `${backendUrl}/users/add-xp/${userId}`,
+            data: { xp: finalScore },
+            headers: { Authorization: `Bearer ${token}` },
+          }).then(() => {console.log('XP added to user');}).catch((error) => {console.error('Failed to update user xp:', error);});
+        }
         setShowSummary(true); // Show summary after saving results
       })
       .catch((error) => {

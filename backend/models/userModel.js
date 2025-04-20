@@ -45,7 +45,11 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
     default: null,
-  }
+  },
+  totalXP: {
+    type: Number,
+    default: 0,
+  },
 })
 
 export const User = mongoose.model.User || mongoose.model('User', UserSchema);
