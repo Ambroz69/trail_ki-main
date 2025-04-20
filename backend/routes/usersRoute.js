@@ -445,4 +445,18 @@ router.put('/add-xp/:id', auth, async(request, response) => {
   }
 });
 
+// Route for TOP10 leaderboard
+router.get('/leaderboard', async (request, response) => {
+  try {
+    const topUsers = await User.find({}, 'name email totalXP')
+      .sort({ totalXP: -1 })
+      .limit(10);
+      return response.status(201).send({
+        data: topUsers
+      });
+  } catch (error) {
+    response.status(500).json({ message: 'Failed to load leaderboard' });
+  }
+});
+
 export default router;
