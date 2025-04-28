@@ -522,4 +522,41 @@ router.put('/:id/translate', auth, upload.none(), async(request, response) => {
   }
 });
 
+// get quizzes for practice
+router.get('/quizzes/practice', auth, async (request, response) => {
+  try {
+    const userLang = request.query.lang || 'Slovak';
+
+    const quizzes = await Quiz.find({});
+
+    const preparedQuizzes = await Promise.all(quizzes.map(async (quiz) => {
+      const quizObj = quiz.toObject();
+      
+      if (quiz.language === userLang) return quizObj;
+
+      const translation = await QuizTranslation.findOne({ quiz: quiz._id, language: userLang });
+      if (translation) {
+        return {
+          ...quizObj,
+          question: translation.question,
+          answers: translation.answers,
+          feedback: translation.feedback,
+          feedbackContent: translation.feedbackContent,
+          language: userLang,
+        };
+      }
+
+      return quizObj;
+    }));
+
+    response.status(200).send({
+      count: preparedQuizzes.length,
+      data: preparedQuizzes,
+    });
+  } catch (error) {
+    console.error(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
+
 export default router;
