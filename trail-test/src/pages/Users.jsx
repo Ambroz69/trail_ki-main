@@ -9,6 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 import ReactPaginate from 'react-paginate';
+import NavbarExplorer from '../NavbarExplorer';
+import Footer from '../../components/Footer';
 
 //svg import
 import search_button from '../assets/search_button.svg';
@@ -165,11 +167,14 @@ const Users = () => {
   }, [alert.message]);
 
   return (
-    <div className='d-flex container-fluid mx-0 px-0'>
+    <>
+    {/*<div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
         <Navbar />
-      </div>
-      <div className='col-9 col-9 px-5'>
+      </div>*/}
+      <NavbarExplorer />
+      {/*<div className='col-9 col-9 px-5'>*/}
+      <div className={`py-lg-3 px-0 offset-lg-2 col-lg-8`}>
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
             <h1 className='text-3xl my-8'>{t('user_management')}</h1>
@@ -360,7 +365,8 @@ const Users = () => {
           </Modal>
         </div>
       </div>
-    </div>
+      <Footer />  
+    </>
 
   )
 };
