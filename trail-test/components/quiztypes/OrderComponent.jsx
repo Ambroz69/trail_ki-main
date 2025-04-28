@@ -3,7 +3,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styles from '../../src/css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
-const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, onDragEnd, quizMode }) => {
+const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, onDragEnd, quizMode, disabled, placeholder }) => {
 
   const [dragAnswers, setDragAnswers] = useState([{ text: '', isCorrect: true }]);
   const { t } = useTranslation(); // Hook to access translations
@@ -57,10 +57,11 @@ const OrderComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                 value={answer.text}
                 onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
                 className={`${styles.form_input} form-control`}
+                placeholder={placeholder[index]?.text}
               />
             </div>
             <div className='col-1 d-flex justify-content-end'>
-              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)}>X</button>
+              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)} disabled={disabled}>X</button>
             </div>
           </div>
         ))

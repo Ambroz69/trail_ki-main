@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../axiosConfig';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Navbar from '../Navbar';
@@ -20,6 +20,8 @@ import AudioRecorder from '../../components/AudioRecorder';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import NavbarExplorer from '../NavbarExplorer';
+import Footer from '../../components/Footer';
 
 import Cookies from "universal-cookie";
 
@@ -68,7 +70,6 @@ const CreateTrail = () => {
   const [sliderMinValue, setSliderMinValue] = useState(0);
   const [sliderMaxValue, setSliderMaxValue] = useState(100);
   const { id } = useParams(); // Extract id for edit mode
-  const hasLoadedInitialContent = useRef(false); // initial loading of description
   const [accordionEdit, setAccordionEdit] = useState(false);
   const [showPointContent, setShowPointContent] = useState(false);
   const [longitude, setLongitude] = useState('');
@@ -82,12 +83,24 @@ const CreateTrail = () => {
   const [tempAudios, setTempAudios] = useState({});
   const [tempPointId, setTempPointId] = useState(null);
   const [audioB, setAudioB] = useState(null);
-  const [languageVersion, setLanguageVersion] = useState('');
   const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
+  const query = useQuery();
+  const translationLang = query.get('lang');
+  const [isTranslationMode, setIsTranslationMode] = useState(false);
+  const [existingTranslation, setExistingTranslation] = useState(false);
+  const [editingLanguage, setEditingLanguage] = useState('');
+  // translation placeholder variables
+  const [showOriginalDescription, setShowOriginalDescription] = useState(false);
   const [storedOriginalTrail, setStoredOriginalTrail] = useState({ name: '', description: '' });
-  const [trailTranslation, setTrailTranslation] = useState({ language: '', name: null, description: null });
-  const [storedOriginalPoint, setStoredOriginalPoint] = useState({ title: '', content: '' });
-  const [pointTranslation, setPointTranslation] = useState({ language: '', title: null, content: null });
+  const [placeTitle, setPlaceTitle] = useState('');
+  const [placeContent, setPlaceContent] = useState('');
+  const [showOriginalContent, setShowOriginalContent] = useState(false);
+  const [placeQuestion, setPlaceQuestion] = useState('');
+  const [placeAnswers, setPlaceAnswers] = useState([]);
+  const [placeCorrect, setPlaceCorrect] = useState('');
+  const [placeIncorrect, setPlaceIncorrect] = useState('');
+  const [placeFeedbackContent, setPlaceFeedbackContent] = useState('');
+  const [showOriginalFeedbackContent, setShowOriginalFeedbackContent] = useState(false);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -115,6 +128,11 @@ const CreateTrail = () => {
     return totalLength; // Length in kilometers
   }
 
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+
+  // return userId from cookie
   const getUserIDFromToken = (token) => {
     try {
       const [header, payload, signature] = token.split('.');
@@ -138,6 +156,7 @@ const CreateTrail = () => {
     setThumbnailPreview(fileURL);
   };
 
+  // Save the whole trail into DB
   const handleSaveTrail = async () => {
     let trailLength = calculateTrailLength(points);
     const userId = getUserIDFromToken(token);
@@ -155,86 +174,161 @@ const CreateTrail = () => {
     }
     const formData = new FormData();
 
-    const uploadedAudios = {};
-
-    for (const pointId in tempAudios) {
-      const audioBlob = tempAudios[pointId];
-      if (!audioBlob || !(audioBlob instanceof Blob)) continue;
-      const audioForm = new FormData();
-      audioForm.append('audio', audioBlob, `${pointId}.wav`);
-      try {
-        const response = await fetch(`${backendUrl}/trails/upload-audio`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: audioForm,
-        });
-        const data = await response.json();
-        uploadedAudios[tempPointId || pointId] = data.audioPath; // store returned file path
-      } catch (error) {
-        console.error("Fetch error:", error);
+    if (isTranslationMode) { // if saving translation
+      for (const point of points) {
+        const pt = point.translation || point;
+        if (!pt.title?.trim() || !pt.content?.trim()) {
+          setAlert({ message: t('missing_point_translation'), type: 'error' });
+          return;
+        }
+    
+        // If quiz exists, validate quiz translation
+        if (point.quiz && point.quiz.translation) {
+          const qt = point.quiz.translation;
+    
+          if (!qt.question?.trim()) {
+            setAlert({ message: t('missing_quiz_question_translation'), type: 'error' });
+            return;
+          }
+    
+          // Optional: Check number of answers matches original
+          const originalAnswersCount = point.quiz.answers?.length || 0;
+          const translatedAnswers = qt.answers || [];
+          if (translatedAnswers.length !== originalAnswersCount) {
+            setAlert({ message: t('mismatch_answers_translation'), type: 'error' });
+            return;
+          }
+    
+          for (const answer of translatedAnswers) {
+            if (!answer.text?.trim() && point.quiz.type !== 'slider') {
+              setAlert({ message: t('missing_answer_text_translation'), type: 'error' });
+              return;
+            }
+          }
+    
+          // Optional feedback validation
+          if (!qt.feedback?.correct?.trim() || !qt.feedback?.incorrect?.trim()) {
+            setAlert({ message: t('missing_feedback_translation'), type: 'error' });
+            return;
+          }
+        }
       }
-    }
-    const updatedPoints = points.map((point) => ({
-      ...point,
-      audioPath: uploadedAudios[point.id] || uploadedAudios[point._id] || point.audioPath || null,
-    }));
+      formData.append('translation', JSON.stringify({
+        language: translationLang,
+        name,
+        description
+      }));
 
-    if (language !== selectedLanguageVersion) {
-      const tempTranslation = { language: '', name: '', description: '' }
-      tempTranslation.name = name;
-      tempTranslation.description = description;
-      tempTranslation.language = selectedLanguageVersion;
-      formData.append('name', storedOriginalTrail.name);
-      formData.append('description', storedOriginalTrail.description);
-      formData.append('translation', JSON.stringify(tempTranslation))
-      console.log(JSON.stringify(tempTranslation));
-    } else {
+      const translatedPoints = points.map(p => {
+        const quiz = p.quiz;
+        return {
+          pointId: p._id || p.id,
+          translation: {
+            language: translationLang,
+            title: p.title || '',
+            content: p.content || ''
+          },
+          quizTranslation: quiz ? {
+            language: translationLang,
+            question: quiz.question || '',
+            answers: quiz.answers || [],
+            feedback: quiz.feedback || {},
+            feedbackContent: quiz.feedbackContent || ''
+          } : null
+        }
+      });
+
+      formData.append('pointsTranslation', JSON.stringify(translatedPoints));
+
+      const url = existingTranslation ? `${backendUrl}/trails/${id}/translate` : `${backendUrl}/trails/${id}/translate?lang=${translationLang}`;
+      const method = existingTranslation ? 'put' : 'post';
+
+      const configuration = {
+        method,
+        url,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData,
+      };
+
+      api(configuration)
+        .then((response) => {
+          console.log('Trail translated.');
+          setAlert({ message: `${t('trail_updated')}`, type: 'success' });
+          setPoints([]);
+          setTempAudios({});
+          setTimeout(() => { navigate('/'); }, 1500);
+        })
+        .catch((error) => {
+          console.log(error);
+          setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
+        });
+    } else { // saving original trail
+
+      const uploadedAudios = {};
+
+      for (const pointId in tempAudios) {
+        const audioBlob = tempAudios[pointId];
+        if (!audioBlob || !(audioBlob instanceof Blob)) continue;
+        const audioForm = new FormData();
+        audioForm.append('audio', audioBlob, `${pointId}.wav`);
+        try {
+          const response = await fetch(`${backendUrl}/trails/upload-audio`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: audioForm,
+          });
+          const data = await response.json();
+          uploadedAudios[tempPointId || pointId] = data.audioPath; // store returned file path
+        } catch (error) {
+          console.error("Fetch error:", error);
+        }
+      }
+
+      const updatedPoints = points.map((point) => ({
+        ...point,
+        audioPath: uploadedAudios[point.id] || uploadedAudios[point._id] || point.audioPath || null,
+      }));
+
       formData.append('name', name);
       formData.append('description', description);
-      if (trailTranslation.language !== "") {
-        formData.append('translation', JSON.stringify(trailTranslation));
-      } else {
-        formData.append('translation', null);
-      }
-    }
-    console.log(selectedLanguageVersion);
-    formData.append('difficulty', difficulty);
-    formData.append('locality', locality);
-    formData.append('season', season);
-    formData.append('thumbnail', thumbnail);
-    formData.append('length', trailLength);
-    formData.append('estimatedTime', estimatedTime);
-    formData.append('language', language);
-    formData.append('points', JSON.stringify(updatedPoints));
+      formData.append('difficulty', difficulty);
+      formData.append('locality', locality);
+      formData.append('season', season);
+      formData.append('thumbnail', thumbnail);
+      formData.append('length', trailLength);
+      formData.append('estimatedTime', estimatedTime);
+      formData.append('language', language);
+      formData.append('points', JSON.stringify(updatedPoints));
 
-    console.log(JSON.stringify(trailTranslation));
-    const url = id
-      ? `${backendUrl}/trails/${id}`
-      : `${backendUrl}/trails`;
-    const method = id ? 'put' : 'post';
-    const configuration = {
-      method,
-      url,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      },
-      data: formData,
-    };
-    api(configuration)
-      .then((response) => {
-        console.log(id ? 'Trail updated.' : 'Trail created.');
-        setAlert({ message: id ? `${t('trail_updated')}` : `${t('trail_created')}`, type: 'success' });
-        setPoints([]);
-        setTempAudios({});
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
-      })
-      .catch((error) => {
-        console.log(error);
-        setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
-      });
+      const url = id ? `${backendUrl}/trails/${id}` : `${backendUrl}/trails`;
+      const method = id ? 'put' : 'post';
+
+      const configuration = {
+        method,
+        url,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData,
+      };
+
+      api(configuration)
+        .then((response) => {
+          console.log(id ? 'Trail updated.' : 'Trail created.');
+          setAlert({ message: id ? `${t('trail_updated')}` : `${t('trail_created')}`, type: 'success' });
+          setPoints([]);
+          setTempAudios({});
+          setTimeout(() => { navigate('/'); }, 1500);
+        })
+        .catch((error) => {
+          console.log(error);
+          setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
+        });
+    }
   };
 
   // If editing, load existing trail
@@ -242,7 +336,7 @@ const CreateTrail = () => {
     if (id) {
       const configuration = {
         method: "get",
-        url: `${backendUrl}/trails/${id}`,
+        url: `${backendUrl}/trails/${id}${isTranslationMode ? `?lang=${translationLang}` : ''}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -260,19 +354,65 @@ const CreateTrail = () => {
           setPoints(data.points || []);
           setEstimatedTime(data.estimatedTime);
           setLanguage(data.language);
-          //setTranslations(data.translation || [])
-          if (data.translation) {
-            setTrailTranslation({ language: data.translation[0].language || '', name: data.translation[0]?.name || null, description: data.translation[0]?.description || null });
-          } else {
-            setTrailTranslation({ language: '', name: null, description: null });
-          }
           setSelectedLanguageVersion(data.language);
+
+          if (isTranslationMode) {
+            const translation = data.translated || false;
+            setExistingTranslation(translation);
+            //console.log(data);
+            setStoredOriginalTrail({ name: data.name, description: data.description });
+            setName(translation ? data.name : '');
+            setDescription(translation ? data.description : '');
+
+            const loadedPoints = data.points.map(point => {
+              const originalPoint = { title: point.title, content: point.content };
+              //const pointTranslation = point.translations?.find(tl => tl.language === translationLang);
+              point.title = translation ? point.title : '';
+              point.content = translation ? point.content : '';
+              point.language = translation ? point.language : translationLang;
+
+              let originalQuiz = null;
+              let updatedQuiz = null;
+
+              if (point.quiz) {
+                originalQuiz = {
+                  question: point.quiz.question,
+                  answers: point.quiz.answers,
+                  feedback: point.quiz.feedback,
+                  feedbackContent: point.quiz.feedbackContent,
+                };
+                //const qt = point.quiz.translations?.find(tl => tl.language === translationLang) || null;
+                updatedQuiz = {
+                  ...point.quiz,
+                  language: translationLang,
+                  question: translation ? point.quiz.question : '',
+                  answers: point.quiz.answers.map((a, index) => ({
+                    text: translation ? point.quiz?.answers?.[index]?.text : '',
+                    pairText: translation ? point.quiz?.answers?.[index]?.pairText : '',
+                    minValue: a.minValue || null,
+                    maxValue: a.maxValue || null,
+                    isCorrect: a.isCorrect || false,
+                  })),
+                  feedback: {
+                    correct: translation ? point.quiz?.feedback?.correct : '',
+                    incorrect: translation ? point.quiz?.feedback?.incorrect : '',
+                  },
+                  feedbackContent: translation ? point.quiz?.feedbackContent : '',
+                };
+
+              }
+              return { ...point, quiz: updatedQuiz, originalPoint, originalQuiz };
+            });
+            //console.log(loadedPoints);
+            setPoints(loadedPoints);
+          }
+
           //loadExistingPoints(response.data.points || []);
         }).catch(error => {
           console.error(error);
         });
     }
-  }, [id]);
+  }, [id, isTranslationMode]);
 
   const handleConfirmDelete = () => {
     setPoints(points => {
@@ -316,6 +456,7 @@ const CreateTrail = () => {
     );
   };
 
+  // save point to temp 
   const handleSavePoint = (data, audioBlob) => {
     if (editMode) {
       let cID = currentPoint.id || currentPoint._id;
@@ -369,20 +510,14 @@ const CreateTrail = () => {
     setAudioB(null);
   }
 
+  // point save checks before saving
   const handleSave = () => {
     if (title) {
-      let tempTranslation = { language: null, title: null, content: null };
-      if (selectedLanguageVersion !== language) {
-        tempTranslation.language = pointTranslation.language || selectedLanguageVersion;
-        tempTranslation.title = title;
-        tempTranslation.content = content;
-      }
       const pointData = {
-        title: selectedLanguageVersion !== language ? storedOriginalPoint.title : title,
+        title,
         longitude,
         latitude,
-        content: selectedLanguageVersion !== language ? storedOriginalPoint.content : content,
-        translation: null //selectedLanguageVersion !== language ? tempTranslation : pointTranslation - ready for translation
+        content
       };
 
       if (quizChecked) {
@@ -392,7 +527,7 @@ const CreateTrail = () => {
         }
 
         pointData.quiz = {
-          question,
+          question: question,
           type: quizType,
           points: ppoints,
           answers: quizType === 'slider' ? [{ text: sliderCorrectValue, minValue: sliderMinValue, maxValue: sliderMaxValue, isCorrect: true }] : answers.filter(ans => ans.text.trim() !== ''),
@@ -402,10 +537,10 @@ const CreateTrail = () => {
           },
           feedbackContent: feedbackContent,
         };
+
       } else {
         pointData.quiz = null;
       }
-      console.log(pointData);
       handleSavePoint(pointData, audioB);
       resetContent();
       //onClose();
@@ -414,6 +549,7 @@ const CreateTrail = () => {
     }
   }
 
+  // reset variables 
   const resetContent = () => {
     setPointCreated(false);
     setTitle('');
@@ -432,8 +568,7 @@ const CreateTrail = () => {
     setIncorrectFeedback('');
     setFeedbackContent('');
     setTempPoint(null);
-    setStoredOriginalPoint({ title: '', content: '' });
-    setPointTranslation({ language: '', title: null, content: null });
+    setStoredOriginalTrail({ name: '', description: '' });
     //setPreviousAnswers({});
   };
 
@@ -470,24 +605,15 @@ const CreateTrail = () => {
     return pow ? toLetters(pow) + out : out;
   };
 
-
+  // load point for editing from accordion
   const handleAccordionClick = (pointId) => {
     const pointToEdit = points.find((point) => point.id === pointId || point._id === pointId);
     console.log('accordion id:', pointId);
-    console.log(pointToEdit);
     if (pointToEdit) {
-      if (selectedLanguageVersion !== language) {
-        setTitle(pointToEdit.translation.title || '');
-        setContent(pointToEdit.translation.content || '');
-      } else {
-        setTitle(pointToEdit.title || '');
-        setContent(pointToEdit.content || '');
-      }
-      setStoredOriginalPoint({ title: pointToEdit.title, content: pointToEdit.content });
+      setTitle(pointToEdit.title || '');
+      setContent(pointToEdit.content || '');
       setLongitude(pointToEdit.longitude || '');
       setLatitude(pointToEdit.latitude || '');
-      //setPointTranslation({ language: pointToEdit.translation?.language || pointToEdit.translation[0]?.language, title: pointToEdit.translation?.title || pointToEdit.translation[0]?.title, content: pointToEdit.translation?.content || pointToEdit.translation[0]?.content } || { language: '', title: null, content: null })
-      setPointTranslation({ language: '', title: null, content: null })
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
       setQuizType(pointToEdit.quiz?.type || 'single');
@@ -503,6 +629,16 @@ const CreateTrail = () => {
       setTempPointId(pointToEdit._id || pointToEdit.id);
       setCurrentPoint(pointToEdit);
       setAudioB(pointToEdit.audioFile || null);
+
+      if (isTranslationMode) {
+        setPlaceTitle(pointToEdit.originalPoint.title);
+        setPlaceContent(pointToEdit.originalPoint.content);
+        setPlaceQuestion(pointToEdit.originalQuiz.question);
+        setPlaceAnswers(pointToEdit.originalQuiz.answers)
+        setPlaceCorrect(pointToEdit.originalQuiz.feedback.correct);
+        setPlaceIncorrect(pointToEdit.originalQuiz.feedback.incorrect);
+        setPlaceFeedbackContent(pointToEdit.originalQuiz.feedbackContent);
+      }
 
       // Switch to the "Trail Content" tab 
       document.getElementById("create-trail-tab-tab-points").click();
@@ -556,52 +692,6 @@ const CreateTrail = () => {
     console.log("Audio saved for point:", pointId);
   };
 
-  const handleLanguageChange = (event) => {
-    const newLang = event.target.value;
-
-    // Store the current input before switching
-    if (selectedLanguageVersion !== language && name.trim() && description.trim()) {
-      setTrailTranslation({ language: selectedLanguageVersion, name, description });
-      console.log(trailTranslation);
-    }
-
-    if (selectedLanguageVersion !== language && title.trim() && content.trim()) {
-      setPointTranslation({ language: selectedLanguageVersion, title, content });
-      console.log(pointTranslation);
-    }
-
-    setSelectedLanguageVersion(newLang);
-    if (newLang !== language) {
-      setStoredOriginalTrail({ name, description }); // store original input before switching
-      setStoredOriginalPoint({ title, content }); // store original point before switching
-    }
-    if (newLang === language) {
-      setName(storedOriginalTrail?.name || '');
-      setDescription(storedOriginalTrail?.description || '');
-      setTitle(storedOriginalPoint?.title || '');
-      setContent(storedOriginalPoint?.content || '');
-    } else {
-      if (trailTranslation.name !== null) {
-        setName(trailTranslation.name);
-        setDescription(trailTranslation.description);
-      } else {
-        setName('');
-        setDescription('');
-      }
-      if (pointTranslation.title !== null) {
-        setTitle(pointTranslation.title);
-        setContent(pointTranslation.content);
-      } else {
-        setTitle('');
-        setContent('');
-      }
-    }
-  };
-
-  useEffect(() => {
-    setSelectedLanguageVersion(language);
-  }, [language]);
-
   useEffect(() => {
     if (alert.message) {
       const timer = setTimeout(() => {
@@ -625,26 +715,33 @@ const CreateTrail = () => {
     ]
   };
 
+  // detect translation mode
+  useEffect(() => {
+    if (translationLang) {
+      setIsTranslationMode(true);
+      console.log('translation on');
+      setEditingLanguage(translationLang);
+    }
+  }, [translationLang]);
+
   return (
-    <div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
+    <>
+      {/*<div className={`${styles.new_trail_container} ${styles.new_trail_bg} d-flex container-fluid mx-0 px-0`}>
       <div className='col-3 pe-4'>
         <Navbar />
-      </div>
-      <div className={`col-9 px-5`}>
+      </div>*/}
+      <NavbarExplorer />
+      {/*<div className={`col-9 px-5`}>*/}
+      <div className={`py-lg-3 px-0 offset-lg-2 col-lg-8`}>
         <div className='py-5 ps-0'>
           <div className='d-flex justify-content-between'>
             <div>
-              <h1 className='text-3xl'>{id ? `${t('edit_new_trail')}` : `${t('add_new_trail')}`}</h1>
+              {isTranslationMode ? (
+                <h1 className='text-3xl'>{`${t('translate')} ${editingLanguage}`}</h1>
+              ) : (
+                <h1 className='text-3xl'>{id ? `${t('edit_new_trail')}` : `${t('add_new_trail')}`}</h1>
+              )}
               <p className={`${styles.new_trail_text}`}>{t('new_trail_text')}</p>
-            </div>
-            <div>
-              {/* Language Selection - not ready */}
-              {/*<select value={selectedLanguageVersion} onChange={handleLanguageChange} className="form-select">
-                <option value={language}>{language} (Original)</option>
-                <option value={trailTranslation.language || (language === 'English' ? 'Slovak' : 'English')}>
-                  {trailTranslation.language || (language === 'English' ? 'Slovak' : 'English')}
-                </option>
-              </select>*/}
             </div>
             <div className='d-flex align-items-center pb-4'>
               <button className={`${styles.save_button} btn btn-secondary`} onClick={handleSaveTrail}>{t('save_draft')}</button>
@@ -680,17 +777,17 @@ const CreateTrail = () => {
                   <div className='mb-3 d-flex'>
                     <div className='col-9 pe-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('trail_name')}</label>
-                      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                      <input type='text' value={name} onChange={(e) => setName(e.target.value)} className={`${styles.form_input} form-control`} placeholder={storedOriginalTrail.name}></input>
                     </div>
                     <div className='col-3 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('estimated_time')}</label>
-                      <input type='number' value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} min="0" className={`${styles.form_input} form-control`}></input>
+                      <input type='number' value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} min="0" className={`${styles.form_input} form-control`} disabled={isTranslationMode}></input>
                     </div>
                   </div>
                   <div className='mb-3 d-flex'>
                     <div className='col-6 pe-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('locality')}</label>
-                      <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`}>
+                      <select value={locality} onChange={e => setLocality(e.target.value)} className={`${styles.form_input} form-select`} disabled={isTranslationMode}>
                         <option value="Slovakia">{t('slovakia')}</option>
                         <option value="Czech Republic">{t('czech')}</option>
                         <option value="Spain">{t('spain')}</option>
@@ -699,9 +796,10 @@ const CreateTrail = () => {
                     </div>
                     <div className='col-6 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('language')}</label>
-                      <select value={language} onChange={e => setLanguage(e.target.value)} className={`${styles.form_input} form-select`} >
+                      <select value={language} onChange={e => setLanguage(e.target.value)} className={`${styles.form_input} form-select`} disabled={isTranslationMode}>
                         <option value="Slovak">{t('lang_sk')}</option>
                         <option value="English">{t('lang_en')}</option>
+                        <option value="Czech">{t('lang_cz')}</option>
                         <option value="Spanish">{t('lang_es')}</option>
                         <option value="Other">{t('other')}</option>
                       </select>
@@ -710,7 +808,7 @@ const CreateTrail = () => {
                   <div className='mb-3 d-flex'>
                     <div className='col-6 pe-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('season')}</label>
-                      <select value={season} onChange={e => setSeason(e.target.value)} className={`${styles.form_input} form-select`} >
+                      <select value={season} onChange={e => setSeason(e.target.value)} className={`${styles.form_input} form-select`} disabled={isTranslationMode}>
                         <option value="All Seasons">{t('all_seasons')}</option>
                         <option value="Spring">{t('spring')}</option>
                         <option value="Summer">{t('summer')}</option>
@@ -720,7 +818,7 @@ const CreateTrail = () => {
                     </div>
                     <div className='col-6 ps-3'>
                       <label className={`${styles.form_label} form-label mb-1`}>{t('difficulty')}</label>
-                      <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className={`${styles.form_input} form-select`}>
+                      <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className={`${styles.form_input} form-select`} disabled={isTranslationMode}>
                         <option value="Easy">{t('diff_easy')}</option>
                         <option value="Moderate">{t('diff_mod')}</option>
                         <option value="Challenging">{t('diff_chal')}</option>
@@ -730,6 +828,16 @@ const CreateTrail = () => {
                   </div>
                   <div className='mb-3'>
                     <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
+                    {isTranslationMode && (
+                      <div className="mb-2" >
+                        <button className="btn btn-outline-secondary btn-sm mb-2" onClick={() => setShowOriginalDescription(!showOriginalDescription)}>
+                          {showOriginalDescription ? 'Hide Original Description' : 'Show Original Description'}
+                        </button>
+                        {showOriginalDescription && (
+                          <div className="border rounded p-2 bg-light" dangerouslySetInnerHTML={{ __html: storedOriginalTrail.description }} />
+                        )}
+                      </div>
+                    )}
                     <div>
                       <ReactQuill theme="snow" value={description} onChange={setDescription} modules={modules} className={`${styles.description_input}`} />
                     </div>
@@ -743,20 +851,31 @@ const CreateTrail = () => {
                     <>
                       <div className='mb-3'>
                         <label className={`${styles.form_label} form-label mb-1`}>{t('interaction_title')}</label>
-                        <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                        <input type='text' value={title} onChange={e => setTitle(e.target.value)} className={`${styles.form_input} form-control`}
+                          placeholder={isTranslationMode ? placeTitle : ''}></input>
                       </div>
                       <div className='mb-3 d-flex'>
                         <div className='col-6 pe-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>{t('longitude')}</label>
-                          <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
+                          <input type='text' value={longitude} onChange={e => setLongitude(e.target.value)} className={`${styles.form_input} form-control`} disabled={isTranslationMode}></input>
                         </div>
                         <div className='col-6 ps-3'>
                           <label className={`${styles.form_label} form-label mb-1`}>{t('latitude')}</label>
-                          <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} ></input>
+                          <input type='text' value={latitude} onChange={e => setLatitude(e.target.value)} className={`${styles.form_input} form-control`} disabled={isTranslationMode}></input>
                         </div>
                       </div>
                       <div className='mb-3'>
                         <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
+                        {isTranslationMode && (
+                          <div className="mb-2" >
+                            <button className="btn btn-outline-secondary btn-sm mb-2" onClick={() => setShowOriginalContent(!showOriginalContent)}>
+                              {showOriginalContent ? 'Hide Original Content' : 'Show Original Content'}
+                            </button>
+                            {showOriginalContent && (
+                              <div className="border rounded p-2 bg-light" dangerouslySetInnerHTML={{ __html: placeContent }} />
+                            )}
+                          </div>
+                        )}
                         <ReactQuill theme="snow" value={content} onChange={setContent} modules={modules} className={`${styles.description_input}`} />
                         {/*<textarea type='text' rows="3" value={content} onChange={e => setContent(e.target.value)} className={`${styles.form_input} form-control`}></textarea>*/}
                       </div>
@@ -765,7 +884,7 @@ const CreateTrail = () => {
                       </div>
                       <div className="d-flex flex-row justify-content-between mt-3">
                         <div className=" form-check col-8">
-                          <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} />
+                          <input className="form-check-input" type="checkbox" checked={quizChecked} id="quiz_included" onChange={(e) => setQuizChecked(e.target.checked)} disabled={isTranslationMode} />
                           <label className={`${styles.form_label} form-check-label`} htmlFor="quiz_included" >
                             {t('quiz_text')}
                           </label>
@@ -780,16 +899,17 @@ const CreateTrail = () => {
                         <>
                           <div className='mb-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('question')}</label>
-                            <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            <input type='text' value={question} onChange={e => setQuestion(e.target.value)} className={`${styles.form_input} form-control`}
+                              placeholder={isTranslationMode ? placeQuestion : ''}></input>
                           </div>
                           <div className='mb-3 d-flex'>
                             <div className='col-4 pe-3'>
                               <label className={`${styles.form_label} form-label mb-1`}>{t('points')}</label>
-                              <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                              <input type='number' value={ppoints} min="0" onChange={e => setPpoints(e.target.value)} className={`${styles.form_input} form-control`} disabled={isTranslationMode}></input>
                             </div>
                             <div className='col-8 ps-3'>
                               <label className={`${styles.form_label} form-label mb-1`}>{t('question_type')}</label>
-                              <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`}>
+                              <select value={quizType} onChange={e => setQuizType(e.target.value)} className={`${styles.form_input} form-select`} disabled={isTranslationMode}>
                                 <option value="single">{t('single')}</option>
                                 <option value="multiple">{t('multiple')}</option>
                                 <option value="short-answer">{t('short_answer')}</option>
@@ -807,6 +927,7 @@ const CreateTrail = () => {
                                   <ShortAnswerComponent
                                     value={answers[0].text}
                                     onChange={(newValue) => handleChangeAnswer(0, 'text', newValue)}
+                                    placeholder={placeAnswers[0]?.text}
                                   />
                                 );
                               case 'single':
@@ -818,8 +939,10 @@ const CreateTrail = () => {
                                       answers={answers}
                                       handleChangeAnswer={handleChangeAnswer}
                                       handleRemoveAnswer={handleRemoveAnswer}
+                                      disabled={isTranslationMode}
+                                      placeholder={placeAnswers}
                                     />
-                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`} disabled={isTranslationMode}>{t('add_answer')}</button>
                                   </>
                                 );
                               case 'slider':
@@ -831,6 +954,7 @@ const CreateTrail = () => {
                                     setCorrectValue={correctValue => setSliderCorrectValue(correctValue)}
                                     setMinValue={minValue => setSliderMinValue(minValue)}
                                     setMaxValue={maxValue => setSliderMaxValue(maxValue)}
+                                    disabled={isTranslationMode}
                                   />
                                 );
                               case 'pairs':
@@ -840,8 +964,10 @@ const CreateTrail = () => {
                                       answers={answers}
                                       handleChangeAnswer={handleChangeAnswer}
                                       handleRemoveAnswer={handleRemoveAnswer}
+                                      disabled={isTranslationMode}
+                                      placeholder={placeAnswers}
                                     />
-                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`} disabled={isTranslationMode}>{t('add_answer')}</button>
                                   </>
                                 );
                               case 'order':
@@ -851,8 +977,10 @@ const CreateTrail = () => {
                                       answers={answers}
                                       handleChangeAnswer={handleChangeAnswer}
                                       handleRemoveAnswer={handleRemoveAnswer}
+                                      disabled={isTranslationMode}
+                                      placeholder={placeAnswers}
                                     />
-                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`}>{t('add_answer')}</button>
+                                    <button onClick={handleAddAnswer} className={`btn ${styles.point_save_button} mb-3`} disabled={isTranslationMode}>{t('add_answer')}</button>
                                   </>
                                 );
                               case 'true-false':
@@ -861,6 +989,7 @@ const CreateTrail = () => {
                                     value={answers[0].isCorrect}
                                     answer={answers[0]}
                                     handleChangeAnswer={handleChangeAnswer}
+                                    disabled={isTranslationMode}
                                   />
                                 );
                               default:
@@ -869,14 +998,26 @@ const CreateTrail = () => {
                           })()}
                           <div className='mb-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('correct_answer_feedback')}</label>
-                            <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            <input type='text' value={correctFeedback} onChange={e => setCorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}
+                              placeholder={isTranslationMode ? placeCorrect : ''}></input>
                           </div>
                           <div className='mb-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('incorrect_answer_feedback')}</label>
-                            <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}></input>
+                            <input type='text' value={incorrectFeedback} onChange={e => setIncorrectFeedback(e.target.value)} className={`${styles.form_input} form-control`}
+                              placeholder={isTranslationMode ? placeIncorrect : ''}></input>
                           </div>
                           <div className='mb-3'>
                             <label className={`${styles.form_label} form-label mb-1`}>{t('feedback_content')}</label>
+                            {isTranslationMode && (
+                              <div className="mb-2" >
+                                <button className="btn btn-outline-secondary btn-sm mb-2" onClick={() => setShowOriginalFeedbackContent(!showOriginalFeedbackContent)}>
+                                  {showOriginalFeedbackContent ? 'Hide Original Feedback Content' : 'Show Original Feedback Content'}
+                                </button>
+                                {showOriginalFeedbackContent && (
+                                  <div className="border rounded p-2 bg-light" dangerouslySetInnerHTML={{ __html: placeFeedbackContent }} />
+                                )}
+                              </div>
+                            )}
                             <ReactQuill theme="snow" value={feedbackContent} onChange={setFeedbackContent} modules={modules} className={`${styles.description_input}`} />
                           </div>
                         </>
@@ -916,7 +1057,7 @@ const CreateTrail = () => {
                             <Accordion.Header className={`${styles.accordion_header}`}>
                               <div className='d-flex flex-column w-100 p-2'>
                                 <img src={accordion_default} alt="publish" className='mb-3' style={{ width: '3.1rem', height: '3.1rem' }} />
-                                <p className={`${styles.accordion_point_title} mb-2`}>{point.title}</p>
+                                <p className={`${styles.accordion_point_title} mb-2`}>{selectedLanguageVersion === language ? point.title : point.translation[0]?.title}</p>
                                 <div className='d-flex'>
                                   {point.quiz ? (
                                     <>
@@ -977,7 +1118,7 @@ const CreateTrail = () => {
                                     <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleAccordionClick(point._id || point.id)}>
                                       <img src={accordion_action_edit} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
                                     </button>
-                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleDeleteModalShow(point._id || point.id)}>
+                                    <button className={`${styles.accordion_buttons} btn p-1`} onClick={() => handleDeleteModalShow(point._id || point.id)} disabled={isTranslationMode}>
                                       <img src={accordion_action_delete} alt="delete" className='m-2' style={{ width: '1.2rem', height: '1.2rem', color: '#6C7885' }} />
                                     </button>
                                   </div>
@@ -992,7 +1133,7 @@ const CreateTrail = () => {
                                   <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? `${t('hide_content')}` : `${t('show_content')}`}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
-                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point.content }}></p>
+                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: selectedLanguageVersion === language ? point.content : point.translation[0]?.content }}></p>
                                 </div>
                                 {point.quiz ? (
                                   <>
@@ -1001,9 +1142,9 @@ const CreateTrail = () => {
                                         case 'short-answer': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
                                               <div className='my-1'>
-                                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{point.quiz.answers[0].text}</p>
+                                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.answers[0].text : point.quiz.translation[0]?.answers[0].text}</p>
                                               </div>
                                             </div>
                                           </>);
@@ -1011,8 +1152,8 @@ const CreateTrail = () => {
                                         case 'multiple': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
-                                              {point.quiz.answers.map((answer, index) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer, index) => (
                                                 <div className='d-flex my-1'>
                                                   <div className='col-1 d-flex justify-content-start'>
                                                     <p className={`${answer.isCorrect ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
@@ -1028,7 +1169,7 @@ const CreateTrail = () => {
                                         case 'slider': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
                                               <div className='d-flex justify-content-between mt-2'>
                                                 <p className={`${styles.accordion_text_gray} mb-0`}>{point.quiz.answers[0].minValue}</p>
                                                 <p className={`${styles.accordion_slider_value} mb-0`}>{point.quiz.answers[0].text}</p>
@@ -1049,8 +1190,8 @@ const CreateTrail = () => {
                                         case 'pairs': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
-                                              {point.quiz.answers.map((answer) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer) => (
                                                 <div className='d-flex my-1'>
                                                   <div className='col-6 pe-2'>
                                                     <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
@@ -1065,8 +1206,8 @@ const CreateTrail = () => {
                                         case 'order': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
-                                              {point.quiz.answers.map((answer) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer) => (
                                                 <div className='my-1'>
                                                   <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
                                                 </div>
@@ -1076,7 +1217,7 @@ const CreateTrail = () => {
                                         case 'true-false': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
                                               <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={point.quiz.answers[0]?.isCorrect} />
                                                 <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
@@ -1099,13 +1240,13 @@ const CreateTrail = () => {
                                         <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                                           <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                                           <div className={(point.quiz.feedback.correct !== "" && point.quiz.feedback.correct !== null) ? 'my-1' : 'my-1 d-none'}>
-                                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.correct}</p>
+                                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.feedback.correct : point.quiz.translation[0]?.feedback.correct}</p>
                                           </div>
                                           <div className={(point.quiz.feedback.incorrect !== "" && point.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
-                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect}</p>
+                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.feedback.incorrect : point.quiz.translation[0]?.feedback.incorrect}</p>
                                           </div>
                                           <div className='my-1'>
-                                            <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: point.quiz.feedbackContent }}></p>
+                                            <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: selectedLanguageVersion === language ? point.quiz.feedbackContent : point.quiz.translation[0]?.feedback.feedbackContent }}></p>
                                           </div>
                                         </div>
                                       </>
@@ -1158,7 +1299,8 @@ const CreateTrail = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+      <Footer />
+    </>
   )
 };
 

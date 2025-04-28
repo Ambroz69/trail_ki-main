@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
-const ShortAnswerComponent = ({ value, onChange, quizMode, handleAnswer }) => {
+const ShortAnswerComponent = ({ value, onChange, quizMode, handleAnswer, placeholder }) => {
   const [tempAnswer, setTempAnswer] = useState(value || '');
   const { t } = useTranslation(); // Hook to access translations
 
@@ -27,6 +27,7 @@ const ShortAnswerComponent = ({ value, onChange, quizMode, handleAnswer }) => {
           value={value}
           onChange={e => onChange(e.target.value)}
           className={`${styles.form_input} form-control`}
+          placeholder={placeholder || ''}
         />
       )}
 

@@ -9,6 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import AlertComponent from '../../components/AlertComponent';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 import ReactPaginate from 'react-paginate';
+import NavbarExplorer from '../NavbarExplorer';
+import Footer from '../../components/Footer';
 
 //svg import
 import backup_trail_image from '../assets/backup_trail_image.png';
@@ -25,6 +27,14 @@ import table_action_show from '../assets/table_action_show.svg';
 import modal_clone from '../assets/modal_clone.svg';
 import modal_delete from '../assets/modal_delete.svg';
 import modal_publish from '../assets/modal_publish.svg';
+import sk_flag from '../assets/flag-sk.svg';
+import gb_flag from '../assets/flag-gb.svg';
+import cz_flag from '../assets/flag-cz.svg';
+import es_flag from '../assets/flag-es.svg';
+import sk_flag_gray from '../assets/flag-sk_gray.svg';
+import gb_flag_gray from '../assets/flag-gb_gray.svg';
+import cz_flag_gray from '../assets/flag-cz_gray.svg';
+import es_flag_gray from '../assets/flag-es_gray.svg';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -59,6 +69,10 @@ const Home = () => {
 
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+
+  const hasTranslation = (trail, lang) => {
+    return trail.translations?.some(t => t.language === lang) || trail.language === lang;
+  };
 
   useEffect(() => {
     // set configurations for the API call here
@@ -288,11 +302,14 @@ const Home = () => {
   }, [alert.message]);
 
   return (
-    <div className='d-flex container-fluid mx-0 px-0'>
+    <>
+      {/*<div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
         <Navbar />
-      </div>
-      <div className='col-9 col-9 px-5'>
+      </div>*/}
+      <NavbarExplorer />
+      {/*<div className='col-9 col-9 px-5'>*/}
+      <div className={`py-lg-3 px-0 offset-lg-2 col-lg-8`}>
         <div className='py-4 ps-0'>
           <div className='flex justify-between items-center'>
             <h1 className='text-3xl my-8'>{t('trail_management')}</h1>
@@ -393,6 +410,7 @@ const Home = () => {
                     <th className=''>{t('length')}</th>
                     <th className=''>{t('difficulty')}</th>
                     <th className=''>{t('location')}</th>
+                    <th className=''>Language</th>
                     <th className=''>{t('status')}</th>
                     <th className=''>{t('action')}</th>
                   </tr>
@@ -415,6 +433,39 @@ const Home = () => {
                       </td>
                       <td>
                         {t(`trail_location.${trail.locality.toLowerCase()}`)}
+                      </td>
+                      <td>
+                        <div className='d-flex align-items-center'>
+                          {(trail.creator === userId || userRole === "manager") && (!trail.published) ? (
+                            <a href={`${basePath}/trails/edit/${trail._id}${trail.language !== 'English' ? `?lang=English` : ''}`}>
+                              <img src={hasTranslation(trail, 'English') ? gb_flag : gb_flag_gray} width="20px" className="me-2" alt="English Flag" />
+                            </a>
+                          ) : (
+                            <img src={hasTranslation(trail, 'English') ? gb_flag : gb_flag_gray} width="20px" className="me-2" alt="English Flag" />
+                          )}
+                          {(trail.creator === userId || userRole === "manager") && (!trail.published) ? (
+                            <a href={`${basePath}/trails/edit/${trail._id}${trail.language !== 'Slovak' ? `?lang=Slovak` : ''}`}>
+                              <img src={hasTranslation(trail, 'Slovak') ? sk_flag : sk_flag_gray} width="20px" className="me-2" alt="Slovak Flag" />
+                            </a>
+                          ) : (
+                            <img src={hasTranslation(trail, 'Slovak') ? sk_flag : sk_flag_gray} width="20px" className="me-2" alt="Slovak Flag" />
+                          )}
+                          {(trail.creator === userId || userRole === "manager") && (!trail.published) ? (
+                            <a href={`${basePath}/trails/edit/${trail._id}${trail.language !== 'Czech' ? `?lang=Czech` : ''}`}>
+                              <img src={hasTranslation(trail, 'Czech') ? cz_flag : cz_flag_gray} width="20px" className="me-2" alt="Czech Flag" />
+                            </a>
+                          ) : (
+                            <img src={hasTranslation(trail, 'Czech') ? cz_flag : cz_flag_gray} width="20px" className="me-2" alt="Czech Flag" />
+                          )}
+                          {(trail.creator === userId || userRole === "manager") && (!trail.published) ? (
+                            <a href={`${basePath}/trails/edit/${trail._id}${trail.language !== 'Spanish' ? `?lang=Spanish` : ''}`}>
+                              <img src={hasTranslation(trail, 'Spanish') ? es_flag : es_flag_gray} width="20px" className="me-2" alt="Spanish Flag" />
+                            </a>
+                          ) : (
+                            <img src={hasTranslation(trail, 'Spanish') ? es_flag : es_flag_gray} width="20px" className="me-2" alt="Spanish Flag" />
+                          )}
+                          
+                        </div>
                       </td>
                       <td>
                         {trail.published ? (
@@ -579,8 +630,8 @@ const Home = () => {
 
         </div>
       </div>
-    </div>
-
+      <Footer />
+    </>
   )
 };
 

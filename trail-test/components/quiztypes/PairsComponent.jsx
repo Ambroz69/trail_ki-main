@@ -12,7 +12,7 @@ const shuffleArray = (array) => {
   return shuffledArray;
 };
 
-const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, handleRightSideQuizAnswer, onDragEnd, quizMode }) => {
+const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, handleRightSideQuizAnswer, onDragEnd, quizMode, disabled, placeholder }) => {
   const [shuffledLeft, setShuffledLeft] = useState([]);
   const [shuffledRight, setShuffledRight] = useState([]);
   const { t } = useTranslation(); // Hook to access translations
@@ -68,6 +68,7 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                   value={answer.text}
                   onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
                   className={`${styles.form_input} form-control`}
+                  placeholder={placeholder[index]?.text}
                 />
               </div>
               <div className='col-6 ps-2'>
@@ -76,11 +77,12 @@ const PairsComponent = ({ answers, handleChangeAnswer, handleRemoveAnswer, handl
                   value={answer.pairText || ''}
                   onChange={e => handleChangeAnswer(index, 'pairText', e.target.value)}
                   className={`${styles.form_input} form-control`}
+                  placeholder={placeholder[index]?.pairText}
                 />
               </div>
             </div>
             <div className='col-1 d-flex justify-content-end'>
-              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)}>X</button>
+              <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)} disabled={disabled}>X</button>
             </div>
           </div>
         ))

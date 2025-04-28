@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
-const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => {
+const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode, disabled }) => {
   const [tempAnswer, setTempAnswer] = useState([{ text: 'false', isCorrect: false }]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const { t } = useTranslation(); // Hook to access translations
@@ -25,7 +25,8 @@ const TrueFalseComponent = ({ value, answer, handleChangeAnswer, quizMode }) => 
                 type="checkbox"
                 checked={answer.isCorrect}
                 onChange={e => handleChangeAnswer(0, "isCorrect", e.target.checked)}
-                id="flexSwitchCheckDefault" />
+                id="flexSwitchCheckDefault" 
+                disabled={disabled} />
               <label className={`${styles.form_label} form-check-label`} htmlFor="flexSwitchCheckDefault">{value ? "True" : "False"}</label>
             </div>
           </div>

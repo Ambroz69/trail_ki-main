@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
-const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, quizMode }) => {
+const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAnswer, handleQuizAnswer, quizMode, disabled, placeholder }) => {
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [selectedMultiAnswers, setSelectedMultiAnswers] = useState([]);
@@ -80,6 +80,7 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
                     value={answer.text}
                     onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
                     className={`${styles.form_input} form-control`}
+                    placeholder={placeholder[index]?.text}
                   />
                 </div>
               ) : (
@@ -89,6 +90,7 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
                     value={answer.text}
                     onChange={e => handleChangeAnswer(index, 'text', e.target.value)}
                     className={`${styles.form_input} form-control`}
+                    placeholder={placeholder[index]?.text}
                   />
                 </div>
               )}
@@ -99,11 +101,12 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
                     checked={answer.isCorrect}
                     onChange={e => handleChangeAnswer(index, 'isCorrect', e.target.checked)}
                     className={`form-check-input`}
+                    disabled={disabled}
                   />
                 </div>
               )}
               <div className='col-1 d-flex justify-content-end'>
-                <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)}>X</button>
+                <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)} disabled={disabled}>X</button>
               </div>
             </div>
           ))}

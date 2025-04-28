@@ -23,6 +23,20 @@ const Certificate = () => {
   const [certification, setCertification] = useState(null);
   const [trail, setTrail] = useState(null);
 
+  const languageMap = {
+    en: "English",
+    sk: "Slovak",
+    es: "Spanish",
+    cz: "Czech",
+  };
+
+  const storedLang = localStorage.getItem("language") || "en";
+  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+
+  useEffect(() => {
+    setUserLanguage(languageMap[storedLang] || "English");
+  }, [localStorage.getItem("language")]);
+
   useEffect(() => {
     // Get user details
     const userId = token ? JSON.parse(atob(token.split(".")[1])).userId : null;
@@ -46,7 +60,7 @@ const Certificate = () => {
     // Get trail details
     const configurationTrail = {
       method: "get",
-      url: `${backendUrl}/trails/${id}`,
+      url: `${backendUrl}/trails/${id}?lang=${userLanguage}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -74,8 +88,7 @@ const Certificate = () => {
       .catch((error) => {
         console.log(error);
       });
-    
-  }, [id, token]);
+  }, [id, userLanguage, token]);
 
   const handlePrint = () => {
     window.print();

@@ -329,5 +329,11 @@
   "check": "Check",
   "feedback_content": "Feedback Content",
   "get_question": "Get Question",
-  "last_login": "Last Login"
+  "last_login": "Last Login",
+  "missing_trail_name_or_description": "Please fill out the translated trail name and description.",
+  "missing_point_translation": "Each point must have a translated title and content.",
+  "missing_quiz_question_translation": "Each quiz must have a translated question.",
+  "mismatch_answers_translation": "Each quiz must have the same number of translated answers.",
+  "missing_answer_text_translation": "All answer texts must be translated.",
+  "missing_feedback_translation": "Please translate both correct and incorrect feedback."
 }

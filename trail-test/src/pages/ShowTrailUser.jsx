@@ -11,6 +11,7 @@ import Button from 'react-bootstrap/Button';
 import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
 import ReactPaginate from 'react-paginate';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import TrailMap from '../../components/TrailMap';
 
@@ -49,6 +50,7 @@ const ShowTrailUser = () => {
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 3;
+  const [inProgressCertifications, setInProgressCertifications] = useState(null);
 
   const getUserRole = () => {
     try {
@@ -60,6 +62,20 @@ const ShowTrailUser = () => {
     }
   };
 
+  const languageMap = {
+    en: "English",
+    sk: "Slovak",
+    es: "Spanish",
+    cz: "Czech",
+  };
+
+  const storedLang = localStorage.getItem("language") || "en";
+  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+
+  useEffect(() => {
+    setUserLanguage(languageMap[storedLang] || "English");
+  }, [localStorage.getItem("language")]);
+
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
   const originURL = window.location.hostname;
@@ -68,7 +84,7 @@ const ShowTrailUser = () => {
     // set configurations for the API call here
     const configuration = {
       method: "get",
-      url: `${backendUrl}/trails/${id}`,
+      url: `${backendUrl}/trails/${id}?lang=${userLanguage}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -99,7 +115,27 @@ const ShowTrailUser = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [id]);
+
+    const configurationCert = {
+      method: "get",
+      url: `${backendUrl}/certifications`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    api(configurationCert)
+      .then((response) => {
+        const allCertifications = response.data.data;
+        const filteredCerts = allCertifications.filter(cert => cert.trail).filter(cert => cert.status === null);
+        const trailCerts = filteredCerts.filter(item => item.trail._id === id);
+        setInProgressCertifications(trailCerts || null);
+      })
+      .catch((error) => {
+        //setAlert({ message: `${t('error_trail')}`, type: 'error' });
+        console.log(error);
+      });
+  }, [id, userLanguage]);
 
   const addDefaultImg = event => {
     event.target.src = backup_trail_image;
@@ -141,12 +177,28 @@ const ShowTrailUser = () => {
                       <p className={`${styles.trail_description} mt-3`} dangerouslySetInnerHTML={{ __html: trail?.description }}></p>
                       <div className='mt-auto'>
                         <h2 className={`${styles.trail_content_heading} mb-1`}>{t('overall_progress')}</h2>
-                        <div className='d-flex'>
-                          <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
-                            <div className="progress-bar" role="progressbar" style={{ width: '0%' }}></div>
+                        {inProgressCertifications?.length > 0 ? (
+                          (inProgressCertifications).map((certificate) => {
+                            const totalQuest = certificate?.trail?.points?.length || 1;
+                            const answeredQuest = certificate?.answers?.length;
+                            const progress = Math.round((answeredQuest / totalQuest) * 100);
+                            return (
+                              <div className='d-flex'>
+                                <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
+                                  <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-12 col-lg-8 mb-3 m-lg-0" />
+                                </div>
+                                <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>{`${progress}%`}</p>
+                              </div>
+                            );
+                          })) : (
+                          <div className='d-flex'>
+                            <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
+                              <ProgressBar now={0} label='0%' className="col-12 col-lg-8 mb-3 m-lg-0" />
+                            </div>
+                            <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>0%</p>
                           </div>
-                          <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>0%</p>
-                        </div>
+                        )}
+
                       </div>
                     </div>
                     <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} col-lg-4 col-12 px-4 pt-4 pb-3`}>
@@ -198,7 +250,7 @@ const ShowTrailUser = () => {
                           <img src={trail_points} alt="trail_points" className='pe-2' />
                           <p className={`${styles.trail_card_description} mb-0`}>{t('total_points')}:</p>
                         </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{trail?.points.length}</p>
+                        <p className={`${styles.trail_card_value} mb-0`}>{trail?.points?.length}</p>
                       </div>
                     </div>
                   </div>

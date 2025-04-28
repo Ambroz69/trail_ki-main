@@ -54,6 +54,20 @@ const HomeUser = () => {
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
 
+  const languageMap = {
+    en: "English",
+    sk: "Slovak",
+    es: "Spanish",
+    cz: "Czech",
+  };
+
+  const [userLanguage, setUserLanguage] = useState(languageMap[localStorage.getItem("language")] || "English")
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("language");
+    setUserLanguage(languageMap[storedLang] || "English");
+  }, [localStorage.getItem("language")]);
+
   useEffect(() => {
     const configuration = {
       method: "get",
@@ -232,42 +246,47 @@ const HomeUser = () => {
 
         {/* Grid Layout for Trails */}
         <div className={`d-flex row row-cols-1 row-cols-lg-3 pt-4 px-3 px-lg-0`}>
-          {trailPageData.map((trail) => (
-            <div className={`col pb-3 pb-lg-4`}>
-              <div key={trail._id} className={`${styles.trail_card}`}>
-                <div className={`d-flex flex-column align-items-start`}>
-                  <div className='pb-2'>
-                    <img src={trail_card_icon} alt="trail_card_icon" className='' />
-                  </div>
-                  <div className={`${styles.trail_card_title}`}>
-                    <p className='mb-0'>{trail.name}</p>
-                  </div>
-                  <div className={`${styles.trail_card_info} d-flex pt-2 pb-2`}>
-                    <img src={trail_card_time} alt="trail_card_time" className='pe-1' />
-                    <p className='mb-0 pe-3'>{trail.estimatedTime} min</p>
-                    <img src={trail_card_location} alt="trail_card_location" className='pe-0' />
-                    <p className='mb-0'>{t(`trail_location.${trail.locality.toLowerCase()}`)}</p>
-                    {/*<p>{t(`trail_difficulty.${trail.difficulty.toLowerCase()}`)}</p>*/}
-                  </div>
-                  <div className={`${styles.trail_card_description}`}>
-                    <p className='mb-0 text-start' dangerouslySetInnerHTML={{ __html: trail?.description }}></p>
-                  </div>
-                  <div className='d-flex justify-content-between pt-4 w-100'>
-                    <div className='d-flex align-items-center'>
-                      <a href={`${basePath}/trails/details/${trail._id}`} className={`${styles.trail_card_button_details} pe-1`}>
-                        {t('see_details')}
-                      </a>
-                      <span className={`${styles.trail_card_button_details_icon}`}>
-                        <img src={trail_card_arrow_right} alt="trail_card_arrow_right" width={22} className={`pe-0`} />
-                      </span>
+          {trailPageData.map((trail) => {
+            const translation = trail.translations?.find(tl => tl.language === userLanguage);
+            const displayName = (trail.language !== userLanguage && translation) ? translation.name : trail.name;
+            const diplayDescription = (trail.language !== userLanguage && translation) ? translation.description : trail.description;
+            return (
+              <div className={`col pb-3 pb-lg-4`}>
+                <div key={trail._id} className={`${styles.trail_card}`}>
+                  <div className={`d-flex flex-column align-items-start`}>
+                    <div className='pb-2'>
+                      <img src={trail_card_icon} alt="trail_card_icon" className='' />
                     </div>
-                    <button className={`btn ${styles.trail_card_button_start} py-1`} onClick={() => goTo(`${basePath}/trails/certification/${trail._id}`)}>{t('start_trail')}</button>
+                    <div className={`${styles.trail_card_title}`}>
+                      <p className='mb-0'>{displayName}</p>
+                    </div>
+                    <div className={`${styles.trail_card_info} d-flex pt-2 pb-2`}>
+                      <img src={trail_card_time} alt="trail_card_time" className='pe-1' />
+                      <p className='mb-0 pe-3'>{trail.estimatedTime} min</p>
+                      <img src={trail_card_location} alt="trail_card_location" className='pe-0' />
+                      <p className='mb-0'>{t(`trail_location.${trail.locality.toLowerCase()}`)}</p>
+                      {/*<p>{t(`trail_difficulty.${trail.difficulty.toLowerCase()}`)}</p>*/}
+                    </div>
+                    <div className={`${styles.trail_card_description}`}>
+                      <p className='mb-0 text-start' dangerouslySetInnerHTML={{ __html: diplayDescription }}></p>
+                    </div>
+                    <div className='d-flex justify-content-between pt-4 w-100'>
+                      <div className='d-flex align-items-center'>
+                        <a href={`${basePath}/trails/details/${trail._id}`} className={`${styles.trail_card_button_details} pe-1`}>
+                          {t('see_details')}
+                        </a>
+                        <span className={`${styles.trail_card_button_details_icon}`}>
+                          <img src={trail_card_arrow_right} alt="trail_card_arrow_right" width={22} className={`pe-0`} />
+                        </span>
+                      </div>
+                      <button className={`btn ${styles.trail_card_button_start} py-1`} onClick={() => goTo(`${basePath}/trails/certification/${trail._id}`)}>{t('start_trail')}</button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-          
+            );
+          })}
+
         </div>
         <div className='py-3 px-0 offset-lg-2 col-lg-8'>
           {/* Pagination */}

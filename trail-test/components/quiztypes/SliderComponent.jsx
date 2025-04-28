@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../../src/css/TrailCreate.module.css';
 import { useTranslation } from 'react-i18next'; // Import translation hook
 
-const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, setMinValue, setMaxValue, quizMode }) => {
+const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, setMinValue, setMaxValue, quizMode, disabled }) => {
   const [userValue, setUserValue] = useState(0);
   const { t } = useTranslation(); // Hook to access translations
 
@@ -24,6 +24,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
                 value={minValue}
                 onChange={e => setMinValue(e.target.value)}
                 className={`${styles.form_input} form-control`}
+                disabled={disabled}
               />
             </div>
             <div className='col-6 ps-3'>
@@ -33,6 +34,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
                 value={maxValue}
                 onChange={e => setMaxValue(e.target.value)}
                 className={`${styles.form_input} form-control`}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -44,6 +46,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
                 value={correctValue}
                 onChange={e => setCorrectValue(e.target.value)}
                 className={`${styles.form_input} form-control`}
+                disabled={disabled}
               />
             </div>
             <div className='col-6 d-flex align-items-center justify-content-center pt-4'>
@@ -54,6 +57,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
                 value={correctValue}
                 onChange={e => setCorrectValue(e.target.value)}
                 className='form-range ps-3'
+                disabled={disabled}
               />
             </div>
           </div>
@@ -73,6 +77,7 @@ const SliderComponent = ({ correctValue, minValue, maxValue, setCorrectValue, se
               value={userValue}
               onChange={handleSliderChange}
               className='form-range'
+              disabled={disabled}
             />
           </div>
         </div>

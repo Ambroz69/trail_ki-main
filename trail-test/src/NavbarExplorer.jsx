@@ -108,14 +108,14 @@ function NavbarExplorer() {
                 <img src={getFlag(selectedLanguage)} width="20px" className="me-2" alt="selected flag" /> {selectedLanguage.toUpperCase()}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
-                { primaryLanguage === "Slovak" && (
+                <Dropdown.Item onClick={() => handleLanguageChange('en')} className="d-flex align-items-center"><img src={gb_flag} width="20px" className="me-2" alt="English Flag" />English</Dropdown.Item>
+                {primaryLanguage === "Slovak" && (
                   <Dropdown.Item onClick={() => handleLanguageChange('sk')} className="d-flex align-items-center"><img src={sk_flag} width="20px" className="me-2" alt="Slovak Flag" />Slovenčina</Dropdown.Item>
                 )}
-                { primaryLanguage === "Czech" && (
+                {primaryLanguage === "Czech" && (
                   <Dropdown.Item onClick={() => handleLanguageChange('cz')} className="d-flex align-items-center"><img src={cz_flag} width="20px" className="me-2" alt="Czech Flag" />Čeština</Dropdown.Item>
                 )}
-                { primaryLanguage === "Spanish" && (
+                {primaryLanguage === "Spanish" && (
                   <Dropdown.Item onClick={() => handleLanguageChange('es')} className="d-flex align-items-center"><img src={es_flag} width="20px" className="me-2" alt="Espania Flag" />Español</Dropdown.Item>
                 )}
               </Dropdown.Menu>
@@ -126,7 +126,7 @@ function NavbarExplorer() {
             <Dropdown className="bg-[#416A65] d-none d-lg-block">
               <Dropdown.Toggle variant="" size="sm" className="d-flex align-items-center text-white pt-2">
                 {userName}
-              </Dropdown.Toggle>              
+              </Dropdown.Toggle>
               <Dropdown.Menu>
                 {(userRole === "trail creator" || userRole === "manager") && (
                   <Dropdown.Item className="d-flex align-items-center">
@@ -157,6 +157,26 @@ function NavbarExplorer() {
 
       {/* Navbar 2*/}
       <div className='d-none d-lg-flex align-items-center px-0 offset-lg-2 col-lg-8'>
+        {(userRole === "trail creator" || userRole === "manager") && (
+          <div className={`pe-4 py-4`}>
+            <NavLink to={`${basePath}`} end aria-current="page" className={({ isActive }) =>
+              isActive ? `${styles.nav_2_item_current}`
+                : `${styles.nav_2_item}`
+            }>
+              {t('trail_management')}
+            </NavLink>
+          </div>
+        )}
+        {(userRole === "manager") && (
+          <div className={`pe-4 py-4`}>
+            <NavLink to={`${basePath}/users`} end aria-current="page" className={({ isActive }) =>
+              isActive ? `${styles.nav_2_item_current}`
+                : `${styles.nav_2_item}`
+            }>
+              {t('user_management')}
+            </NavLink>
+          </div>
+        )}
         <div className={`pe-4 py-4`}>
           <NavLink to={`${basePath}/journey`} end aria-current="page" className={({ isActive }) =>
             isActive ? `${styles.nav_2_item_current}`
@@ -166,25 +186,25 @@ function NavbarExplorer() {
           </NavLink>
         </div>
         <div className={`pe-4 py-4`}>
-        {(userRole === "trail creator" || userRole === "manager") ? (
-          <NavLink to={`${basePath}/homeuser`} end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item_current}`
-              : `${styles.nav_2_item}`
-          }>
-            {t("explore_nav_explore")}
-          </NavLink>
-        ) : (
-          <NavLink to={`${basePath}`} end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item_current}`
-              : `${styles.nav_2_item}`
-          }>
-            {t("explore_nav_explore")}
-          </NavLink>
-        )}
+          {(userRole === "trail creator" || userRole === "manager") ? (
+            <NavLink to={`${basePath}/homeuser`} end aria-current="page" className={({ isActive }) =>
+              isActive ? `${styles.nav_2_item_current}`
+                : `${styles.nav_2_item}`
+            }>
+              {t("explore_nav_explore")}
+            </NavLink>
+          ) : (
+            <NavLink to={`${basePath}`} end aria-current="page" className={({ isActive }) =>
+              isActive ? `${styles.nav_2_item_current}`
+                : `${styles.nav_2_item}`
+            }>
+              {t("explore_nav_explore")}
+            </NavLink>
+          )}
         </div>
         <div className={`pe-4 py-4`}>
           <NavLink to={`${basePath}/certificates`} end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item_current}` 
+            isActive ? `${styles.nav_2_item_current}`
               : `${styles.nav_2_item}`
           }>
             {t("explore_nav_certificates")}
@@ -192,7 +212,7 @@ function NavbarExplorer() {
         </div>
         <div className={`pe-4 py-4`}>
           <NavLink to={`${basePath}/leaderboard`} end aria-current="page" className={({ isActive }) =>
-            isActive ? `${styles.nav_2_item_current}` 
+            isActive ? `${styles.nav_2_item_current}`
               : `${styles.nav_2_item}`
           }>
             {t("explore_nav_hall_of_fame")}

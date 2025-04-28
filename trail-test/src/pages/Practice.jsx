@@ -41,16 +41,33 @@ const Practice = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
 
+  const languageMap = {
+    en: "English",
+    sk: "Slovak",
+    es: "Spanish",
+    cz: "Czech",
+  };
+
+  const storedLang = localStorage.getItem("language") || "en";
+  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+
+  useEffect(() => {
+    setUserLanguage(languageMap[storedLang] || "English");
+  }, [localStorage.getItem("language")]);
+
   useEffect(() => {
     const storedQuestions = localStorage.getItem("practiceQuestions");
-    if (storedQuestions) {
+    //console.log(storedQuestions.length);
+    if (storedQuestions && storedQuestions.length>0) {
       setQuestions(JSON.parse(storedQuestions));
       return;
     }
+
+    console.log(userLanguage);
     // fetch random querstions from all trails
     const configuration = {
       method: "get",
-      url: `${backendUrl}/trails`,
+      url: `${backendUrl}/trails/quizzes/practice?lang=${userLanguage}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -59,16 +76,8 @@ const Practice = () => {
     // make the API call
     api(configuration)
       .then((response) => {
-        const allQuestions = response.data.data
-          .filter((trail) => trail.points && trail.points.length > 0)
-          .flatMap((trail) =>
-            trail.points
-              .filter((point) => point.quiz)
-              .map((point) => ({
-                trailName: trail.name,
-                ...point.quiz,
-              })))
-          .filter((quiz) => quiz); // Remove undefined quizzes
+        const allQuestions = response.data.data;
+        
 
         // Randomly select 5 questions
         const shuffledQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -169,8 +178,8 @@ const Practice = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      setShowSummary(true);
       localStorage.removeItem("practiceQuestions");
+      setShowSummary(true);      
     }
   };
   const progress = Math.round((currentQuestionIndex / questions.length) * 100);

@@ -63,11 +63,25 @@ const CertificationTrail = () => {
   const [alert, setAlert] = useState({ message: '', type: '' });
   const soundPlayedPoints = useRef([]);
 
+  const languageMap = {
+    en: "English",
+    sk: "Slovak",
+    es: "Spanish",
+    cz: "Czech",
+  };
+
+  const storedLang = localStorage.getItem("language") || "en";
+  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+
+  useEffect(() => {
+    setUserLanguage(languageMap[storedLang] || "English");
+  }, [localStorage.getItem("language")]);
+
   useEffect(() => {
     // set configurations for the API call here
     const configuration = {
       method: "get",
-      url: `${backendUrl}/trails/${id}`,
+      url: `${backendUrl}/trails/${id}?lang=${userLanguage}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -137,7 +151,7 @@ const CertificationTrail = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [id]);
+  }, [id, userLanguage]);
 
   const handleSkipPOI = () => {
     if (answeredQuestions.size === quizQuestions.length) {
@@ -330,14 +344,14 @@ const CertificationTrail = () => {
     api(configuration)
       .then(() => {
         // add xp to user
-        if(status==='Passed') {
+        if (status === 'Passed') {
           let userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
           api({
             method: 'put',
             url: `${backendUrl}/users/add-xp/${userId}`,
             data: { xp: finalScore },
             headers: { Authorization: `Bearer ${token}` },
-          }).then(() => {console.log('XP added to user');}).catch((error) => {console.error('Failed to update user xp:', error);});
+          }).then(() => { console.log('XP added to user'); }).catch((error) => { console.error('Failed to update user xp:', error); });
         }
         setShowSummary(true); // Show summary after saving results
       })
