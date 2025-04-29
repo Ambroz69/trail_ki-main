@@ -169,11 +169,15 @@ const CertificationTrail = () => {
 
   const handleProximityTask = (pointProximity) => {
     if (pointProximity === null) {
-      setPoint(null);
+      //setPoint(null); // keep showing the point
       setOnPoint(false);
       return;
     }
-    setPoint(pointProximity);
+    // Only change point if it's a new one
+    if (!point || pointProximity._id !== point._id) {
+      setPoint(pointProximity);
+      setViewState('point'); // reset to point view
+    }
     setOnPoint(true);
     const pointId = pointProximity._id || pointProximity.id;
     if (!soundPlayedPoints.current.includes(pointId)) { // only play notification if i have not already visited the point
@@ -715,7 +719,9 @@ const CertificationTrail = () => {
                                     <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
                                         <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
-                                        <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={!onPoint}>
+                                        <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit}
+                                        //disabled={!onPoint}
+                                        >
                                           {t('check')}
                                         </button>
                                       </div>
