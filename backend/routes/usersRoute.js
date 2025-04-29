@@ -34,26 +34,26 @@ router.post('/register', async (request, response) => {
       primaryLanguage: request.body.primaryLanguage,
       password: hashedPassword,
       role: 'explorer', 
-      verified: false,
+      verified: true, // turn off verification
       verificationToken: null,
     });
 
 
     // generate the verification token
-    const emailToken = jwt.sign(
+    /*const emailToken = jwt.sign(
       { email: request.body.email },
       process.env.EMAIL_SECRET,
       { expiresIn: '1d' }
-    );
+    );*/
 
     // attach token to user
-    user.verificationToken = emailToken;
+    //user.verificationToken = emailToken;
 
     // save user
     await user.save();
 
     // configure nodemailer
-    const transporter = nodemailer.createTransport({
+    /*const transporter = nodemailer.createTransport({
       host: process.env.MAIL_SERVER,
       port: 465,
       secure: true,
@@ -61,10 +61,10 @@ router.post('/register', async (request, response) => {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASSCODE,
       },
-    });
+    });*/
 
     // send the verification email
-    const mailOptions = {
+    /*const mailOptions = {
       from: process.env.MAIL_USER,
       to: request.body.email,
       subject: 'AVAtar - Account verification',
@@ -78,11 +78,12 @@ router.post('/register', async (request, response) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);*/
 
     // respond the client
     return response.status(201).json({
-      message: 'User created successfully. Please check your email to activate the account.',
+      //message: 'User created successfully. Please check your email to activate the account.',
+      message: 'User created successfully. You can login to your account.',
     })
 
   } catch (error) {

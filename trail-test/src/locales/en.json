@@ -157,7 +157,7 @@
   "forgot_password": "Forgot password?",
   "login_register_text": "Don't have an account?",
   "sing_up": "Sign up",
-  "success_registration": "Registration successful! Please check your email for verification.",
+  "success_registration": "Registration successful! You can login now.", 
   "error_registration": "There has been an error with the registration.",
   "display_name": "Display Name",
   "select_country": "Select country",
