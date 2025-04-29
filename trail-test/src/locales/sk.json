@@ -329,5 +329,14 @@
   "check": "Overenie",
   "feedback_content": "Spätná väzba",
   "get_question": "Zobrazenie otázky",
-  "last_login": "Posledné prihlásenie"
+  "last_login": "Posledné prihlásenie",
+  "missing_trail_name_or_description": "Vyplňte, prosím, preložený názov a popis trasy.",
+  "missing_point_translation": "Každý bod musí mať preložený názov a obsah.",
+  "missing_quiz_question_translation": "Každý kvíz musí mať preloženú otázku.",
+  "mismatch_answers_translation": "Každý kvíz musí mať rovnaký počet preložených odpovedí.",
+  "missing_answer_text_translation": "Všetky texty odpovedí musia byť preložené.",
+  "missing_feedback_translation": "Preložte správnu aj nesprávnu spätnú väzbu.",
+  "error_multer_file_limit": "Jedno z obsahových polí je príliš veľké. Použite menšie obrázky.",
+  "do_not_upload_big": "Nenahrávajte veľké obrázky, max. 5MB",
+  "translate": "Preklad"
 }

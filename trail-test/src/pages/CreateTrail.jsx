@@ -326,7 +326,8 @@ const CreateTrail = () => {
         })
         .catch((error) => {
           console.log(error);
-          setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
+          if(error.response.data.message === "multer_file_limit") setAlert({ message: `${t('error_multer_file_limit')}`, type: 'error'});
+          else setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
         });
     }
   };
@@ -696,7 +697,7 @@ const CreateTrail = () => {
     if (alert.message) {
       const timer = setTimeout(() => {
         setAlert({ message: '', type: '' });
-      }, 3000); // Hide alert after 3 seconds
+      }, 12000); // Hide alert after 12 seconds
       return () => clearTimeout(timer);
     }
   }, [alert.message]);
@@ -827,7 +828,7 @@ const CreateTrail = () => {
                     </div>
                   </div>
                   <div className='mb-3'>
-                    <label className={`${styles.form_label} form-label mb-1`}>{t('description')}</label>
+                    <label className={`${styles.form_label} form-label mb-1`}>{t('description')} <small>({t('do_not_upload_big')})</small></label>
                     {isTranslationMode && (
                       <div className="mb-2" >
                         <button className="btn btn-outline-secondary btn-sm mb-2" onClick={() => setShowOriginalDescription(!showOriginalDescription)}>
@@ -865,7 +866,7 @@ const CreateTrail = () => {
                         </div>
                       </div>
                       <div className='mb-3'>
-                        <label className={`${styles.form_label} form-label mb-1`}>{t('content')}</label>
+                        <label className={`${styles.form_label} form-label mb-1`}>{t('content')} <small>({t('do_not_upload_big')})</small></label>
                         {isTranslationMode && (
                           <div className="mb-2" >
                             <button className="btn btn-outline-secondary btn-sm mb-2" onClick={() => setShowOriginalContent(!showOriginalContent)}>

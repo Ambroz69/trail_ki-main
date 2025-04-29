@@ -335,5 +335,8 @@
   "missing_quiz_question_translation": "Each quiz must have a translated question.",
   "mismatch_answers_translation": "Each quiz must have the same number of translated answers.",
   "missing_answer_text_translation": "All answer texts must be translated.",
-  "missing_feedback_translation": "Please translate both correct and incorrect feedback."
+  "missing_feedback_translation": "Please translate both correct and incorrect feedback.",
+  "error_multer_file_limit": "One of the uploaded fields is too large. Please use smaller images.",
+  "do_not_upload_big": "Do not upload big images, max. 5MB",
+  "translate": "Translate"
 }

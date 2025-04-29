@@ -7,6 +7,7 @@ import certificationRoute from './routes/certificationRoute.js';
 import reviewsRoute from './routes/reviewsRoute.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import multer from 'multer';
 
 dotenv.config();
 
@@ -34,6 +35,20 @@ app.use('/certifications', certificationRoute);
 app.use('/reviews', reviewsRoute);
 app.use('/uploads', express.static('uploads'));
 app.use('/uploads/audio', express.static('uploads/audio'));
+
+// MULTER ERROR HANDLER 
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FIELD_VALUE') {
+        return res.status(400).send({ message: "multer_file_limit" });
+      }
+      return res.status(400).send({ message: err.message });
+    } else if (err) {
+      console.error(err);
+      return res.status(500).send({ message: 'Internal Server Error' });
+    }
+    next();
+  });
 
 mongoose.connect(mongoDBRUL)
 .then(() => { 
