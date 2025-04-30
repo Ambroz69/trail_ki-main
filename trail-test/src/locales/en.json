@@ -22,7 +22,7 @@
     "czech republic": "Czech Republic",
     "spain": "Spain"
   },
-  "location": "Location",
+  "locality": "Location",
   "all_localities": "All Localities",
   "trail_status": {
     "published": "Published",
@@ -100,6 +100,7 @@
   "lang_en": "English",
   "english": "English",
   "lang_sk": "Slovak",
+  "lang_cz": "Czech",
   "slovak": "Slovak",
   "lang_es": "Spanish",
   "spanish": "Spanish",

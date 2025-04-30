@@ -83,7 +83,7 @@ const CreateTrail = () => {
   const [tempAudios, setTempAudios] = useState({});
   const [tempPointId, setTempPointId] = useState(null);
   const [audioB, setAudioB] = useState(null);
-  const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
+  //const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
   const query = useQuery();
   const translationLang = query.get('lang');
   const [isTranslationMode, setIsTranslationMode] = useState(false);
@@ -355,7 +355,7 @@ const CreateTrail = () => {
           setPoints(data.points || []);
           setEstimatedTime(data.estimatedTime);
           setLanguage(data.language);
-          setSelectedLanguageVersion(data.language);
+          //setSelectedLanguageVersion(data.language);
 
           if (isTranslationMode) {
             const translation = data.translated || false;
@@ -1058,7 +1058,7 @@ const CreateTrail = () => {
                             <Accordion.Header className={`${styles.accordion_header}`}>
                               <div className='d-flex flex-column w-100 p-2'>
                                 <img src={accordion_default} alt="publish" className='mb-3' style={{ width: '3.1rem', height: '3.1rem' }} />
-                                <p className={`${styles.accordion_point_title} mb-2`}>{selectedLanguageVersion === language ? point.title : point.translation[0]?.title}</p>
+                                <p className={`${styles.accordion_point_title} mb-2`}>{point.title}</p>
                                 <div className='d-flex'>
                                   {point.quiz ? (
                                     <>
@@ -1134,7 +1134,7 @@ const CreateTrail = () => {
                                   <label className={`${styles.form_label} form-check-label`} htmlFor="show_content_checkbox">{showPointContent ? `${t('hide_content')}` : `${t('show_content')}`}</label>
                                 </div>
                                 <div className={showPointContent ? "d-block" : "d-none"}>
-                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: selectedLanguageVersion === language ? point.content : point.translation[0]?.content }}></p>
+                                  <p className={`${styles.accordion_text_gray}`} dangerouslySetInnerHTML={{ __html: point.content }}></p>
                                 </div>
                                 {point.quiz ? (
                                   <>
@@ -1143,9 +1143,9 @@ const CreateTrail = () => {
                                         case 'short-answer': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
                                               <div className='my-1'>
-                                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.answers[0].text : point.quiz.translation[0]?.answers[0].text}</p>
+                                                <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{point.quiz.answers[0].text}</p>
                                               </div>
                                             </div>
                                           </>);
@@ -1153,8 +1153,8 @@ const CreateTrail = () => {
                                         case 'multiple': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
-                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer, index) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              {(point.quiz.answers || []).map((answer, index) => (
                                                 <div className='d-flex my-1'>
                                                   <div className='col-1 d-flex justify-content-start'>
                                                     <p className={`${answer.isCorrect ? styles.accordion_point_answers_index_correct : styles.accordion_point_answers_index} p-2 m-0 text-center`}>{toLetters(index + 1)}</p>
@@ -1170,7 +1170,7 @@ const CreateTrail = () => {
                                         case 'slider': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
                                               <div className='d-flex justify-content-between mt-2'>
                                                 <p className={`${styles.accordion_text_gray} mb-0`}>{point.quiz.answers[0].minValue}</p>
                                                 <p className={`${styles.accordion_slider_value} mb-0`}>{point.quiz.answers[0].text}</p>
@@ -1191,8 +1191,8 @@ const CreateTrail = () => {
                                         case 'pairs': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
-                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              {(point.quiz.answers || []).map((answer) => (
                                                 <div className='d-flex my-1'>
                                                   <div className='col-6 pe-2'>
                                                     <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
@@ -1207,8 +1207,8 @@ const CreateTrail = () => {
                                         case 'order': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
-                                              {(selectedLanguageVersion === language ? point.quiz.answers : point.quiz.translation[0]?.answers || []).map((answer) => (
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
+                                              {(point.quiz.answers || []).map((answer) => (
                                                 <div className='my-1'>
                                                   <p className={`${styles.accordion_point_answers_text} p-2 ps-2 m-0`}>{answer.text}</p>
                                                 </div>
@@ -1218,7 +1218,7 @@ const CreateTrail = () => {
                                         case 'true-false': return (
                                           <>
                                             <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
-                                              <p className={`${styles.accordion_text_gray} my-2`}>{selectedLanguageVersion === language ? point.quiz.question : point.quiz.translation[0]?.question}</p>
+                                              <p className={`${styles.accordion_text_gray} my-2`}>{point.quiz.question}</p>
                                               <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="trueFalseRadio" id="optionTrue" value="true" readOnly checked={point.quiz.answers[0]?.isCorrect} />
                                                 <label className={`${styles.form_label} form-check-label`} htmlFor="optionTrue">
@@ -1241,13 +1241,13 @@ const CreateTrail = () => {
                                         <div className={`${styles.accordion_divider_top} d-flex flex-column mt-3 pt-2`}>
                                           <p className={`${styles.accordion_text_gray} my-2`}>{t('answer_feedback')}</p>
                                           <div className={(point.quiz.feedback.correct !== "" && point.quiz.feedback.correct !== null) ? 'my-1' : 'my-1 d-none'}>
-                                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.feedback.correct : point.quiz.translation[0]?.feedback.correct}</p>
+                                            <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.correct}</p>
                                           </div>
                                           <div className={(point.quiz.feedback.incorrect !== "" && point.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
-                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{selectedLanguageVersion === language ? point.quiz.feedback.incorrect : point.quiz.translation[0]?.feedback.incorrect}</p>
+                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect }</p>
                                           </div>
                                           <div className='my-1'>
-                                            <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: selectedLanguageVersion === language ? point.quiz.feedbackContent : point.quiz.translation[0]?.feedback.feedbackContent }}></p>
+                                            <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: point.quiz.feedbackContent }}></p>
                                           </div>
                                         </div>
                                       </>

@@ -22,7 +22,7 @@
     "czech republic": "Česko",
     "spain": "Španielsko"
   },
-  "location": "Lokalita",
+  "locality": "Lokalita",
   "all_localities": "Všetky lokality",
   "trail_status": {
     "published": "Zverejnené",
@@ -100,6 +100,7 @@
   "lang_en": "Anglicky",
   "english": "Anglicky",
   "lang_sk": "Slovensky",
+  "lang_cz": "Česky",
   "slovak": "Slovensky",
   "lang_es": "Španielsky",
   "spanish": "Španielsky",
