@@ -501,14 +501,18 @@ const CertificationTrail = () => {
                   onProximityTask={handleProximityTask}
                   answeredQuestions={answeredQuestions}
                 />
+                <div className='d-flex justify-content-end pt-3'>
+                  <button className={`${styles.show_all_button} btn px-5 py-2`} onClick={() => handleForfeitModalShow()}>
+                    {t('forfeit')}
+                  </button>
+                </div>
+
                 <audio id="proximity-sound" src="/notification.wav" preload="auto"></audio>
               </div>
               <div className={`${styles.full_height} col-lg-10 offset-lg-1`}>
                 <h5 className='fs-5 font-bold text-center mb-3 mt-4'>{trail?.name}</h5>
                 <div className='px-3 px-lg-4 mt-5 mb-3'>
-                  <button className={`${styles.show_all_button} d-none d-lg-inline py-3 px-5 btn py-2`} onClick={() => handleForfeitModalShow()}>
-                    {t('forfeit')}
-                  </button>
+
                 </div>
                 <ProgressBar now={progress} label={`${progress}%`} className={`${styles.progress_bar} col-12 mb-3 m-lg-0`} />
                 {alert.message && (

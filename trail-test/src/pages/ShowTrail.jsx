@@ -90,14 +90,14 @@ const ShowTrail = () => {
 
   return (
     <>
-      {/* Navbar */}
+      {/* NO LONGER USED, GO TO ShowTrailUser.jsx}
       <NavbarExplorer />
       <div className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}>
         <div className={`offset-lg-2 col-lg-8 px-0 mx-lg-auto m-3 mt-lg-5`}>
           <div className={`${styles.white_bg} p-0`}>
             <div className='mx-lg-0'>
               <ReactCardFlip isFlipped={cardFlipped} flipDirection="horizontal">
-                <div /* FRONT CARD */ onClick={e => handleCardFlip(e)} className={`${styles.show_trail_div_border} ${styles.trail_card_div} py-lg-3`}>
+                <div onClick={e => handleCardFlip(e)} className={`${styles.show_trail_div_border} ${styles.trail_card_div} py-lg-3`}>
                   <div className='d-flex flex-column flex-lg-row p-4'>
                     <div className='col-lg-8 col-12 d-flex flex-column pe-4'>
                       <div>
@@ -195,7 +195,7 @@ const ShowTrail = () => {
                     </div>
                   </div>
                 </div>
-                <div /* BACK CARD */ onClick={e => handleCardFlip(e)} className={``}>
+                <div  onClick={e => handleCardFlip(e)} className={``}>
                   <TrailMap
                     points={trail?.points}
                     height='30rem'
@@ -243,7 +243,7 @@ const ShowTrail = () => {
                   <p className={`${styles.trail_description} mt-3`}>{t('qr_code_text2')}</p>
                 </div>
               </div>
-              {/* DESKTOP */}
+
               <div className={`${styles.show_trail_bg} d-none d-lg-flex justify-content-end pt-4 gap-3`}>
                 <Button className={`${styles.show_all_button} btn px-5 py-2`} href={`${basePath}`}>
                   {t('show_all')}
@@ -252,7 +252,7 @@ const ShowTrail = () => {
                   {t('start')}
                 </Button>
               </div>
-              {/* MOBILE */}
+
               <div className={`${styles.show_trail_bg} d-flex d-lg-none justify-content-end pt-4 gap-3`}>
                 <Button className={`${styles.show_all_button} flex-fill btn py-2`} href={`${basePath}`}>
                   {t('show_all')}
@@ -265,8 +265,9 @@ const ShowTrail = () => {
           </div>
         </div>
       </div>
-      {/* Footer */}
+
       <Footer />
+      {*/}
     </>
   )
 };

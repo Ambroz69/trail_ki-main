@@ -190,8 +190,8 @@ const HomeUser = () => {
             {/* Filters */}
             <Dropdown className={`px-2`}>
               <Dropdown.Toggle variant="" className={`${styles.filter_button} d-flex align-items-center py-1`}>
-                <img src={explore_filter_button} alt="explore_filter_button" className='align-self-center pe-2' />
-                {t('filters')}
+                <img src={explore_filter_button} alt="explore_filter_button" className='align-self-center pe-0 pe-lg-2' />
+                <span className='d-none d-lg-flex'>{t('filters')}</span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Header>{t('difficulty')}</Dropdown.Header>
@@ -223,8 +223,8 @@ const HomeUser = () => {
             {/* Sorting */}
             <Dropdown className={``}>
               <Dropdown.Toggle variant="" className={`${styles.filter_button} d-flex align-items-center py-1`}>
-                <img src={sort_button} alt="sort_button" className='align-self-center pe-2' />
-                {t('sort')}
+                <img src={sort_button} alt="sort_button" className='align-self-center pe-0 pe-lg-2' />
+                <span className='d-none d-lg-flex'>{t('sort')}</span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => setSortOption('name-asc')}>
@@ -245,7 +245,7 @@ const HomeUser = () => {
         </div>
 
         {/* Grid Layout for Trails */}
-        <div className={`d-flex row row-cols-1 row-cols-lg-3 pt-4 px-3 px-lg-0`}>
+        <div className={`d-flex row row-cols-1 row-cols-lg-3 pt-4 px-1 px-lg-0 mx-0 mx-lg-n3`}>
           {trailPageData.map((trail) => {
             const translation = trail.translations?.find(tl => tl.language === userLanguage);
             const displayName = (trail.language !== userLanguage && translation) ? translation.name : trail.name;
