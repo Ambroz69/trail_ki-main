@@ -15,7 +15,8 @@ const router = express.Router();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const isAudio = file.mimetype.startsWith('audio/');
-    const folder = isAudio ? 'uploads/audio/' : 'uploads/'
+    const folder = isAudio ? '/uploads/audio/' : '/uploads/';
+    fs.mkdirSync(folder, { recursive: true }); // ensures path exists
     cb(null, folder);
   },
   filename: function (req, file, cb) {

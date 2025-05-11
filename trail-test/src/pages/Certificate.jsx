@@ -117,7 +117,7 @@ const Certificate = () => {
               {t("has_successfully_completed_the_trail")}
             </p>
             <h3 className={styles.trailName}>{trail?.name}</h3>
-            <img src={`${backendUrl}/${trail?.thumbnail}`} alt="Trail Thumbnail" className={styles.thumbnail} />
+            <img src={`${backendUrl}${trail?.thumbnail}`} alt="Trail Thumbnail" className={styles.thumbnail} />
             <p className={styles.text}>
               {t("with_a_score_of")} <strong>{certification?.score}</strong> {t("out_of")} {trail?.points?.reduce((sum, p) => sum + (p.quiz?.points || 0), 0)}
             </p>
