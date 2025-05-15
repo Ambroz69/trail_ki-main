@@ -44,7 +44,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     "Slovakia": [19.699, 48.669],
     "Czech Republic": [15.473, 49.817],
     "Spain": [-3.749, 40.463],
-    "Other": [0, 0] // Default for unknown country
+    "Other": [19.699, 48.669] // Default for unknown country - Slovakia
   };
 
   const getUserCountryFromToken = (token) => {
@@ -71,6 +71,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
 
   useEffect(() => {
     const userCountry = getUserCountryFromToken(token);
+    console.log(countryCoordinates[userCountry]);
 
     // Get user geolocation
     if (navigator.geolocation) {
@@ -112,7 +113,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
         positionLayer,
       ],
       view: new View({
-        center: fromLonLat(userLocation||[0,0]), // Location based on GPS or Country in profile
+        center: fromLonLat(userLocation||[19.699, 48.669]), // Location based on GPS or Country in profile
         zoom: 12,
       }),
     });
@@ -273,7 +274,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
             let foundPoint = false;
             points.forEach((point) => {
               const distance = haversineDistance(latitude, longitude, point.latitude, point.longitude);
-              if (distance <= 10) { // proximity radius in meters
+              if (distance <= 20) { // proximity radius in meters
                 onProximityTask(point); // trigger showing the task
                 foundPoint = true;
               }

@@ -46,7 +46,7 @@ const CertificationTrail = () => {
   const [rightPairAnswer, setRightPairAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [viewState, setViewState] = useState('point'); // 'point' | 'question' | 'feedback'
+  const [viewState, setViewState] = useState(localStorage.getItem("cert_viewState") || 'point'); // 'point' | 'question' | 'feedback'
   const { id } = useParams();
   const { t } = useTranslation(); // Hook to access translations
   const [certificationId, setCertificationId] = useState(null); // store id if exists
@@ -62,6 +62,10 @@ const CertificationTrail = () => {
   const [onPoint, setOnPoint] = useState(false); // to enable check button
   const [alert, setAlert] = useState({ message: '', type: '' });
   const soundPlayedPoints = useRef([]);
+
+  useEffect(() => {
+    if (point?.quiz?._id) localStorage.setItem('cert_pointId', point.quiz._id);
+  }, [point]);
 
   const languageMap = {
     en: "English",
@@ -92,6 +96,16 @@ const CertificationTrail = () => {
       .then((response) => {
         const trailData = response.data;
         const validQuestions = trailData.points.filter(p => p.quiz); // only points with quizes
+        const storedViewState = localStorage.getItem('cert_viewState');
+        const storedPointId = localStorage.getItem('cert_pointId');
+
+        if (trailData && storedPointId) {
+          const restoredPoint = trailData.points.find(p => p.quiz?._id === storedPointId);
+          if (restoredPoint) {
+            setPoint(restoredPoint);
+            setViewState(storedViewState || 'point');
+          }
+        }
 
         setTrail(trailData);
         setQuizQuestions(validQuestions);
@@ -168,29 +182,41 @@ const CertificationTrail = () => {
   };
 
   const handleProximityTask = (pointProximity) => {
-    if (pointProximity === null) {
-      //setPoint(null); // keep showing the point
-      setOnPoint(false);
-      return;
-    }
-    // Only change point if it's a new one
-    if (!point || pointProximity._id !== point._id) {
-      setPoint(pointProximity);
-      setViewState('point'); // reset to point view
-    }
-    setOnPoint(true);
-    const pointId = pointProximity._id || pointProximity.id;
-    if (!soundPlayedPoints.current.includes(pointId)) { // only play notification if i have not already visited the point
-      const audio = document.getElementById('proximity-sound');
-      if (audio) {
-        audio.play().catch(error => {
-          console.warn("Audio could not be played:", error);
-        })
+    if (viewState === 'question' || viewState === 'feedback') {
+      return; // don't deal with it in question or feedback mode
+    } else {
+      if (pointProximity === null) {
+        //setPoint(null); // keep showing the point
+        setOnPoint(false);
+        return;
       }
-      soundPlayedPoints.current.push(pointId);
-      console.log(soundPlayedPoints);
-    }
+      // Only change point if it's a new one
+      if (!point || pointProximity._id !== point._id) {
+        setPoint(pointProximity);
+        //setViewState('point'); // reset to point view
+        const storedViewState = localStorage.getItem('cert_viewState');
+        const storedPointId = localStorage.getItem('cert_pointId');
 
+        const isSameAsLastViewed = storedPointId === pointProximity.quiz?._id && (storedViewState === 'question' || storedViewState === 'feedback');
+
+        if (!isSameAsLastViewed) {
+          setViewState('point');
+          localStorage.setItem('cert_viewState', 'point'); // keep in sync
+        }
+      }
+      setOnPoint(true);
+      const pointId = pointProximity._id || pointProximity.id;
+      if (!soundPlayedPoints.current.includes(pointId)) { // only play notification if i have not already visited the point
+        const audio = document.getElementById('proximity-sound');
+        if (audio) {
+          audio.play().catch(error => {
+            console.warn("Audio could not be played:", error);
+          })
+        }
+        soundPlayedPoints.current.push(pointId);
+        console.log(soundPlayedPoints);
+      }
+    }
     //setFeedback(null); // clear feedback on new point
     //setTempAnswer(null); // clear temp answer
   }
@@ -212,7 +238,7 @@ const CertificationTrail = () => {
     switch (point?.quiz?.type) {
       case 'short-answer': {
         const correctAnswer = point.quiz.answers[0].text.trim().toLowerCase();
-        console.log(correctAnswer);
+        //console.log(correctAnswer);
         isCorrect = tempAnswer.trim().toLowerCase() === correctAnswer;
         break;
       }
@@ -362,6 +388,8 @@ const CertificationTrail = () => {
       .catch((error) => {
         console.error("Error saving certification results:", error);
       });
+    localStorage.removeItem('cert_pointId');
+    localStorage.removeItem('cert_viewState');
   };
 
   //const progress = 0;
@@ -413,12 +441,15 @@ const CertificationTrail = () => {
 
   const handleGetQuestion = () => {
     setViewState('question');
+    localStorage.setItem('cert_viewState', 'question');
   };
 
   const handleNextQuestion = () => {
     const questionId = point.quiz._id;
     // save answered question in state
     setAnsweredQuestions((prev) => new Set(prev).add(questionId));
+    localStorage.removeItem('cert_pointId');
+    localStorage.removeItem('cert_viewState');
     setViewState('point');
     setTempAnswer(null);
     setOnPoint(false);

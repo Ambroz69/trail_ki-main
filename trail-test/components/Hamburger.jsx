@@ -52,7 +52,10 @@ function Hamburger({ userLoggedIn, menuModalShow, closeMenuModalShow }) {
                 <a className={`${styles.hamburger_link}`} href={`${basePath}/homeuser`}>{t('home')}</a>
               </li>
               <li className="py-2 mt-1">
-                <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('dashboard')}</a>
+                <a className={`${styles.hamburger_link}`} href={`${basePath}`}>{t('trail_management')}</a>
+              </li>
+              <li className="py-2 mt-1">
+                <a className={`${styles.hamburger_link}`} href={`${basePath}/users`}>{t('user_management')}</a>
               </li>
               <li className="py-2 mt-1">
                 <a className={`${styles.hamburger_link}`} href={`${basePath}/homeuser`}>{t('explore_nav_explore')}</a>

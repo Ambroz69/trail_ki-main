@@ -301,6 +301,10 @@ const Home = () => {
     }
   }, [alert.message]);
 
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm, sortOption]);
+
   return (
     <>
       {/*<div className='d-flex container-fluid mx-0 px-0'>
@@ -464,7 +468,7 @@ const Home = () => {
                           ) : (
                             <img src={hasTranslation(trail, 'Spanish') ? es_flag : es_flag_gray} width="20px" className="me-2" alt="Spanish Flag" />
                           )}
-                          
+
                         </div>
                       </td>
                       <td>

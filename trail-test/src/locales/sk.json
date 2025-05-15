@@ -23,6 +23,7 @@
     "spain": "Španielsko"
   },
   "locality": "Lokalita",
+  "location": "Lokalita",
   "all_localities": "Všetky lokality",
   "trail_status": {
     "published": "Zverejnené",
@@ -340,5 +341,6 @@
   "missing_feedback_translation": "Preložte správnu aj nesprávnu spätnú väzbu.",
   "error_multer_file_limit": "Jedno z obsahových polí je príliš veľké. Použite menšie obrázky.",
   "do_not_upload_big": "Nenahrávajte veľké obrázky, max. 5MB",
-  "translate": "Preklad"
+  "translate": "Preklad",
+  "invalid_coordinates_format": "V súradniciach prosím používajte bodku \".\" namiesto čiarky \",\" v číslach."
 }

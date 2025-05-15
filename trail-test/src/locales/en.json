@@ -23,6 +23,7 @@
     "spain": "Spain"
   },
   "locality": "Location",
+  "location": "Location",
   "all_localities": "All Localities",
   "trail_status": {
     "published": "Published",
@@ -340,5 +341,6 @@
   "missing_feedback_translation": "Please translate both correct and incorrect feedback.",
   "error_multer_file_limit": "One of the uploaded fields is too large. Please use smaller images.",
   "do_not_upload_big": "Do not upload big images, max. 5MB",
-  "translate": "Translate"
+  "translate": "Translate",
+  "invalid_coordinates_format": "Please use a dot \".\" instead of a comma \",\" in coordinates."
 }

@@ -158,6 +158,10 @@ const Users = () => {
   }
 
   useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm, sortOption]);
+
+  useEffect(() => {
     if (alert.message) {
       const timer = setTimeout(() => {
         setAlert({ message: '', type: '' });
@@ -168,7 +172,7 @@ const Users = () => {
 
   return (
     <>
-    {/*<div className='d-flex container-fluid mx-0 px-0'>
+      {/*<div className='d-flex container-fluid mx-0 px-0'>
       <div className='col-3 pe-3'>
         <Navbar />
       </div>*/}
@@ -365,7 +369,7 @@ const Users = () => {
           </Modal>
         </div>
       </div>
-      <Footer />  
+      <Footer />
     </>
 
   )

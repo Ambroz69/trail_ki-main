@@ -181,16 +181,16 @@ const CreateTrail = () => {
           setAlert({ message: t('missing_point_translation'), type: 'error' });
           return;
         }
-    
+
         // If quiz exists, validate quiz translation
         if (point.quiz && point.quiz.translation) {
           const qt = point.quiz.translation;
-    
+
           if (!qt.question?.trim()) {
             setAlert({ message: t('missing_quiz_question_translation'), type: 'error' });
             return;
           }
-    
+
           // Optional: Check number of answers matches original
           const originalAnswersCount = point.quiz.answers?.length || 0;
           const translatedAnswers = qt.answers || [];
@@ -198,14 +198,14 @@ const CreateTrail = () => {
             setAlert({ message: t('mismatch_answers_translation'), type: 'error' });
             return;
           }
-    
+
           for (const answer of translatedAnswers) {
             if (!answer.text?.trim() && point.quiz.type !== 'slider') {
               setAlert({ message: t('missing_answer_text_translation'), type: 'error' });
               return;
             }
           }
-    
+
           // Optional feedback validation
           if (!qt.feedback?.correct?.trim() || !qt.feedback?.incorrect?.trim()) {
             setAlert({ message: t('missing_feedback_translation'), type: 'error' });
@@ -326,7 +326,7 @@ const CreateTrail = () => {
         })
         .catch((error) => {
           console.log(error);
-          if(error.response.data.message === "multer_file_limit") setAlert({ message: `${t('error_multer_file_limit')}`, type: 'error'});
+          if (error.response.data.message === "multer_file_limit") setAlert({ message: `${t('error_multer_file_limit')}`, type: 'error' });
           else setAlert({ message: `${t('error_trail_save')}`, type: 'error' });
         });
     }
@@ -514,6 +514,12 @@ const CreateTrail = () => {
   // point save checks before saving
   const handleSave = () => {
     if (title) {
+      // validate correct format of longitude and latitude
+      if (String(longitude).includes(',') || String(latitude).includes(',')) {
+        setAlert({ message: `${t('invalid_coordinates_format')}`, type: 'error' });
+        return;
+      }
+
       const pointData = {
         title,
         longitude,
@@ -1244,7 +1250,7 @@ const CreateTrail = () => {
                                             <p className={`${styles.accordion_correct_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.correct}</p>
                                           </div>
                                           <div className={(point.quiz.feedback.incorrect !== "" && point.quiz.feedback.incorrect !== null) ? 'my-1' : 'my-1 d-none'}>
-                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect }</p>
+                                            <p className={`${styles.accordion_incorrect_feedback} p-2 ps-2 m-0`}>{point.quiz.feedback.incorrect}</p>
                                           </div>
                                           <div className='my-1'>
                                             <p className={`${styles.accordion_text_gray} p-2 ps-2 m-0`} dangerouslySetInnerHTML={{ __html: point.quiz.feedbackContent }}></p>
