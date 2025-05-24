@@ -17,13 +17,14 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
 
-const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, height, useGPS, onProximityTask = () => { }, answeredQuestions = new Set() }) => {
+const TrailMap = ({ points, onPointAdd, onPointEdit, getEditMode = () => { }, editable, height, useGPS, onProximityTask = () => { }, answeredQuestions = new Set() }) => {
   const mapRef = useRef(null);
   const vectorSourceRef = useRef(new VectorSource());  // Shared vector source between maps
   const mapInstanceRef = useRef(null); // To store the map instance
   const modifyInteractionRef = useRef(null); // Store modify interaction to avoid adding multiple
   const pointsRef = useRef([]); // Keep track of points with useRef
   const positionSourceRef = useRef(new VectorSource()); // source for position marker
+  const tempPointSourceRef = useRef(new VectorSource()); // temporary marker for updating point position
   const [userLocation, setUserLocation] = useState(null);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -69,6 +70,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
     }
   }, [points]);
 
+  // get user location 
   useEffect(() => {
     const userCountry = getUserCountryFromToken(token);
     console.log(countryCoordinates[userCountry]);
@@ -103,6 +105,10 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
       source: positionSourceRef.current,
     });
 
+    const tempPointLayer = new VectorLayer({
+      source: tempPointSourceRef.current,
+    });
+
     const map = new Map({
       target: mapRef.current,
       layers: [
@@ -111,9 +117,10 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
         }),
         vectorLayer,
         positionLayer,
+        tempPointLayer,
       ],
       view: new View({
-        center: fromLonLat(userLocation||[19.699, 48.669]), // Location based on GPS or Country in profile
+        center: fromLonLat(userLocation || [19.699, 48.669]), // Location based on GPS or Country in profile
         zoom: 12,
       }),
     });
@@ -125,6 +132,42 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
       map.on('click', function (evt) {
         const coordinates = evt.coordinate;
         const lonLat = toLonLat(coordinates);
+        tempPointSourceRef.current.clear();
+        console.log(getEditMode());
+        if (getEditMode()) {
+          // Create new yellow marker
+          const tempFeature = new Feature({
+            geometry: new Point(fromLonLat(lonLat)),
+          });
+
+          tempFeature.setStyle(
+            new Style({
+              image: new CircleStyle({
+                radius: 6,
+                fill: new Fill({ color: 'yellow' }),
+                stroke: new Stroke({ color: 'black', width: 2 }),
+              }),
+            })
+          );
+
+          tempPointSourceRef.current.addFeature(tempFeature);
+        } else {
+          const tempFeature = new Feature({
+            geometry: new Point(fromLonLat(lonLat)),
+          });
+
+          tempFeature.setStyle(
+            new Style({
+              image: new CircleStyle({
+                radius: 6,
+                fill: new Fill({ color: 'blue' }),
+                stroke: new Stroke({ color: 'white', width: 2 }),
+              }),
+            })
+          );
+
+          tempPointSourceRef.current.addFeature(tempFeature);
+        }
         onPointAdd({ longitude: lonLat[0], latitude: lonLat[1], id: Date.now() });
       });
     }
@@ -279,7 +322,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, onPointRemove, editable, he
                 foundPoint = true;
               }
             });
-            if(foundPoint === false) { onProximityTask(null); }
+            if (foundPoint === false) { onProximityTask(null); }
             // center and zoom map to position
             const view = mapInstanceRef.current.getView();
             view.setCenter(fromLonLat([longitude, latitude]));

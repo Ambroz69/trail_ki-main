@@ -82,6 +82,8 @@ const CreateTrail = () => {
   const { t } = useTranslation(); // Hook to access translations
   const [tempAudios, setTempAudios] = useState({});
   const [tempPointId, setTempPointId] = useState(null);
+  const tempPointIdRef = useRef(null);
+  const tempEditModeRef = useRef(null);
   const [audioB, setAudioB] = useState(null);
   //const [selectedLanguageVersion, setSelectedLanguageVersion] = useState('Slovak');
   const query = useQuery();
@@ -435,16 +437,31 @@ const CreateTrail = () => {
     setDeleteModalShow(false);
   };
 
+  useEffect(() => {
+    console.log("editPoint changed:", editMode);
+  }, [editMode]);
+
   // handle for TrailMap component  
-  const handleAddPoint = (point) => {
+  const handleAddPoint = (point, pointIdFromParent) => {
     //setPoints((prevPoints) => [...prevPoints, point]);
-    const newPointId = Date.now();
-    setTempPointId(newPointId);
-    setCurrentPoint({ ...point, id: newPointId });
-    setLongitude(point.longitude);
-    setLatitude(point.latitude);
-    setTempPoint({ ...point, id: newPointId });
-    setPointCreated(true);
+    const existingId = pointIdFromParent || tempPointId || currentPoint?.id || currentPoint?._id;
+    console.log(pointIdFromParent);
+    if (existingId) {
+      setCurrentPoint({ ...point, id: existingId });
+      setLongitude(point.longitude);
+      setLatitude(point.latitude);
+      setTempPoint({ ...point, id: existingId });
+      setPointCreated(true);
+    } else {
+      const newPointId = Date.now();
+      setTempPointId(newPointId);
+      tempPointIdRef.current = newPointId;
+      setCurrentPoint({ ...point, id: newPointId });
+      setLongitude(point.longitude);
+      setLatitude(point.latitude);
+      setTempPoint({ ...point, id: newPointId });
+      setPointCreated(true);
+    }
   };
 
   // handle for TrailMap component
@@ -500,6 +517,7 @@ const CreateTrail = () => {
     }
     //setModalOpen(false);
     setEditMode(false);
+    tempEditModeRef.current = false;
     if (accordionEdit) {
       // Switch to the "Overview" tab programmatically
       document.getElementById("create-trail-tab-tab-overview").click();
@@ -507,6 +525,7 @@ const CreateTrail = () => {
     }
     setCurrentPoint(null);
     setTempPointId(null);
+    tempPointIdRef.current = null;
     setTempPoint(null);
     setAudioB(null);
   }
@@ -634,6 +653,7 @@ const CreateTrail = () => {
       setSliderMaxValue(pointToEdit.quiz?.answers[0]?.maxValue || 100);
       setEditMode(true);
       setTempPointId(pointToEdit._id || pointToEdit.id);
+      tempPointIdRef.current = pointToEdit._id || pointToEdit.id;
       setCurrentPoint(pointToEdit);
       setAudioB(pointToEdit.audioFile || null);
 
@@ -651,7 +671,10 @@ const CreateTrail = () => {
       document.getElementById("create-trail-tab-tab-points").click();
 
       setPointCreated(true);
-      setEditMode(true);
+      setTimeout(() => {
+        setEditMode(true);
+        tempEditModeRef.current = true;
+      }, 0);
       setAccordionEdit(true);
     }
   };
@@ -695,6 +718,7 @@ const CreateTrail = () => {
       [pointId]: audioBlob,
     }));
     setTempPointId(pointId);
+    tempPointIdRef.current = pointId;
     setAudioB(audioBlob);
     console.log("Audio saved for point:", pointId);
   };
@@ -1044,10 +1068,11 @@ const CreateTrail = () => {
                   <div className='col-6'>
                     <TrailMap
                       points={points}
-                      onPointAdd={handleAddPoint}
+                      onPointAdd={(point) => { handleAddPoint(point, tempPointIdRef.current) }}
                       onPointEdit={handleEditPoint}
                       editable={true}
                       height='38rem'
+                      getEditMode={() => tempEditModeRef.current}
                     />
                   </div>
                 </div>
