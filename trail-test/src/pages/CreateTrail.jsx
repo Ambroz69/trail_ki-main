@@ -584,7 +584,7 @@ const CreateTrail = () => {
     setContent('');
     setQuizChecked(false);
     setQuestion('');
-    setPpoints('');
+    setPpoints(0);
     setQuizType('single');
     setAnswers([{ text: '', isCorrect: true }]);
     setSliderCorrectValue(50);
@@ -643,7 +643,7 @@ const CreateTrail = () => {
       setQuizChecked(!!pointToEdit.quiz);
       setQuestion(pointToEdit.quiz?.question || '');
       setQuizType(pointToEdit.quiz?.type || 'single');
-      setPpoints(pointToEdit.quiz?.points || '');
+      setPpoints(pointToEdit.quiz?.points || 0);
       setAnswers(pointToEdit.quiz?.answers || [{ text: '', isCorrect: true }]);
       setCorrectFeedback(pointToEdit.quiz?.feedback?.correct || '');
       setIncorrectFeedback(pointToEdit.quiz?.feedback?.incorrect || '');
