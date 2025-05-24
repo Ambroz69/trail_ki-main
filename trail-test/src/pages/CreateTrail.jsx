@@ -795,7 +795,7 @@ const CreateTrail = () => {
                     {thumbnailPreview ? ( // preview the selected file
                       <img src={thumbnailPreview} alt="preview" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
                     ) : thumbnail ? ( // show thumbnail in edit 
-                      <img src={`${backendUrl}/${thumbnail}`} alt="thumbnail" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
+                      <img src={`${backendUrl}${thumbnail}`} alt="thumbnail" style={{ width: '100%', height: 'auto', objectFit: 'cover', marginBottom: '1rem', marginTop: '0.5rem' }} />
                     ) : (
                       <img src={file_upload} alt="file_upload" style={{ width: '8rem', height: '8rem' }} className='mt-5' />
                     )}

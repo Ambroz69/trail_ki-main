@@ -33,11 +33,11 @@ app.use('/trails', trailsRoute);
 app.use('/users', usersRoute);
 app.use('/certifications', certificationRoute);
 app.use('/reviews', reviewsRoute);
-app.use('/uploads', express.static('uploads'));
-app.use('/uploads/audio', express.static('uploads/audio'));
+//app.use('/uploads', express.static('uploads'));
+//app.use('/uploads/audio', express.static('uploads/audio'));
 // render disk changes
-//app.use('/uploads', express.static('/uploads'));
-//app.use('/uploads/audio', express.static('/uploads/audio'));
+app.use('/uploads', express.static('/uploads'));
+app.use('/uploads/audio', express.static('/uploads/audio'));
 
 // MULTER ERROR HANDLER 
 app.use((err, req, res, next) => {

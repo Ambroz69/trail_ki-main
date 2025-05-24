@@ -195,7 +195,7 @@ const ExplorerJourney = () => {
                 return (
                   <>
                     <div className='d-flex my-3 mb-lg-4 '>
-                      <img src={certificate?.trail?.thumbnail ? `${backendUrl}/${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
+                      <img src={certificate?.trail?.thumbnail ? `${backendUrl}${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
                       <h2 className={`${styles.trail_heading} font-bold ps-2 col-lg-8 align-self-center`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
                     </div>
                     <p className='mb-1 font-bold'>{t("overall_progress")}</p>
