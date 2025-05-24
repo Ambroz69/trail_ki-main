@@ -39,6 +39,7 @@ const Practice = () => {
   const [feedback, setFeedback] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [awardXP, setAwardXP] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
 
   const languageMap = {
@@ -58,7 +59,7 @@ const Practice = () => {
   useEffect(() => {
     const storedQuestions = localStorage.getItem("practiceQuestions");
     //console.log(storedQuestions.length);
-    if (storedQuestions && storedQuestions.length>0) {
+    if (storedQuestions && storedQuestions.length > 0) {
       setQuestions(JSON.parse(storedQuestions));
       return;
     }
@@ -77,7 +78,7 @@ const Practice = () => {
     api(configuration)
       .then((response) => {
         const allQuestions = response.data.data;
-        
+
 
         // Randomly select 5 questions
         const shuffledQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -179,7 +180,23 @@ const Practice = () => {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       localStorage.removeItem("practiceQuestions");
-      setShowSummary(true);      
+      const allCorrect = userAnswers.every(answer => answer.isCorrect) && userAnswers.length === questions.length;
+      if (allCorrect) {
+        setAwardXP(true);
+        let userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+        const config = {
+          method: 'put',
+          url: `${backendUrl}/users/add-xp/${userId}`,
+          data: { xp: 15 },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+        api(config).then(() => {
+          console.log("Practice XP awarded.");
+        }).catch((error) => {
+          console.log("Failed to award XP:", error);
+        });
+      }
+      setShowSummary(true);
     }
   };
   const progress = Math.round((currentQuestionIndex / questions.length) * 100);
@@ -213,7 +230,7 @@ const Practice = () => {
                   style={{ minWidth: "110px", maxWidth: "110px", height: "110px", backgroundColor: "#4783B5" }}>
                   <img className="text-white fs-5" src={practice_result_weight} placeholder="practice_result_weight"></img>
                 </div>
-                <img className="text-white fs-5 mb-4" src={practice_result_xp} placeholder="practice_result_xp"></img>
+                {awardXP && <img className="text-white fs-5 mb-4" src={practice_result_xp} placeholder="practice_result_xp"></img> }
                 <h2 className='fs-3 mt-2 mb-3 font-bold'>Practice completed!</h2>
                 <p className='fs-5 mb-0 text-center'>Practicing on a daily basis increases your knowledge and understanding.</p>
                 <div className={`d-flex pt-4 gap-3`}>
