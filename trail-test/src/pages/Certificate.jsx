@@ -12,6 +12,7 @@ import Footer from "../../components/Footer";
 // SVG imports
 import title_page_logo from "../assets/title_page_logo.svg";
 import avatar_white from "../../src/assets/avatar_white.png";
+import backup_trail_image from '../assets/backup_trail_image.png';
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -97,6 +98,10 @@ const Certificate = () => {
     window.print();
   };
 
+  const addDefaultImg = event => {
+      event.target.src = backup_trail_image;
+    };
+
   /*useEffect(() => {
     // Trigger print when the page loads
     const timer = setTimeout(() => {
@@ -155,7 +160,8 @@ const Certificate = () => {
             alt=""
             className={`align-self-center pb-3`}
             width={150}
-            height={150}
+            height={150}            
+            onError={addDefaultImg}
           />
           <p className={`fs-5 mb-1`}>
             {t("with_a_score_of")}{" "}
