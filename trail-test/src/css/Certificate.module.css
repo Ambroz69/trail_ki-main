@@ -1,103 +1,69 @@
-.certificateContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #f9f9f9;
+.cert_header {
+  background-color: #416863;
+  min-height: 10rem;
 }
 
-.certificate {
-  width: 80%;
-  max-width: 800px;
-  padding: 40px;
-  text-align: center;
-  background: white;
-  border: 10px solid #ccc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.cert_title {
+  color: #dadada;
+  font-weight: 900;
+  font-size: 2.5rem;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+.fancy_header_1 {
+  background-color: #4783B5;
 }
 
-.subtitle, .text {
-  font-size: 1.2rem;
-  margin: 10px 0;
+.fancy_header_2 {
+  background-color: #65C3A8;
 }
 
-.userName {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin: 10px 0;
+.fancy_header_3 {
+  background-color: #9265A8;
 }
 
-.trailName {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 10px 0;
-}
-
-.thumbnail {
+.color_bar {
+  height: 0.5rem;
   width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  margin: 20px 0;
 }
 
-.date {
-  font-size: 1rem;
-  margin-top: 20px;
+.fancy_font {
+  font-size: 4rem;
+  font-family: 'The Nautigal', cursive;
 }
 
-.printButton {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-top: 20px;
+.print_cert_button,
+.print_cert_button:visited {
+  color: #fff;
+  background-color: #3F74B8;
+  border: 1px solid #F4F4F4;
+  border-radius: 0.6rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition-duration: 0.5s;
+  transition-property: background-color;
 }
 
-.printButton:hover {
-  background: #0056b3;
+.print_cert_button:hover,
+.print_cert_button:focus,
+.print_cert_button:not(:disabled):not(:disabled):active {
+  background-color: #3F74B8;
+  transition-duration: 0.5s;
+  transition-property: background-color;
 }
+
+.yes_print {
+    display: none;
+  }
 
 /* Remove everything except the certificate when printing */
 @media print {
+  .no_print {
+    display: none !important;
+  }
 
-  body * {
-    visibility: hidden;
-    margin: 0;
-    padding: 0;
-  }
-  .certificateContainer {
-    width: 100%;
-    height: 100vh; /* Forces it to fit within one page - but does not work :D */
-    overflow: hidden; /* Prevents content from overflowing */
-    page-break-inside: avoid; /* Ensures no content is split */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .printButton {
-    display: none; /* Hide print button in print mode */
-  }
-  NavbarExplorer, Footer {
-    display: none; /* Hide Navbar and Footer when printing */
-  }
-  .certificate, .certificate * {
-    visibility: visible;
-  }
-  .certificate {
-    position: absolute;
-    left: 10;
-    top: 0;
-    width: 90%;
-    height: 95vh; /* Adjusts height to fit perfectly on one page */
-    display: flex;
-    flex-direction: column;
+  .yes_print {
+    display: block !important;
   }
 }

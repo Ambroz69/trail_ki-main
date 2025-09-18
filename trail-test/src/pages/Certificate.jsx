@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import api from '../axiosConfig';
-import { useParams } from 'react-router-dom';
-import styles from '../css/Certificate.module.css';
-import { useTranslation } from 'react-i18next'; // Import translation hook
+import React, { useEffect, useState } from "react";
+import api from "../axiosConfig";
+import { useParams } from "react-router-dom";
+import styles from "../css/Certificate.module.css";
+import { useTranslation } from "react-i18next"; // Import translation hook
 
 import Cookies from "universal-cookie";
 
-import NavbarExplorer from '../NavbarExplorer';
-import Footer from '../../components/Footer';
+import NavbarExplorer from "../NavbarExplorer";
+import Footer from "../../components/Footer";
 
 // SVG imports
-import title_page_logo from '../assets/title_page_logo.svg';
+import title_page_logo from "../assets/title_page_logo.svg";
+import avatar_white from "../../src/assets/avatar_white.png";
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -31,7 +32,9 @@ const Certificate = () => {
   };
 
   const storedLang = localStorage.getItem("language") || "en";
-  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+  const [userLanguage, setUserLanguage] = useState(
+    languageMap[storedLang] || "English"
+  );
 
   useEffect(() => {
     setUserLanguage(languageMap[storedLang] || "English");
@@ -105,28 +108,80 @@ const Certificate = () => {
 
   return (
     <>
-      <NavbarExplorer />
-      <div className={`${styles.certificateContainer}`}>
-        <div className={styles.certificate}>
-          <div className={`py-3 px-0 offset-lg-2 col-lg-8`}>
-            <img src={title_page_logo} alt="title_page_logo" className='ps-2' width={110} />
-            <h1 className={styles.title}>{t("certificate_of_completion")}</h1>
-            <p className={styles.subtitle}>{t("this_is_to_certify")}</p>
-            <h2 className={styles.userName}>{user?.name}</h2>
-            <p className={styles.text}>
-              {t("has_successfully_completed_the_trail")}
-            </p>
-            <h3 className={styles.trailName}>{trail?.name}</h3>
-            <img src={`${backendUrl}${trail?.thumbnail}`} alt="Trail Thumbnail" className={styles.thumbnail} />
-            <p className={styles.text}>
-              {t("with_a_score_of")} <strong>{certification?.score}</strong> {t("out_of")} {trail?.points?.reduce((sum, p) => sum + (p.quiz?.points || 0), 0)}
-            </p>
-            <p className={styles.date}>{t("date")}: {new Date(certification?.completedAt).toLocaleDateString()}</p>
-            <button onClick={handlePrint} className={styles.printButton}>{t("print_certificate")}</button>
+      <div className={styles.no_print}>
+        <NavbarExplorer />
+      </div>
+      <div
+        className={`justify-content-center align-items-center text-center offset-lg-3 col-lg-6`}
+      >
+        <div className={`${styles.yes_print}`}>
+          <div className={`${styles.cert_header} container-fluid d-flex`}>
+            <div className="col-1"></div>
+            <div className="col-9 d-flex justify-content-center align-items-center">
+              <h1 className={`${styles.cert_title} text-center`}>
+                {t("certificate_of_completion")}
+              </h1>
+            </div>
+            <div className="col-2 d-flex flex-column justify-content-start align-items-end">
+              <img
+                src={avatar_white}
+                alt="avatar_white"
+                className="pt-4 pe-4"
+                width={100}
+                height={85}
+              />
+            </div>
+          </div>
+          <div className="">
+            <div
+              className={`${styles.color_bar} ${styles.fancy_header_1}`}
+            ></div>
+            <div
+              className={`${styles.color_bar} ${styles.fancy_header_2} `}
+            ></div>
+            <div
+              className={`${styles.color_bar} ${styles.fancy_header_3} `}
+            ></div>
+          </div>
+        </div>
+        <div className={`d-flex flex-column px-2`}>
+          <p className={`fs-3 fw-bolder pt-4`}>{t("this_is_to_certify")}</p>
+          <h2 className={`fw-bold ${styles.fancy_font}`}>{user?.name}</h2>
+          <p className={`fs-5`}>{t("has_successfully_completed_the_trail")}</p>
+          <h3 className={`fs-3 fw-bolder pb-3`}>{trail?.name}</h3>
+          <img
+            src={`${backendUrl}${trail?.thumbnail}`}
+            /*src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRF5dWZoSvLRtwSK44dptbYidbaQTtWuPf0Gw&s`}*/
+            alt=""
+            className={`align-self-center pb-3`}
+            width={150}
+            height={150}
+          />
+          <p className={`fs-5 mb-1`}>
+            {t("with_a_score_of")}{" "}
+            <span className="fw-bolder">{certification?.score ?? 0}</span>{" "}
+            {t("out_of")}{" "}
+            {trail?.points?.reduce((sum, p) => sum + (p.quiz?.points || 0), 0)}
+          </p>
+          <p className={`fs-5`}>
+            <span className="fw-bolder">{t("date")}:</span>{" "}
+            {new Date(certification?.completedAt).toLocaleDateString()}
+          </p>
+          <div
+            className={`${styles.no_print} justify-content-center pt-3 pb-5`}
+          >
+            <button
+              onClick={handlePrint}
+              className={`${styles.print_cert_button} px-5`}
+            >
+              {t("print_certificate")}
+            </button>
           </div>
         </div>
       </div>
-      <Footer />
+      <div className={styles.no_print}>
+        <Footer />
+      </div>
     </>
   );
 };
