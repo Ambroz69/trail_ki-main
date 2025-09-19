@@ -261,7 +261,20 @@ const CertificationTrail = () => {
         break;
       }
       case 'pairs': {
-        const leftAnswers = point.quiz.answers
+        const correctPairs = point.quiz.answers.map((a) => ({
+          left: a.text,
+          right: a.pairText,
+        }));
+        const userPairs = tempAnswer.map((left, index) => ({
+          left,
+          right: rightPairAnswer[index],
+        }));
+        const correctSet = new Set(correctPairs.map((p) => `${p.left}||${p.right}`));
+        const userSet = new Set(userPairs.map((p) => `${p.left}||${p.right}`));
+
+        isCorrect = userSet.size === correctSet.size && [...userSet].every((pair) => correctSet.has(pair));
+
+        /*const leftAnswers = point.quiz.answers
           .map((answer) => answer.text);
         const rightAnswers = point.quiz.answers
           .map((answer) => answer.pairText);
@@ -270,6 +283,7 @@ const CertificationTrail = () => {
           tempAnswer.every((value, index) => value === leftAnswers[index]) &&
           rightPairAnswer.length === rightAnswers.length &&
           rightPairAnswer.every((value, index) => value === rightAnswers[index]);
+          */
         break;
       }
       case 'order': {
