@@ -281,7 +281,7 @@ const ShowTrailUser = () => {
                 <div /* BACK CARD */ onClick={e => handleCardFlip(e)} className={ cardFlipped ? "d-flex" : "d-none" }> {/* <-- fix for Safari */}
                   <TrailMap
                     points={trail?.points}
-                    height='30rem'
+                    height='15rem'
                     editable={false}
                     useGPT={false}
                   />

@@ -394,7 +394,7 @@ div.progress_bar {
 }
 
 .full_height {
-  height: 100vh;
+  padding-bottom: 7rem;
 }
 
 .full_height_2 {

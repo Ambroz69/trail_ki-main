@@ -526,7 +526,7 @@ const CertificationTrail = () => {
               <div className='mb-5'>
                 <TrailMap
                   points={trail?.points}
-                  height='30rem'
+                  height='15rem'
                   editable={false}
                   useGPS={true}
                   onProximityTask={handleProximityTask}
