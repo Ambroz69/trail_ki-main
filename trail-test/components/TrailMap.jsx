@@ -317,7 +317,7 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, getEditMode = () => { }, ed
             let foundPoint = false;
             points.forEach((point) => {
               const distance = haversineDistance(latitude, longitude, point.latitude, point.longitude);
-              if (distance <= 20) { // proximity radius in meters
+              if (distance <= 10) { // proximity radius in meters
                 onProximityTask(point); // trigger showing the task
                 foundPoint = true;
               }

@@ -23,6 +23,8 @@ import my_journey_rating from '../../src/assets/my_journey_rating.svg';
 import my_journey_trail_star from '../../src/assets/my_journey_trail_star.svg';
 import my_journey_certification from '../../src/assets/my_journey_certification.svg';
 
+import backup_trail_image from '../assets/backup_trail_image.png';
+
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -73,14 +75,19 @@ const ExplorerJourney = () => {
         const inProgress = allCertifications.filter(cert => cert.status === null);
         const latestInProgress = inProgress.length > 1
           ? inProgress.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0] : null;
+        const latestInProgressArray = latestInProgress ? [latestInProgress] : null;
         setCertifications(completedCertifications);
-        setInProgressCertifications(latestInProgress || inProgress);
+        setInProgressCertifications(latestInProgressArray || inProgress);
       })
       .catch((error) => {
         setAlert({ message: `${t('error_trail')}`, type: 'error' });
         console.log(error);
       });
   }, []);
+
+  const addDefaultImg = event => {
+    event.target.src = backup_trail_image;
+  };
 
   return (
     <div className='row d-flex mx-0 px-0'>
@@ -195,7 +202,7 @@ const ExplorerJourney = () => {
                 return (
                   <>
                     <div className='d-flex my-3 mb-lg-4 '>
-                      <img src={certificate?.trail?.thumbnail ? `${backendUrl}${certificate?.trail?.thumbnail}` : certificate.thumbnail} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' />
+                      <img src={certificate?.trail?.thumbnail ? `${backendUrl}${certificate?.trail?.thumbnail}` : certificate?.thumbnail ? certificate.thumbnail : backup_trail_image} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
                       <h2 className={`${styles.trail_heading} font-bold ps-2 col-lg-8 align-self-center`}>{inProgressCertifications.length > 0 ? certificate?.trail?.name : certificate.name}</h2>
                     </div>
                     <p className='mb-1 font-bold'>{t("overall_progress")}</p>
