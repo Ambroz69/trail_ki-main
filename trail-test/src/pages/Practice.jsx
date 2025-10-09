@@ -264,7 +264,6 @@ const Practice = () => {
                             answers={questions[currentQuestionIndex]?.answers}
                             quizMode
                             handleQuizAnswer={setTempAnswer}
-
                           />
                         );
                       case "slider":
@@ -306,7 +305,7 @@ const Practice = () => {
                 {showFeedback ? (
                   <>
                     {/* CORRECT feedback */}
-                    <div className={`${feedback === t("correct") ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                    <div className={`${feedback === t("correct") ? styles.stickyBarVisible : styles.stickyBarHidden} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
                         <div className='me-auto d-flex flex-row align-items-center'>
                           <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
@@ -322,7 +321,7 @@ const Practice = () => {
                       </div>
                     </div>
                     {/* INCORRECT feedback */}
-                    <div className={`${feedback === t("incorrect") ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                    <div className={`${feedback === t("incorrect") ? styles.stickyBarVisible : styles.stickyBarHidden} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 align-items-center`}>
                         <div className='me-auto d-flex flex-row align-items-center'>
                           <div className="rounded-circle d-flex align-items-center justify-content-center me-4"
@@ -340,7 +339,7 @@ const Practice = () => {
                   </>
                 ) : (
                   <>
-                    <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                    <div className={`${styles.sticky_default} ${tempAnswer !== null ? styles.stickyBarVisible : styles.stickyBarHidden} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
                         <p className='d-none d-lg-block mb-0 pe-3'>CLICK BUTTON TO</p>
                         <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit} disabled={tempAnswer === null && rightPairAnswer === null}>

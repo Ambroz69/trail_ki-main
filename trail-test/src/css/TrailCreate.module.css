@@ -508,6 +508,70 @@ button.save_changes_button:not(:disabled):not(:disabled):active {
   transition-duration: 0.5s;
 }
 
+/* Sticky bar visibility */
+.stickyBarHidden {
+  display: none; /* completely hidden */
+}
+
+.stickyBarVisible {
+  display: block; /* fully visible */
+}
+
+/* Sticky bar base styles */
+.stickyDefault {
+  background-color: #ffffff; /* white */
+}
+
+.stickyCorrect {
+  background-color: #F9F871; /* yellow */
+}
+
+.stickyIncorrect {
+  background-color: #FCEAFF; /* light pink */
+}
+
+/* Feedback text */
+.feedbackCorrect {
+  color: #000000;
+  font-size: 1.1rem;
+}
+
+.feedbackIncorrect {
+  color: #000000; /* sharp black for readability */
+  font-size: 1.1rem;
+}
+
+/* Scroll hint - optional */
+.scrollHint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.scrollHintInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0;
+  background: none;
+}
+
+.chev {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.hintText {
+  font-size: 0.9rem;
+  color: #6C7885;
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
 @media (max-width: 767.98px) {
   .form_label_2 {
     color: #787D84;

@@ -732,7 +732,7 @@ const CertificationTrail = () => {
                                 <>
                                   <p className={`${styles.accordion_text_gray} my-2`} dangerouslySetInnerHTML={{ __html: point?.quiz.feedbackContent }}></p>
                                   {/* CORRECT feedback */}
-                                  <div className={`${feedback === point?.quiz?.feedback?.correct ? 'd-block' : 'd-none'} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                  <div className={`${feedback === point?.quiz?.feedback?.correct ? styles.stickyBarVisible : styles.stickyBarHidden} ${styles.sticky_correct} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                     <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
                                       <div className='me-auto d-flex flex-row align-items-center'>
                                         <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
@@ -748,7 +748,7 @@ const CertificationTrail = () => {
                                     </div>
                                   </div>
                                   {/* INCORRECT feedback */}
-                                  <div className={`${feedback === point?.quiz?.feedback?.incorrect ? 'd-block' : 'd-none'} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                  <div className={`${feedback === point?.quiz?.feedback?.incorrect ? styles.stickyBarVisible : styles.stickyBarHidden} ${styles.sticky_incorrect} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                     <div className={`d-flex py-4 px-0 offset-lg-2 col-lg-8 align-items-center`}>
                                       <div className='me-auto d-flex flex-row align-items-center'>
                                         <div className="rounded-circle d-flex align-items-center justify-content-center me-2 me-lg-4"
@@ -767,7 +767,7 @@ const CertificationTrail = () => {
                               ) : (
                                 <>
                                   {viewState === 'question' && (
-                                    <div className={`${styles.sticky_default} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
+                                    <div className={`${styles.sticky_default} ${tempAnswer !== null ? styles.stickyBarVisible : styles.stickyBarHidden} fixed-bottom px-3 pb-3 px-lg-0 pb-lg-0`}>
                                       <div className={`d-flex py-4 px-0 offset-lg-3 col-lg-6 col-md-8 offset-md-2 justify-content-end align-items-center`}>
                                         <p className='d-none d-lg-block mb-0 pe-3'>{t('click_button_to')}</p>
                                         <button className={`${styles.practice_check_button} px-4 py-3`} onClick={handleAnswerSubmit}
