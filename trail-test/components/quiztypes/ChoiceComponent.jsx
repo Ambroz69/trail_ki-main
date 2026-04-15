@@ -106,7 +106,11 @@ const ChoiceComponent = ({ quizType, answers, handleChangeAnswer, handleRemoveAn
                 </div>
               )}
               <div className='col-1 d-flex justify-content-end'>
-                <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)} disabled={disabled}>X</button>
+                {index==0 & quizType != 'multiple' ? (
+                    <span></span>
+                ): (
+                  <button className={`btn ${styles.point_delete_button}`} onClick={() => handleRemoveAnswer(index)} disabled={disabled}>X</button>
+                )}
               </div>
             </div>
           ))}
