@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 import TitlePage from "./pages/TitlePage";
@@ -8,10 +8,39 @@ import TitlePage from "./pages/TitlePage";
 const ProtectedRoute = ({ requiredRole }) => {
   // get cookie from browser if logged in
   const token = cookies.get("SESSION_TOKEN");
+  const location = useLocation(); 
+  const allowedPaths = [
+    "/explorer/trails",
+    "/manager/trails",
+    "/creator/trails"
+  ];
+
+  const isTokenValid = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+  };
 
   try {
-    if (!token) {
-      return <TitlePage />; // Show the title page if no token is found
+    //if (!token) {
+    //  if(allowedPaths.includes(location.pathname)) { sessionStorage.setItem("redirectAfterLogin", location.pathname); }
+    //  return <TitlePage />; // Show the title page if no token is found
+      //return <Navigate to="/users/login" replace state={{ from: location.pathname }} />;
+    //}
+    if (!token || !isTokenValid(token)) {
+      
+      cookies.remove("SESSION_TOKEN", { path: "/" });
+      console.log(location.pathname);
+      if (allowedPaths.some((path)=>location.pathname.startsWith(path))) {
+        console.log('OK');
+        sessionStorage.setItem("redirectAfterLogin", location.pathname);
+        return (<Navigate to="/users/login" replace />);
+      }
+
+      return <TitlePage />;
     }
     const arrayToken = token.split('.');
     const tokenPayload = JSON.parse(atob(arrayToken[1]));
@@ -20,9 +49,12 @@ const ProtectedRoute = ({ requiredRole }) => {
     //console.log(userRole);
 
     // returns route if there is a valid token set in the cookie or the landing page if there is no valid token set
-    if (!verified) {
-      return <TitlePage />; // Show the title page if the user is not verified
-    }
+    //if (!verified) {
+    //  cookies.remove("SESSION_TOKEN", { path: "/" }); 
+    //  if(allowedPaths.includes(location.pathname)) { sessionStorage.setItem("redirectAfterLogin", location.pathname); }
+    //  return <TitlePage />; // Show the title page if the user is not verified
+      //return <Navigate to="/users/login" replace state={{ from: location.pathname }} />;
+    //}
 
     // **Redirect users to their correct home pages based on role**
     /*if (!requiredRole) {
@@ -58,7 +90,6 @@ const ProtectedRoute = ({ requiredRole }) => {
     if (userRole === "manager") return <Navigate to="/manager" replace />;
 
     //return <Outlet />; // Allow access to protected routes
-
   } catch (error) {
     console.error(error);
     return <TitlePage />; // If there's an error, show the title page

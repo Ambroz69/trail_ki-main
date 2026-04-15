@@ -22,7 +22,9 @@ const Login = () => {
   const [login, setLogin] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en")
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en");
+  const [redirectTo, setRedirectTo] = useState(sessionStorage.getItem("redirectAfterLogin") || "/");
+  sessionStorage.removeItem("redirectAfterLogin");
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -46,9 +48,11 @@ const Login = () => {
           path: "/",
         });
         // redirect user to the trails
-        window.location.href = "/";
+        window.location.href = redirectTo;
       })
       .catch((error) => {
+        console.log(error);
+        cookies.remove("SESSION_TOKEN", { path: "/" });
         setAlert({ message: `${t('error_login')}`, type: 'error' });
         error = new Error();
       });
