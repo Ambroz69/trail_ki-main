@@ -529,6 +529,8 @@ const CertificationTrail = () => {
 
   const userRole = getUserRole();
   const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+  const correctPoiCount = userAnswers.filter((answer) => answer.isCorrect === true).length;
+  const totalQuizPoiCount = quizQuestions.length;
 
   return (
     <>
@@ -570,7 +572,7 @@ const CertificationTrail = () => {
                         <div className='d-flex justify-content-between pt-4'>
                           <div className=''>
                             <h2 className='fs-4 font-bold'>{t('certification_results')}</h2>
-                            <p className='mb-2'><strong>{t('total_score')}:</strong> {score} / {totalPoints}</p>
+                            <p className='mb-2'><strong>{t('total_score')}:</strong> {score} / {totalPoints} ({correctPoiCount} {t('correct_points')})</p>
                             <p className='mb-2'><strong>{t('status')}:</strong> {score >= totalPoints * 0.7 ? t('passed') : t('failed')}</p>
                           </div>
                           <div className=''>
@@ -582,6 +584,7 @@ const CertificationTrail = () => {
                         {!reviewSubmitted ? (
                           <>
                             <div className='col-12'>
+                              <p className={`${styles.accordion_text_gray} mb-1 mt-4`} >{t('rate_trail')}</p>
                               <Rating onRate={setRating} />
                             </div>
                             <div className='col-12'>
