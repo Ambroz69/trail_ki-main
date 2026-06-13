@@ -267,7 +267,7 @@ const TitlePage = () => {
                 </div>
                 <MainButton
                   variant="buttonGreen"
-                  onClick={() => goTo("/trails")}
+                  onClick={() => goTo("users/register")}
                   height="3rem"
                   width="11rem"
                 >
