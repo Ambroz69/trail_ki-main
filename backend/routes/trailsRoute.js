@@ -9,6 +9,8 @@ import { Point } from '../models/pointModel.js';
 import { PointTranslation } from '../models/pointTranslation.js';
 import { Quiz } from '../models/quizModel.js';
 import { QuizTranslation } from '../models/quizTranslation.js';
+import { User } from '../models/userModel.js';
+import { Review } from '../models/reviewModel.js';
 
 const router = express.Router();
 
@@ -182,6 +184,37 @@ router.get('/', auth, async (request, response) => {
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
+  }
+});
+
+// Statistic counts for title page
+router.get('/public-stats', async (request, response) => {
+  try {
+    const [registeredUsers, publishedTrails, doneReviews, reviewStatistics] = await Promise.all([
+      User.countDocuments({}),
+      Trail.countDocuments({ published: true }),
+      Review.countDocuments({}),
+      Review.aggregate([{
+        $match: {rating: {$gte: 1, $lte: 5,},},
+      }, {
+        $group: {_id: null, averageRatings: {$avg: '$rating'}}
+      }])
+    ]);
+
+    const averageRatings = reviewStatistics.length > 0 ? Math.round(reviewStatistics[0].averageRatings * 100) / 100 : 0;
+
+    return response.status(200).json({
+      registeredUsers,
+      publishedTrails,
+      doneReviews,
+      averageRatings,
+    });
+  } catch (error) {
+    console.error('Failed to load counts:', error);
+
+    return response.status(500).json({
+      message: 'Failed to load counts',
+    });
   }
 });
 

@@ -1,8 +1,9 @@
 //modules
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { useTranslation } from "react-i18next"; // Import translation hook
 import { useNavigate } from "react-router-dom";
+import api from '../axiosConfig';
 
 //styles
 import styles from "../css/TitlePage.module.css";
@@ -51,8 +52,11 @@ import partner_logo_3 from "../../src/assets/partner_logo_3.png";
 import partner_logo_4 from "../../src/assets/partner_logo_4.png";
 import partner_logo_5 from "../../src/assets/partner_logo_5.png";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const TitlePage = () => {
   const { t, i18n } = useTranslation();
+  const [stats, setStats] = useState({registeredUsers: 0, publishedTrails: 0, doneReviews: 0, averageRatings: 0.0});
   const currentLanguage =
     i18n.language || localStorage.getItem("language") || "en";
   const navigate = useNavigate();
@@ -105,6 +109,29 @@ const TitlePage = () => {
       description: t("testimonial_desc_3"),
     },
   ];
+
+  useEffect(() => {
+      const configuration = {
+        method: "get",
+        url: `${backendUrl}/trails/public-stats`,
+      };
+      
+      // make the API call
+      api(configuration)
+        .then((response) => {
+          const data = response.data;
+          console.log(data);
+          setStats({
+            registeredUsers: data.registeredUsers ?? 0,
+            publishedTrails: data.publishedTrails ?? 0,
+            doneReviews: data.doneReviews ?? 0,
+            averageRatings: data.averageRatings ?? 0.0,
+          });
+        })
+        .catch((error) => {        
+          console.log(error);
+        });
+    }, []);
 
   return (
     <div className="text-white px-lg-0">
@@ -203,13 +230,13 @@ const TitlePage = () => {
         </div>
         <div className="offset-2 col-8 pt-3 pb-1">
           <div className="d-flex gap-4 pb-5">
-            <CounterCard icon={trails_available} counter="128" color="#55C2AF">
+            <CounterCard icon={trails_available} counter={stats.publishedTrails.toLocaleString()} color="#55C2AF">
               {t("counter_card_trails")}
             </CounterCard>
-            <CounterCard icon={users} counter="5 420" color="#A191D8">
+            <CounterCard icon={users} counter={stats.registeredUsers.toLocaleString()} color="#A191D8">
               {t("counter_card_users")}
             </CounterCard>
-            <CounterCard icon={reviews} counter="874" color="#8CB7C8">
+            <CounterCard icon={reviews} counter={stats.doneReviews.toLocaleString()} color="#8CB7C8">
               {t("counter_card_reviews")}
             </CounterCard>
           </div>
@@ -227,13 +254,13 @@ const TitlePage = () => {
                   <div className="d-flex flex-column ms-4">
                     <div className={styles.heading}>{t("average_rating")}</div>
                     <div className="d-flex align-items-center mt-2">
-                      <span className={styles.rating}>4,8</span>
+                      <span className={styles.rating}>{stats.averageRatings.toLocaleString()}</span>
                       <span className={styles.outOf}>/ 5</span>
                       <div className="ms-3">
-                        <RatingStars rating={4.8} size="3rem" />
+                        <RatingStars rating={stats.averageRatings} size="3rem" />
                       </div>
                       <span className={`ms-3 pt-2 ${styles.reviewCount}`}>
-                        {t("based_on_reviews", { count: 874 })}
+                        {t("based_on_reviews", { count: stats.doneReviews.toLocaleString() })}
                       </span>
                     </div>
                   </div>
