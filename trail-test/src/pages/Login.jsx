@@ -23,8 +23,14 @@ const Login = () => {
   const [alert, setAlert] = useState({ message: '', type: '' });
   const { t } = useTranslation(); // Hook to access translations
   const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("language") || "en");
-  const [redirectTo, setRedirectTo] = useState(sessionStorage.getItem("redirectAfterLogin") || "/");
-  sessionStorage.removeItem("redirectAfterLogin");
+  //const [redirectTo, setRedirectTo] = useState(sessionStorage.getItem("redirectAfterLogin") || "/");
+  //sessionStorage.removeItem("redirectAfterLogin");
+  const [redirectTo, setRedirectTo] = useState(() => {
+    const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+    if(storedRedirect && storedRedirect.startsWith("/") && !storedRedirect.startsWith("//"))
+      return storedRedirect;
+    return "/";
+  });
 
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
@@ -47,6 +53,7 @@ const Login = () => {
         cookies.set("SESSION_TOKEN", result.data.token, {
           path: "/",
         });
+        sessionStorage.removeItem("redirectAfterLogin");
         // redirect user to the trails
         window.location.href = redirectTo;
       })

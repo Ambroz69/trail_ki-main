@@ -11,6 +11,17 @@ const RegisterSuccess = () => {
 
   const { t } = useTranslation(); // Hook to access translations
   const [alert, setAlert] = useState({ message: `${t('success_registration')}`, type: 'success' });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/users/login", {
+        replace: true,
+      });
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <Container fluid className={`${styles.base_font} mt-5 overflow-hidden`}>
