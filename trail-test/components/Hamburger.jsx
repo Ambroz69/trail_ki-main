@@ -11,14 +11,17 @@ import hamburger_logo from '../src/assets/avatar_color.png';
 import hamburger_logout from '../src/assets/hamburger_logout.svg';
 
 const cookies = new Cookies();
-const token = cookies.get("SESSION_TOKEN");
 
 function Hamburger({ userLoggedIn, menuModalShow, closeMenuModalShow }) {
   const { t } = useTranslation();
 
   const getUserRole = () => {
+    const token = cookies.get("SESSION_TOKEN");
     try {
-      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+      if (!token) return "explorer";
+      const tokenParts = token.split(".");
+      if (tokenParts.length < 2) return "explorer";
+      const tokenPayload = JSON.parse(atob(tokenParts[1]));
       return tokenPayload?.userRole || "explorer";
     } catch (error) {
       console.error("Error decoding token:", error);

@@ -1,0 +1,42 @@
+.card {
+  background-color: #fff;
+  border: 1px solid #f4eded;
+  border-bottom: 7px solid var(--testimonial-color);
+  border-radius: 0.25rem;
+  height: 21rem;
+  padding: 2rem;
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.thumbnailPhoto {
+  align-self: flex-start;
+  position: relative;
+  margin-top: -4.5rem;
+  margin-left: 1.5rem;
+  z-index: 10;
+}
+
+.thumbnailPhotoBg {
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  background-color: var(--testimonial-color);
+
+  align-self: flex-start;
+  position: relative;
+  margin-top: -5rem;
+}
+
+.cardText {
+  padding-top: 2rem;
+  text-align: start;
+  line-height: 1.6rem;
+  font-weight: lighter;
+}
+
+.cardAuthor {
+  color: #979797;
+  font-weight: lighter;
+  margin-bottom: 0;
+}

@@ -1,0 +1,52 @@
+.counterCard {
+  min-height: 17.5rem;
+  border-radius: 1rem;
+  background-color: #fff;
+
+  transition-property: transform, box-shadow;
+  transition-duration: 0.3s;
+}
+
+.counterCard:hover,
+.counterCard:focus-within {
+  transform: translateY(-0.25rem);
+  border: 1px solid var(--counter-card-color);
+}
+
+.iconCircle {
+  width: 5.5rem;
+  height: 5.5rem;
+
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--counter-card-color) 15%, white);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: contain;
+}
+
+.label {
+  color: var(--counter-card-color);
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.counter {
+  color: #172233;
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.05rem;
+}
+
+.chartWrapper {
+  width: 100%;
+  margin-top: auto;
+}

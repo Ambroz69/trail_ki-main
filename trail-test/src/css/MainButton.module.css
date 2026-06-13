@@ -1,0 +1,59 @@
+button.mainButton,
+button.mainButton:visited {
+  border-radius: 0.5rem;
+  border: none;
+
+  min-width: var(--main-button-width);
+  min-height: var(--main-button-height);
+
+  font-size: 0.9rem;
+  font-weight: 900;
+
+  transition-duration: 0.5s;
+}
+
+button.mainButton:hover,
+button.mainButton:focus,
+button.mainButton:not(:disabled):not(:disabled):active {
+  transition-duration: 0.5s;
+}
+
+button.buttonPrimary,
+button.buttonPrimary:visited {
+  color: #05192D;
+  background-color: #e1f563;
+}
+
+button.buttonPrimary:hover,
+button.buttonPrimary:focus,
+button.buttonPrimary:not(:disabled):not(:disabled):active {
+  color: #05192D;
+  background-color: #bcd41e;
+}
+
+button.buttonSecondary,
+button.buttonSecondary:visited {
+  color: #fff;
+  background-color: #ffffff00;
+  border: 1px solid #fff;
+}
+
+button.buttonSecondary:hover,
+button.buttonSecondary:focus,
+button.buttonSecondary:not(:disabled):not(:disabled):active {
+  color: #fff;
+  background-color: #83838362;
+}
+
+button.buttonGreen,
+button.buttonGreen:visited {
+  color: #fff;
+  background-color: #55C2AF;
+}
+
+button.buttonGreen:hover,
+button.buttonGreen:focus,
+button.buttonGreen:not(:disabled):not(:disabled):active {
+  color: #fff;
+  background-color: #38a190;
+}

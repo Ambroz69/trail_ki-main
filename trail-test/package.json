@@ -25,6 +25,7 @@
     "react-qr-code": "^2.0.15",
     "react-quill": "^2.0.0",
     "react-quilljs": "^2.0.4",
+    "swiper": "^12.2.0",
     "universal-cookie": "^7.2.0"
   },
   "devDependencies": {

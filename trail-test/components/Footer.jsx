@@ -1,27 +1,68 @@
-import { useTranslation } from 'react-i18next';
-import styles from '../src/css/TrailGrid.module.css';
+import { useTranslation } from "react-i18next";
+import styles from "../src/css/Footer.module.css";
 
-// SVG imports
-import title_page_logo from '../src/assets/title_page_logo.svg';
+import eu_flag from "../src/assets/eu_flag.png";
+import avatar_color from "../src/assets/avatar_color.png";
+import information from "../src/assets/information.svg";
 
 function Footer() {
-
-  const { t } = useTranslation(); // Hook for translations
+  const { t } = useTranslation();
 
   return (
-    <footer className={`bg-white px-0`}>
-      <div className={`${styles.footer_bg} py-5 px-3 px-lg-0`}>
-        <div className={`offset-lg-2`}>
-          <div className="d-flex">
-            <img src={title_page_logo} alt="title_page_logo" className='ps-2' width={110} />
-            <div className="col-lg-3 pe-5">
-              <p className={`${styles.footer_text} pt-3 ps-4 text-white`}>{t("footer_description")}</p>
-            </div>
+    <footer className={styles.euFooter}>
+      <div className="container-fluid px-0 mb-3">
+        <div className="d-flex flex-column flex-lg-row align-items-stretch">
+          <div className="col-12 col-lg-3 d-flex justify-content-center align-items-center py-4">
+            <img
+              src={avatar_color}
+              alt="avatar_color"
+              className={styles.footerLogo}
+            />
           </div>
-          <p className="mt-5 mb-0 text-white">© 2024 AVAtar | {t("university_name")}</p>
+
+          <div
+            className={`col-12 col-lg-5 d-flex flex-column justify-content-center px-4 px-lg-5 py-4 ${styles.footerMiddle}`}
+          >
+            <p className={`${styles.footerTextBold} mb-2`}>
+              PROJECT AVATAR - caring for All Vulnerable Animals Through an
+              Active Relationship with nature
+            </p>
+
+            <p className={`${styles.footerText} mb-0`}>
+              Contract number: 2023-1-SK01-KA220-SCH-000155430
+            </p>
+          </div>
+
+          <div className="col-12 col-lg-4 d-flex justify-content-center align-items-center py-4">
+            <img src={eu_flag} alt="eu_flag" className={styles.euLogo} />
+          </div>
+        </div>
+
+        <div className={`${styles.disclaimerRow} px-4 px-lg-5 py-4 mt-4`}>
+          <div className="d-flex align-items-start gap-4">
+            <div
+              className={`d-flex justify-content-center align-items-center ${styles.infoIcon}`}
+            >
+              <img
+                src={information}
+                alt="information"
+                className={styles.infoIconImg}
+              />
+            </div>
+
+            <p className={`${styles.footerText} mb-0`}>
+              Funded by the European Union. Views and opinions expressed are
+              however those of the author(s) only and do not necessarily reflect
+              those of the European Union or SAAIC - the National Agency for the
+              Erasmus+ Programme for Education and Training Sectors. Neither the
+              European Union nor the granting authority can be held responsible
+              for them.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
   );
-};
+}
+
 export default Footer;
