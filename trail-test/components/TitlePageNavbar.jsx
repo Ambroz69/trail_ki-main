@@ -47,10 +47,10 @@ export default function TitlePageNavbar() {
           <div className="row pt-4">
             <nav className="offset-lg-2 col-lg-8 d-flex justify-content-between align-items-center px-3 px-lg-0">
               <div>
-                <img src={avatar_white} alt="avatar_white" width={110} />
+                <img src={avatar_white} alt="avatar_white" className={styles.navbarLogo} />
               </div>
 
-              <div className="d-flex align-items-start gap-2 pt-2">
+              <div className="d-flex align-items-center gap-2 pt-2">
                 <Dropdown className="bg-transparent">
                   <Dropdown.Toggle
                     variant=""
@@ -95,23 +95,25 @@ export default function TitlePageNavbar() {
                   </Dropdown.Menu>
                 </Dropdown>
 
-                <MainButton
-                  variant="buttonSecondary"
-                  onClick={() => goTo("users/login")}
-                >
-                  {t("login")}
-                </MainButton>
+                <div className="d-none d-lg-flex gap-2">
+                  <MainButton
+                    variant="buttonSecondary"
+                    onClick={() => goTo("users/login")}
+                  >
+                    {t("login")}
+                  </MainButton>
 
-                <MainButton
-                  variant="buttonPrimary"
-                  onClick={() => goTo("users/register")}
-                >
-                  {t("get_started")}
-                </MainButton>
+                  <MainButton
+                    variant="buttonPrimary"
+                    onClick={() => goTo("users/register")}
+                  >
+                    {t("get_started")}
+                  </MainButton>
+                </div>
 
                 <button
                   type="button"
-                  className="btn d-block d-lg-none"
+                  className="btn d-flex d-lg-none"
                   onClick={() => setMenuModalShow(true)}
                 >
                   <img src={hamburger} alt="hamburger" />

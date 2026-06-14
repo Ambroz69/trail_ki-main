@@ -10,9 +10,9 @@ function Footer() {
 
   return (
     <footer className={styles.euFooter}>
-      <div className="container-fluid px-0 mb-3">
+      <div className="container-fluid px-0 pb-3">
         <div className="d-flex flex-column flex-lg-row align-items-stretch">
-          <div className="col-12 col-lg-3 d-flex justify-content-center align-items-center py-4">
+          <div className="col-12 col-lg-3 d-flex justify-content-center align-items-center pb-4 py-lg-4">
             <img
               src={avatar_color}
               alt="avatar_color"
@@ -39,7 +39,7 @@ function Footer() {
         </div>
 
         <div className={`${styles.disclaimerRow} px-4 px-lg-5 py-4 mt-4`}>
-          <div className="d-flex align-items-start gap-4">
+          <div className="d-flex align-items-lg-start align-items-center gap-4">
             <div
               className={`d-flex justify-content-center align-items-center ${styles.infoIcon}`}
             >

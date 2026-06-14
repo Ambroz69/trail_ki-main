@@ -11,7 +11,7 @@ export default function TestimonialCard({
   return (
     <div className="col-12 col-lg-3 pe-lg-3 mb-0 pb-3">
       <div
-        className={`${styles.card} d-flex flex-column justify-content-between`}
+        className={`${styles.card} d-flex shadow flex-column justify-content-between`}
         style={{ "--testimonial-color": color }}
       >
         <div>

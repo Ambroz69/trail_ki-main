@@ -45,6 +45,21 @@ button.buttonSecondary:not(:disabled):not(:disabled):active {
   background-color: #83838362;
 }
 
+button.buttonSecondaryDark,
+button.buttonSecondaryDark:visited {
+  color: #05192d;
+  background-color: transparent;
+  border: 1px solid #05192d;
+}
+
+button.buttonSecondaryDark:hover,
+button.buttonSecondaryDark:focus,
+button.buttonSecondaryDark:not(:disabled):active {
+  color: #05192d;
+  background-color: #e8f5f1;
+  border: 1px solid #05192d;
+}
+
 button.buttonGreen,
 button.buttonGreen:visited {
   color: #fff;

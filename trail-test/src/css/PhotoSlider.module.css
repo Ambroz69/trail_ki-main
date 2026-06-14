@@ -126,7 +126,7 @@
   opacity: 1;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 767.98px) {
   .photoSlider {
     height: auto;
     min-height: unset;
@@ -144,7 +144,7 @@
 
   .photoSliderContent {
     max-width: 100%;
-    padding: 4rem 2rem;
+    padding: 2rem 2rem;
   }
 
   .photoSliderImageCol {
