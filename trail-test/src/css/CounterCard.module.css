@@ -50,3 +50,28 @@
   width: 100%;
   margin-top: auto;
 }
+
+@media (max-width: 767.98px) {
+  .counterCard {
+    min-height: 12rem;
+  }
+
+  .iconCircle {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .icon {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .label {
+    font-size: 0.9rem;
+    min-height: 2rem;
+  }
+
+  .counter {
+    font-size: 2rem;
+  }
+}

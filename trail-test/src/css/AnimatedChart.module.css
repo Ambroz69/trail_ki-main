@@ -10,7 +10,8 @@
   animation-name: revealGradient;
   animation-duration: var(--total-duration);
   animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation-iteration-count: var(--animation-count);
+  animation-fill-mode: forwards;
 }
 
 .line {
@@ -20,7 +21,8 @@
   animation-name: drawLine;
   animation-duration: var(--total-duration);
   animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation-iteration-count: var(--animation-count);
+  animation-fill-mode: forwards;
 }
 
 .dot {
@@ -29,7 +31,8 @@
   animation-name: showDot;
   animation-duration: var(--total-duration);
   animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation-iteration-count: var(--animation-count);
+  animation-fill-mode: forwards;
 }
 
 @keyframes drawLine {

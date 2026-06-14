@@ -16,6 +16,7 @@ import CounterCard from "../../components/CounterCard";
 import RatingStars from "../../components/RatingStars";
 import TitlePageNavbar from "../../components/TitlePageNavbar";
 import TestimonialCard from "../../components/TestimonialCard";
+import CountUp from "../../components/CountUp";
 
 //assets
 import desc_bullet_point from "../../src/assets/desc_bullet_point.svg";
@@ -212,24 +213,24 @@ const TitlePage = () => {
           </h4>
         </div>
         <div className="offset-lg-2 col-lg-8 px-3 px-lg-0 pt-3 pb-1">
-          <div className="d-flex flex-column flex-lg-row gap-4 pb-5">
+          <div className="d-flex flex-lg-row gap-lg-4 gap-1 pb-5">
             <CounterCard
               icon={trails_available}
-              counter={stats.publishedTrails.toLocaleString()}
+              counter={<CountUp end={stats.publishedTrails} />}
               color="#55C2AF"
             >
               {t("counter_card_trails")}
             </CounterCard>
             <CounterCard
               icon={users}
-              counter={stats.registeredUsers.toLocaleString()}
+              counter={<CountUp end={stats.registeredUsers} />}
               color="#A191D8"
             >
               {t("counter_card_users")}
             </CounterCard>
             <CounterCard
               icon={reviews}
-              counter={stats.doneReviews.toLocaleString()}
+              counter={<CountUp end={stats.doneReviews} />}
               color="#8CB7C8"
             >
               {t("counter_card_reviews")}

@@ -1,14 +1,11 @@
 import { useId } from "react";
 import styles from "../src/css/AnimatedChart.module.css";
 
-function seconds(value) {
-  return Number(String(value).replace("s", ""));
-}
-
 export default function AnimatedChart({
   color = "#55C2AF",
   duration = "2s",
   delay = "1s",
+  loop = true
 }) {
   const id = useId().replace(/:/g, "");
   const gradientId = `chartFill-${id}`;
@@ -21,6 +18,7 @@ export default function AnimatedChart({
         "--draw-duration": duration,
         "--pause-duration": delay,
         "--total-duration": `calc(${duration} + ${delay})`,
+        "--animation-count": loop ? "infinite" : "1",
       }}
       viewBox="0 0 350 50"
       fill="none"
