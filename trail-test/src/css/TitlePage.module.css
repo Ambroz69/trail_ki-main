@@ -233,7 +233,7 @@
 }
 
 .heading {
-  color: #20c997;
+  color: #55c2af;
   font-size: 0.9rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -264,6 +264,11 @@
 
 .heroButtons {
   justify-content: flex-start;
+}
+
+.counterCardsGrid {
+  display: flex;
+  gap: 1.5rem;
 }
 
 @media (max-width: 767.98px) {
@@ -319,5 +324,104 @@
   .heroButtons > button {
     width: calc(50% - 0.25rem) !important;
     min-width: 0 !important;
+  }
+
+  .counterCardsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .mobileRatingCard {
+    min-height: 12rem;
+    border-radius: 0.5rem;
+    background-color: #fff;
+  }
+
+  .mobileRatingIconCircle {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: rgb(85 194 175 / 15%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobileRatingIcon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .mobileRatingLabel {
+    color: #55c2af;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .mobileRatingValue {
+    line-height: 1;
+  }
+
+  .mobileRatingNumber {
+    color: #172233;
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .mobileOutOf {
+    color: #6b7280;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-left: 0.2rem;
+  }
+
+  .testimonialsViewport {
+    overflow: hidden;
+    width: 100%;
+    padding-top: 3rem;
+  }
+
+  .testimonialsContainer {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .testimonialSlide {
+    flex: 0 0 75%;
+    min-width: 0;
+    transform: scale(0.9);
+    opacity: 0.8;
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
+  }
+
+  .activeSlide {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .testimonialsDots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .testimonialsDot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    border: none;
+    background-color: #d0d5dd;
+    padding: 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .testimonialsDotActive {
+    background-color: #55c2af;
   }
 }

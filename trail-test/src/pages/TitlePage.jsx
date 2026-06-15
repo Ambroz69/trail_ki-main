@@ -1,9 +1,10 @@
 //modules
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useCallback } from "react";
 import Button from "react-bootstrap/Button";
 import { useTranslation } from "react-i18next"; // Import translation hook
 import { useNavigate } from "react-router-dom";
 import api from "../axiosConfig";
+import useEmblaCarousel from "embla-carousel-react";
 
 //styles
 import styles from "../css/TitlePage.module.css";
@@ -139,6 +140,29 @@ const TitlePage = () => {
       });
   }, []);
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "center",
+    loop: false,
+  });
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    setScrollSnaps(emblaApi.scrollSnapList());
+    emblaApi.on("select", onSelect);
+    onSelect();
+
+    return () => emblaApi.off("select", onSelect);
+  }, [emblaApi, onSelect]);
+
   return (
     <div className="text-white px-lg-0">
       <TitlePageNavbar />
@@ -221,7 +245,7 @@ const TitlePage = () => {
           </h4>
         </div>
         <div className="offset-lg-2 col-lg-8 px-3 px-lg-0 pt-3 pb-1">
-          <div className="d-flex flex-lg-row gap-lg-4 gap-1 pb-5">
+          <div className={`${styles.counterCardsGrid} pb-4 pb-lg-5`}>
             <CounterCard
               icon={trails_available}
               counter={<CountUp end={stats.publishedTrails} />}
@@ -243,8 +267,36 @@ const TitlePage = () => {
             >
               {t("counter_card_reviews")}
             </CounterCard>
+            {/* MOBILE RATING */}
+            <div
+              className={`card border-0 shadow text-center p-2 d-lg-none ${styles.mobileRatingCard}`}
+            >
+              <div className="card-body d-flex flex-column align-items-center p-0">
+                <div className={`${styles.mobileRatingIconCircle} mb-3`}>
+                  <img
+                    src={review_star}
+                    alt="review_star"
+                    className={styles.mobileRatingIcon}
+                  />
+                </div>
+
+                <h3 className={`${styles.mobileRatingLabel} mt-0 mb-2`}>
+                  {t("average_rating")}
+                </h3>
+
+                <p className={`${styles.mobileRatingValue} mb-3`}>
+                  <span className={styles.mobileRatingNumber}>
+                    {stats.averageRatings.toLocaleString()}
+                  </span>
+                  <span className={styles.mobileOutOf}>/5</span>
+                </p>
+
+                <RatingStars rating={stats.averageRatings} size="1.6rem" />
+              </div>
+            </div>
           </div>
-          <div className="">
+          {/* DESKTOP RATING*/}
+          <div className="d-none d-lg-block">
             <div className={`card shadow border-0 ${styles.ratingCard}`}>
               <div className="card-body d-lg-flex justify-content-between align-items-center p-4">
                 <div className="d-flex flex-column flex-lg-row align-items-center text-center text-lg-start">
@@ -297,7 +349,7 @@ const TitlePage = () => {
             </div>
           </div>
           <div
-            className={`${styles.title_grey} pt-3 pb-4 py-lg-5 d-flex flex-lg-row flex-column justify-content-lg-around align-items-center`}
+            className={`${styles.title_grey} pt-3 pb-4 py-lg-5 d-lg-flex d-none justify-content-around align-items-center`}
           >
             <div className="d-lg-block d-none"></div>
             <div className="d-flex pt-0">
@@ -367,12 +419,36 @@ const TitlePage = () => {
           ))}
         </div>
         {/* MOBILE */}
-        <div className="d-block d-lg-none pt-5">
-          {testimonials.map((testimonial) => (
-            <div className="pb-5">
-              <TestimonialCard key={testimonial.author} {...testimonial} />
+        <div
+          className={`d-block d-lg-none pt-5 ${styles.testimonialsCarousel}`}
+        >
+          <div className={styles.testimonialsViewport} ref={emblaRef}>
+            <div className={styles.testimonialsContainer}>
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={testimonial.author}
+                  className={`${styles.testimonialSlide} ${
+                    index === selectedIndex ? styles.activeSlide : ""
+                  }`}
+                >
+                  <TestimonialCard {...testimonial} />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className={`${styles.testimonialsDots} mb-3`}>
+            {scrollSnaps.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`${styles.testimonialsDot} ${
+                  index === selectedIndex ? styles.testimonialsDotActive : ""
+                }`}
+                onClick={() => emblaApi?.scrollTo(index)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
