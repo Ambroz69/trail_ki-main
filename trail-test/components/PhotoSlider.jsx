@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
@@ -13,18 +15,44 @@ import pic3 from "../src/assets/pic3.jpg";
 import pic4 from "../src/assets/pic4.jpg";
 import pic5 from "../src/assets/pic5.jpg";
 
-const photoSlides = [pic1, pic2, pic3, pic4, pic5];
+import pic1_m from "../src/assets/pic1_m.png";
+import pic2_m from "../src/assets/pic2_m.png";
+import pic3_m from "../src/assets/pic3_m.png";
+import pic4_m from "../src/assets/pic4_m.png";
+import pic5_m from "../src/assets/pic5_m.png";
 
-export default function PhotoSlider({
-    children
-}) {
+const photoSlides = [
+  { desktop: pic1, mobile: pic1_m },
+  { desktop: pic2, mobile: pic2_m },
+  { desktop: pic3, mobile: pic3_m },
+  { desktop: pic4, mobile: pic4_m },
+  { desktop: pic5, mobile: pic5_m },
+];
+
+export default function PhotoSlider({ children }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767.98px)");
+
+    setIsMobile(media.matches);
+
+    const handleChange = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    media.addEventListener("change", handleChange);
+
+    return () => {
+      media.removeEventListener("change", handleChange);
+    };
+  }, []);
+
   return (
     <section className={styles.photoSlider}>
       <div className={styles.photoSliderLayout}>
-        {/* Empty 35% column */}
         <div />
 
-        {/* 65% image column */}
         <div className={styles.photoSliderImageCol}>
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
@@ -38,10 +66,10 @@ export default function PhotoSlider({
             loop
             className={styles.photoSliderSwiper}
           >
-            {photoSlides.map((src) => (
-              <SwiperSlide key={src}>
+            {photoSlides.map((slide) => (
+              <SwiperSlide key={slide.desktop}>
                 <img
-                  src={src}
+                  src={isMobile ? slide.mobile : slide.desktop}
                   alt=""
                   className={styles.photoSliderImage}
                 />
@@ -53,14 +81,11 @@ export default function PhotoSlider({
         </div>
       </div>
 
-      {/* TEXT OVERLAY */}
       <div className={styles.photoSliderTextOverlay}>
         <div className="container-fluid">
           <div className="row">
             <div className="offset-lg-2 col-lg-8 px-0">
-              <div className={styles.photoSliderContent}>
-                {children}
-              </div>
+              <div className={styles.photoSliderContent}>{children}</div>
             </div>
           </div>
         </div>

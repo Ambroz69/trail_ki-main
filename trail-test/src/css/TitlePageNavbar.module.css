@@ -5,7 +5,7 @@
   width: 100%;
   z-index: 50;
   background: transparent;
-  height: 7.5rem;
+  height: 4.5rem;
 }
 
 .navbarLogo {
@@ -13,6 +13,10 @@
 }
 
 @media (max-width: 767.98px) {
+  .navbarOverlay {
+    background: rgba(6, 28, 23, 0.6);
+  }
+
   .navbarLogo {
     width: 4rem;
   }

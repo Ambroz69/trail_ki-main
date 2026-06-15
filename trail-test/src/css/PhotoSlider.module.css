@@ -128,30 +128,82 @@
 
 @media (max-width: 767.98px) {
   .photoSlider {
+    position: relative;
     height: auto;
     min-height: unset;
+    background: #061c17;
+    overflow: hidden;
   }
 
   .photoSliderLayout {
-    grid-template-columns: 1fr;
+    position: absolute;
+    inset: 0;
+    display: block;
+    height: 100%;
+  }
+
+  .photoSliderLayout > div:first-child {
+    display: none;
+  }
+
+  .photoSliderImageCol {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photoSliderSwiper,
+  .photoSliderSwiper :global(.swiper-wrapper),
+  .photoSliderSwiper :global(.swiper-slide) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .photoSliderImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .photoSliderEdgeGradient {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 2;
+
+    background: linear-gradient(
+      to bottom,
+      rgba(6, 28, 23, 0.35) 0%,
+      rgba(6, 28, 23, 0.42) 35%,
+      rgba(6, 28, 23, 0.53) 50%,
+      rgba(6, 28, 23, 0.72) 65%,
+      rgba(6, 28, 23, 0.92) 82%,
+      #061c17 100%
+    );
   }
 
   .photoSliderTextOverlay {
     position: relative;
-    inset: unset;
     display: block;
+    padding-top: 13rem;
+    z-index: 5;
   }
 
   .photoSliderContent {
     max-width: 100%;
-    padding: 2rem 2rem;
+    padding: 0 2rem 2rem;
+    pointer-events: auto;
   }
 
-  .photoSliderImageCol {
-    height: 26.25rem;
-  }
-
-  .photoSliderEdgeGradient {
+  .photoSlider :global(.swiper-button-prev),
+  .photoSlider :global(.swiper-button-next) {
     display: none;
+  }
+
+  .photoSlider :global(.swiper-pagination) {
+    bottom: 1rem !important;
   }
 }

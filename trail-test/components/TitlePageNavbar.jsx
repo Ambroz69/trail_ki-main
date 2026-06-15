@@ -44,7 +44,7 @@ export default function TitlePageNavbar() {
     <>
       <div className={styles.navbarOverlay}>
         <div className="container-fluid">
-          <div className="row pt-4">
+          <div className="row pt-lg-4 pt-2">
             <nav className="offset-lg-2 col-lg-8 d-flex justify-content-between align-items-center px-3 px-lg-0">
               <div>
                 <img src={avatar_white} alt="avatar_white" className={styles.navbarLogo} />

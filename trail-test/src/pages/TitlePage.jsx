@@ -145,34 +145,41 @@ const TitlePage = () => {
 
       <PhotoSlider>
         <>
-          <div className="pt-3 pt-lg-5 pb-3">
+          <div className="pt-5 pb-lg-3 pb-1">
             <img
               src={trailExperience[currentLanguage]}
               alt="trail_experience"
-              className=""
+              className={styles.title_logo}
             />
           </div>
-          <h1 className={`${styles.title} mb-2`}>{t("hero_title_1")}</h1>
-          <h1 className={`${styles.title} ${styles.title_yellow} mb-4`}>
+
+          <h1 className={`${styles.title} mb-lg-2 mb-0`}>
+            {t("hero_title_1")}
+          </h1>
+
+          <h1 className={`${styles.title} ${styles.title_yellow} mb-lg-4`}>
             {t("hero_title_2")}
           </h1>
+
           <div className="d-flex justify-content-center align-items-start">
             <img
               src={desc_bullet_point}
               alt="desc_bullet_point"
               className="pe-2 pt-2"
             />
-            <p className={`${styles.desc_font}`}>{t("hero_description_1")}</p>
+            <p className={styles.desc_font}>{t("hero_description_1")}</p>
           </div>
+
           <div className="d-flex justify-content-center align-items-start">
             <img
               src={desc_bullet_point}
               alt="desc_bullet_point"
               className="pe-2 pt-2"
             />
-            <p className={`${styles.desc_font}`}>{t("hero_description_2")}</p>
+            <p className={styles.desc_font}>{t("hero_description_2")}</p>
           </div>
-          <div className="d-flex justify-content-center justify-content-lg-start mt-5 gap-2">
+
+          <div className={`d-flex gap-lg-3 mt-lg-5 ${styles.heroButtons}`}>
             <MainButton
               variant="buttonPrimary"
               onClick={() => goTo("users/login")}
@@ -180,6 +187,7 @@ const TitlePage = () => {
             >
               {t("explore")}
             </MainButton>
+
             <MainButton
               variant="buttonSecondary"
               onClick={() => goTo("users/register")}

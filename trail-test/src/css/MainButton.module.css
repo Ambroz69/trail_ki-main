@@ -3,6 +3,7 @@ button.mainButton:visited {
   border-radius: 0.5rem;
   border: none;
 
+  width: var(--main-button-width);
   min-width: var(--main-button-width);
   min-height: var(--main-button-height);
 
