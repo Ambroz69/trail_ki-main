@@ -1,0 +1,131 @@
+.trailCard {
+  height: 14.25rem;
+  border: 1px solid #e1e5ea;
+  border-radius: 0.75rem;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.trailCard:hover,
+.trailCard:focus-within {
+  transform: translateY(-0.25rem);
+  border-color: #e1f563;
+}
+
+.imageColumn {
+  width: 12.25rem;
+}
+
+.imageBox {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.trailTypeIcon {
+  width: 3.5rem;
+  height: auto;
+}
+
+.trailTitle {
+  color: #102a43;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.15rem;
+  max-height: 2.3rem;
+  overflow: hidden;
+
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.trailDescription {
+  color: #7f8b97;
+  font-size: 0.78rem;
+  line-height: 1rem;
+  font-weight: 400;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+.descThreeLines {
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  max-height: 3rem;
+}
+
+.descTwoLines {
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  max-height: 2rem;
+}
+
+.trailDescription p {
+  margin-bottom: 0;
+}
+
+.trailMeta {
+  color: #8a94a3;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.metaIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.arrowIcon {
+  width: 1rem;
+}
+
+.metaIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  transform: translateY(-0.1rem);
+}
+
+@media (max-width: 1399.98px) {
+  .trailCard {
+    height: 13.25rem;
+  }
+
+  .imageColumn {
+    width: 11.25rem;
+  }
+
+  .trailTitle {
+    font-size: 0.9rem;
+  }
+
+  .trailDescription {
+    font-size: 0.78rem;
+  }
+
+  .trailMeta {
+    gap: 0.65rem !important;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .imageColumn {
+    width: 10.25rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .trailCard {
+    height: 12.75rem;
+  }
+
+  .imageColumn {
+    width: 9.75rem;
+  }
+}

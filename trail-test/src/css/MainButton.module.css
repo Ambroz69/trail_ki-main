@@ -4,7 +4,7 @@ button.mainButton:visited {
   border: none;
 
   width: var(--main-button-width);
-  min-width: var(--main-button-width);
+  min-width: 0;
   min-height: var(--main-button-height);
 
   font-size: 0.9rem;
@@ -43,7 +43,22 @@ button.buttonSecondary:hover,
 button.buttonSecondary:focus,
 button.buttonSecondary:not(:disabled):not(:disabled):active {
   color: #fff;
-  background-color: #83838362;
+  background-color: #bebebe;
+}
+
+button.buttonSecondaryGrey,
+button.buttonSecondaryGrey:visited {
+  color: #05192d;
+  background-color: transparent;
+  border: 1px solid #d4d4d4;
+}
+
+button.buttonSecondaryGrey:hover,
+button.buttonSecondaryGrey:focus,
+button.buttonSecondaryGrey:not(:disabled):active {
+  color: #05192d;
+  background-color: #e8f5f1;
+  border: 1px solid #d4d4d4;
 }
 
 button.buttonSecondaryDark,

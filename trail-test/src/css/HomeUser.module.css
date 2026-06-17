@@ -1,0 +1,73 @@
+.exploreBanner {
+  height: 14rem;
+  background: #edf8f5;
+  position: relative;
+  overflow: hidden;
+}
+
+.exploreBanner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    rgba(236, 245, 241, 0.98) 0%,
+    rgba(236, 245, 241, 0.96) 35%,
+    rgba(236, 245, 241, 0.75) 55%,
+    rgba(236, 245, 241, 0.3) 72%,
+    rgba(236, 245, 241, 0) 88%
+  );
+}
+
+.exploreBannerImage {
+  height: 14rem;
+  position: relative;
+  z-index: 0;
+}
+
+.exploreBannerContent {
+  z-index: 2;
+  left: 4rem;
+  width: 36rem;
+  max-width: 40%;
+}
+
+.exploreBannerText {
+  color: #5e6b78;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.exploreBannerTitle {
+  color: #102a43;
+  font-size: 2rem;
+}
+
+.exploreBannerTitle span {
+  color: #e1f563;
+}
+
+@media (max-width: 991.98px) {
+  .exploreBanner,
+  .exploreBannerImage {
+    min-height: 14rem;
+  }
+
+  .exploreBannerContent {
+    left: 1.5rem;
+    right: 1.5rem;
+    width: auto;
+    max-width: none;
+  }
+
+  .exploreBannerTitle {
+    font-size: 1.5rem;
+  }
+
+  .exploreBannerText {
+    font-size: 0.9rem;
+  }
+}

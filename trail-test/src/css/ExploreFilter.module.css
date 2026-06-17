@@ -1,0 +1,75 @@
+.searchBox {
+  max-width: 28rem;
+  flex-basis: 28rem;
+}
+
+.searchIconBox,
+.searchInput {
+  height: 3rem;
+  border-color: #e1e5ea;
+}
+
+.searchInput {
+  color: #5e6b78;
+  font-size: 0.95rem;
+}
+
+.searchInput::placeholder {
+  color: #a7a7b1;
+}
+
+.selectButton,
+.actionButton {
+  height: 3rem;
+  border-color: #e1e5ea;
+  border-radius: 0.5rem;
+  color: #5e6b78;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.selectButton {
+  min-width: 13rem;
+}
+
+.actionButton {
+  min-width: 9rem;
+}
+
+.sortButton {
+  min-width: 15rem;
+}
+
+.selectIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.selectButton::after,
+.actionButton::after {
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+.selectButton:hover,
+.selectButton:focus,
+.actionButton:hover,
+.actionButton:focus {
+  border-color: #d4d8de;
+  color: #5e6b78;
+}
+
+@media (max-width: 991.98px) {
+  .searchBox {
+    max-width: none;
+    flex-basis: auto;
+  }
+
+  .selectButton,
+  .actionButton,
+  .sortButton {
+    width: 100%;
+    min-width: unset;
+  }
+}
