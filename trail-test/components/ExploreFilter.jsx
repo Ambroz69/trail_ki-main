@@ -7,20 +7,27 @@ import sort_button from "../src/assets/sort_button.svg";
 import location from "../src/assets/location.svg";
 import duration from "../src/assets/duration.svg";
 import difficulty from "../src/assets/difficulty.svg";
+import arrow_down from "../src/assets/arrow_down.svg";
 
 const sortLabels = {
   newest: "Newest",
   oldest: "Oldest",
   "name-asc": "Name (A → Z)",
   "name-desc": "Name (Z → A)",
-  "length-asc": "Length (shortest)",
-  "length-desc": "Length (longest)",
+  "length-asc": "Shortest",
+  "length-desc": "Longest",
+};
+
+const difficultyLabels = {
+  easy: "Easy",
+  moderate: "Medium",
+  difficult: "Hard",
 };
 
 const durationLabels = {
-  Short: "Short (up to 30 min)",
-  Medium: "Medium (up to 60 min)",
-  Long: "Long (60 min+)",
+  short: "Short",
+  medium: "Medium",
+  long: "Long",
 };
 
 const ExploreFilter = ({
@@ -37,6 +44,8 @@ const ExploreFilter = ({
 }) => {
   const buttonBase =
     "btn bg-white d-flex align-items-center border shadow-none text-nowrap px-3";
+
+  const dropdownButtonClass = `${buttonBase} justify-content-between w-100 ${styles.selectButton}`;
 
   return (
     <div className="d-flex flex-column flex-lg-row gap-3 align-items-stretch align-items-lg-center mb-4">
@@ -56,88 +65,129 @@ const ExploreFilter = ({
         />
       </div>
 
-      <Dropdown>
-        <Dropdown.Toggle
-          variant=""
-          className={`${buttonBase} justify-content-between w-100 ${styles.selectButton}`}
-        >
-          <span className="d-flex align-items-center gap-2">
-            <img src={location} alt="" className={styles.selectIcon} />
-            {localityFilter || "All Locations"}
-          </span>
-        </Dropdown.Toggle>
+      <div className="d-flex gap-2 gap-lg-3">
+        <Dropdown className="flex-fill">
+          <Dropdown.Toggle
+            variant=""
+            className={`${dropdownButtonClass} ${styles.noCaret}`}
+          >
+            <span className="d-flex align-items-center gap-2">
+              <img src={location} alt="" className={styles.selectIcon} />
+              <span className={styles.mobileShortText}>
+                {localityFilter || "All Locations"}
+              </span>
+            </span>
+            <img src={arrow_down} alt="" className={styles.arrowIcon} />
+          </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          <Dropdown.Item onClick={() => setLocalityFilter("")}>
-            All Locations
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setLocalityFilter("Slovakia")}>
-            Slovakia
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setLocalityFilter("Czech Republic")}>
-            Czech Republic
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setLocalityFilter("Spain")}>
-            Spain
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+          <Dropdown.Menu className={styles.dropdownMenu}>
+            {["", "Slovakia", "Czech Republic", "Spain"].map((value) => (
+              <Dropdown.Item
+                key={value || "all"}
+                active={localityFilter === value}
+                onClick={() => setLocalityFilter(value)}
+              >
+                {value || "All Locations"}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
 
-      <Dropdown>
-        <Dropdown.Toggle
-          variant=""
-          className={`${buttonBase} justify-content-between w-100 ${styles.selectButton}`}
-        >
-          <span className="d-flex align-items-center gap-2">
-            <img src={difficulty} alt="" className={styles.selectIcon} />
-            {difficultyFilter || "All Difficulties"}
-          </span>
-        </Dropdown.Toggle>
+        <Dropdown className="flex-fill">
+          <Dropdown.Toggle
+            variant=""
+            className={`${dropdownButtonClass} ${styles.noCaret}`}
+          >
+            <span className="d-flex align-items-center gap-2">
+              <img src={difficulty} alt="" className={styles.selectIcon} />
+              <span className={styles.mobileShortText}>
+                {difficultyFilter
+                  ? difficultyLabels[difficultyFilter]
+                  : "All Difficulties"}
+              </span>
+            </span>
+            <img src={arrow_down} alt="" className={styles.arrowIcon} />
+          </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          <Dropdown.Item onClick={() => setDifficultyFilter("")}>
-            All Difficulties
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDifficultyFilter("Easy")}>
-            Easy
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDifficultyFilter("Medium")}>
-            Medium
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDifficultyFilter("Hard")}>
-            Hard
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+          <Dropdown.Menu className={styles.dropdownMenu}>
+            <Dropdown.Item
+              active={difficultyFilter === ""}
+              onClick={() => setDifficultyFilter("")}
+            >
+              All Difficulties
+            </Dropdown.Item>
 
-      <Dropdown>
-        <Dropdown.Toggle
-          variant=""
-          className={`${buttonBase} justify-content-between w-100 ${styles.selectButton}`}
-        >
-          <span className="d-flex align-items-center gap-2">
-            <img src={duration} alt="" className={styles.selectIcon} />
-            {durationFilter ? durationLabels[durationFilter] : "All Durations"}
-          </span>
-        </Dropdown.Toggle>
+            {Object.entries(difficultyLabels).map(([value, label]) => (
+              <Dropdown.Item
+                key={value}
+                active={difficultyFilter === value}
+                onClick={() => setDifficultyFilter(value)}
+              >
+                {label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
 
-        <Dropdown.Menu>
-          <Dropdown.Item onClick={() => setDurationFilter("")}>
-            All Durations
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDurationFilter("Short")}>
-            Short (up to 30 min)
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDurationFilter("Medium")}>
-            Medium (up to 60 min)
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => setDurationFilter("Long")}>
-            Long (60 min+)
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+        <Dropdown className="flex-fill">
+          <Dropdown.Toggle
+            variant=""
+            className={`${dropdownButtonClass} ${styles.noCaret}`}
+          >
+            <span className="d-flex align-items-center gap-2">
+              <img src={duration} alt="" className={styles.selectIcon} />
+              <span className={styles.mobileShortText}>
+                {durationFilter
+                  ? durationLabels[durationFilter]
+                  : "All Durations"}
+              </span>
+            </span>
+            <img src={arrow_down} alt="" className={styles.arrowIcon} />
+          </Dropdown.Toggle>
 
-      <div className="d-flex gap-3 ms-lg-auto">
+          <Dropdown.Menu className={styles.dropdownMenu}>
+            <Dropdown.Item
+              active={durationFilter === ""}
+              onClick={() => setDurationFilter("")}
+            >
+              All Durations
+            </Dropdown.Item>
+
+            {Object.entries(durationLabels).map(([value, label]) => (
+              <Dropdown.Item
+                key={value}
+                active={durationFilter === value}
+                onClick={() => setDurationFilter(value)}
+              >
+                {label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <Dropdown className="d-lg-none flex-shrink-0">
+          <Dropdown.Toggle
+            variant=""
+            className={`btn bg-white border shadow-none ${styles.iconOnlyButton} ${styles.noCaret}`}
+          >
+            <img src={sort_button} alt="Sort" className={styles.selectIcon} />
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu align="end" className={styles.dropdownMenu}>
+            {Object.entries(sortLabels).map(([value, label]) => (
+              <Dropdown.Item
+                key={value}
+                active={sortOption === value}
+                onClick={() => setSortOption(value)}
+              >
+                {label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+
+      <div className="d-none d-lg-flex gap-3 ms-lg-auto">
         <button
           type="button"
           className={`${buttonBase} justify-content-start ${styles.actionButton}`}
@@ -153,31 +203,25 @@ const ExploreFilter = ({
         <Dropdown>
           <Dropdown.Toggle
             variant=""
-            className={`${buttonBase} justify-content-start ${styles.actionButton} ${styles.sortButton}`}
+            className={`${buttonBase} justify-content-between ${styles.actionButton} ${styles.sortButton} ${styles.noCaret}`}
           >
-            <img src={sort_button} alt="" className={styles.selectIcon} />
-            <span className="ms-2">Sort by: {sortLabels[sortOption]}</span>
+            <span className="d-flex align-items-center">
+              <img src={sort_button} alt="" className={styles.selectIcon} />
+              <span className="ms-2">Sort by: {sortLabels[sortOption]}</span>
+            </span>
+            <img src={arrow_down} alt="" className={styles.arrowIcon} />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => setSortOption("newest")}>
-              Newest
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSortOption("oldest")}>
-              Oldest
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSortOption("name-asc")}>
-              Name (A → Z)
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSortOption("name-desc")}>
-              Name (Z → A)
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSortOption("length-asc")}>
-              Length (shortest)
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSortOption("length-desc")}>
-              Length (longest)
-            </Dropdown.Item>
+          <Dropdown.Menu className={styles.dropdownMenu}>
+            {Object.entries(sortLabels).map(([value, label]) => (
+              <Dropdown.Item
+                key={value}
+                active={sortOption === value}
+                onClick={() => setSortOption(value)}
+              >
+                {label}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       </div>

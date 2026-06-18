@@ -36,13 +36,31 @@
   min-width: 9rem;
 }
 
+.selectButton::after,
+.actionButton::after {
+  display: none;
+}
+
+.arrowIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+}
+
+.iconOnlyButton {
+  height: 3rem;
+  width: 3rem;
+  border-color: #e1e5ea;
+  border-radius: 0.5rem;
+}
+
 .sortButton {
   min-width: 15rem;
 }
 
 .selectIcon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
 }
 
@@ -60,16 +78,86 @@
   color: #5e6b78;
 }
 
+.noCaret::after {
+  display: none;
+}
+
+.noCaret:global(.dropdown-toggle)::after {
+  display: none;
+}
+
+.dropdownMenu :global(.dropdown-item.active),
+.dropdownMenu :global(.dropdown-item:active) {
+  background-color: #e1f563;
+  color: #05192d;
+  font-weight: 700;
+}
+
+.dropdownMenu :global(.dropdown-item:hover) {
+  background-color: #f4f7d0;
+  color: #05192d;
+}
+
 @media (max-width: 991.98px) {
   .searchBox {
     max-width: none;
     flex-basis: auto;
   }
 
-  .selectButton,
-  .actionButton,
-  .sortButton {
+  .searchIconBox,
+  .searchInput {
+    height: 3rem;
+  }
+
+  .selectButton {
+    height: 2.75rem;
+    min-width: 0;
     width: 100%;
-    min-width: unset;
+    padding-left: 0.55rem;
+    padding-right: 0.45rem;
+  }
+
+  .selectButton,
+  .selectButton span,
+  .mobileShortText {
+    font-size: 0.65rem;
+  }
+
+  .mobileShortText {
+    max-width: 4.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .actionButton {
+    height: 2.75rem;
+    min-width: 0;
+    width: 100%;
+    font-size: 0.72rem;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  .sortButton {
+    min-width: 0;
+  }
+
+  .selectIcon {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .arrowIcon {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .iconOnlyButton {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
   }
 }

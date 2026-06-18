@@ -91,7 +91,7 @@ const TrailCard = ({
             </h3>
 
             <p
-              className={`mb-2 ${styles.trailDescription} ${
+              className={`mb-2 d-none d-lg-block ${styles.trailDescription} ${
                 titleLines > 1 ? styles.descTwoLines : styles.descThreeLines
               }`}
             >

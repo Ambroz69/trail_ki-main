@@ -88,4 +88,10 @@
   .logo {
     width: 3.5rem;
   }
+
+  .avatarPlaceholder {
+  width: 32px;
+  height: 32px;
+  font-size: 0.8rem;
+}
 }

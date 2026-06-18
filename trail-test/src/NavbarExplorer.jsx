@@ -226,11 +226,11 @@ function NavbarExplorer() {
             <img
               src={profilePhoto}
               alt="Profile"
-              className={`d-none d-lg-block rounded-circle ${styles.avatar}`}
+              className={`d-block rounded-circle ${styles.avatar}`}
             />
           ) : (
             <div
-              className={`d-none d-lg-flex rounded-circle align-items-center justify-content-center ${styles.avatarPlaceholder}`}
+              className={`d-flex rounded-circle align-items-center justify-content-center ${styles.avatarPlaceholder}`}
             >
               {getInitials(userName)}
             </div>
