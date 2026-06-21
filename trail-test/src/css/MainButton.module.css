@@ -7,7 +7,7 @@ button.mainButton:visited {
   min-width: 0;
   min-height: var(--main-button-height);
 
-  font-size: 0.9rem;
+  font-size: var(--main-button-font-size-desktop);
   font-weight: 900;
 
   transition-duration: 0.5s;
@@ -21,14 +21,14 @@ button.mainButton:not(:disabled):not(:disabled):active {
 
 button.buttonPrimary,
 button.buttonPrimary:visited {
-  color: #05192D;
+  color: #05192d;
   background-color: #e1f563;
 }
 
 button.buttonPrimary:hover,
 button.buttonPrimary:focus,
 button.buttonPrimary:not(:disabled):not(:disabled):active {
-  color: #05192D;
+  color: #05192d;
   background-color: #bcd41e;
 }
 
@@ -79,7 +79,7 @@ button.buttonSecondaryDark:not(:disabled):active {
 button.buttonGreen,
 button.buttonGreen:visited {
   color: #fff;
-  background-color: #55C2AF;
+  background-color: #55c2af;
 }
 
 button.buttonGreen:hover,
@@ -87,4 +87,11 @@ button.buttonGreen:focus,
 button.buttonGreen:not(:disabled):not(:disabled):active {
   color: #fff;
   background-color: #38a190;
+}
+
+@media (max-width: 991.98px) {
+  button.mainButton,
+  button.mainButton:visited {
+    font-size: var(--main-button-font-size-mobile);
+  }
 }

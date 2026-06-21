@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../axiosConfig';
 import { useParams } from 'react-router-dom';
-import styles from '../css/TrailShow.module.css';
 import ReactCardFlip from 'react-card-flip';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
@@ -12,12 +11,11 @@ import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
 import ReactPaginate from 'react-paginate';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Cookies from "universal-cookie";
 
 import TrailMap from '../../components/TrailMap';
 
-//import filter_button from '../assets/filter_button.svg';
-
-import Cookies from "universal-cookie";
+import styles from '../css/TrailShow.module.css';
 
 //svg+png import
 import backup_trail_image from '../../src/assets/backup_trail_image.png';

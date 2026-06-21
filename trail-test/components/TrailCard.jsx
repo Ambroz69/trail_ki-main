@@ -100,7 +100,7 @@ const TrailCard = ({
 
             <div className="mt-auto">
               <div
-                className={`d-flex align-items-center flex-wrap column-gap-4 row-gap-2 mb-3 ${styles.trailMeta}`}
+                className={`d-flex align-items-center flex-wrap column-gap-3 column-gap-lg-4 row-gap-2 mb-3 ${styles.trailMeta}`}
               >
                 <span className="d-flex align-items-center gap-1">
                   <img src={durationIcon} alt="" className={styles.metaIcon} />
@@ -128,6 +128,7 @@ const TrailCard = ({
                     variant="buttonSecondaryGrey"
                     width="100%"
                     height="2.25rem"
+                    fontSizeDesktop="0.8rem"
                     onClick={() =>
                       goTo(`${basePath}/trails/details/${trail._id}`)
                     }
@@ -141,6 +142,7 @@ const TrailCard = ({
                     variant="buttonPrimary"
                     width="100%"
                     height="2.25rem"
+                    fontSizeDesktop="0.8rem"
                     onClick={() =>
                       goTo(`${basePath}/trails/certification/${trail._id}`)
                     }
