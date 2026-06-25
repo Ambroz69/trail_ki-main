@@ -1,0 +1,35 @@
+.avatar,
+.avatarPlaceholder {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+}
+
+.avatar {
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  background: #eef0f3;
+  color: #23242a;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.reviewerName {
+  color: #23242a;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.reviewText {
+  color: #5f6b7a;
+  font-size: 0.9rem;
+  line-height: 1.35;
+
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

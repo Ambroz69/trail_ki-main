@@ -1,0 +1,54 @@
+.card {
+  background: #fff;
+  border: 1px solid #f1f1f1;
+  border-radius: 1rem;
+}
+
+.image {
+  width: 100%;
+  max-width: 14rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.fwBlack {
+  font-weight: 900;
+}
+
+.description {
+  color: #91979f;
+  font-size: 1.1rem;
+}
+
+.progressBar {
+  height: 0.55rem;
+  flex: 1;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.metaRow {
+  color: #23242a;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.metaContent {
+  color: #23242a;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.metaContentLast {
+  border-bottom: none;
+}
+
+.metaValue {
+  color: #888c92;
+}
+
+@media (max-width: 991.98px) {
+  .image {
+    max-width: 100%;
+    max-height: 14rem;
+  }
+}

@@ -1,0 +1,98 @@
+.card {
+  background: #fff;
+  border: 1px solid #f1f1f1;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 1rem rgba(14, 33, 52, 0.06);
+  overflow: hidden;
+}
+
+.actionItem {
+  color: #23242a;
+  min-height: 6.5rem;
+}
+
+.actionItem:hover {
+  background: #fafbff;
+  color: #23242a;
+}
+
+.actionInner {
+  width: 22rem;
+  max-width: 85%;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.actionItem:hover .actionInner {
+  transform: scale(1.02);
+  opacity: 0.92;
+}
+
+.iconBox {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: #e8f5f1;
+}
+
+.iconBox img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.title {
+  color: #23242a;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.text {
+  color: #23242a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 0.25rem;
+}
+
+.arrow {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-left: auto;
+}
+
+.hasDivider {
+  position: relative;
+}
+
+.hasDivider::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  width: 1px;
+  background: #f1f1f1;
+}
+
+@media (max-width: 991.98px) {
+  .actionItem {
+    min-height: auto;
+  }
+
+  .actionInner {
+    width: 100%;
+    max-width: none;
+    padding-inline: 1rem;
+  }
+
+  .hasDivider::after {
+    top: auto;
+    right: 1.5rem;
+    bottom: 0;
+    left: 1.5rem;
+    width: auto;
+    height: 1px;
+  }
+}

@@ -1,39 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import api from '../axiosConfig';
-import { useParams } from 'react-router-dom';
-import ReactCardFlip from 'react-card-flip';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { useTranslation } from 'react-i18next';
-import NavbarExplorer from '../NavbarExplorer';
-import Footer from '../../components/Footer';
-import Button from 'react-bootstrap/Button';
+import React, { useEffect, useState } from "react";
+import api from "../axiosConfig";
+import { useParams } from "react-router-dom";
+import ReactCardFlip from "react-card-flip";
+import Dropdown from "react-bootstrap/Dropdown";
+import { useTranslation } from "react-i18next";
+import NavbarExplorer from "../NavbarExplorer";
+import Footer from "../../components/Footer";
+import Button from "react-bootstrap/Button";
 import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
-import ReactPaginate from 'react-paginate';
-import ProgressBar from 'react-bootstrap/ProgressBar';
+import ProgressBar from "react-bootstrap/ProgressBar";
 import Cookies from "universal-cookie";
 
-import TrailMap from '../../components/TrailMap';
+import TrailMap from "../../components/TrailMap";
+import TrailInfoCard from "../../components/TrailInfoCard";
+import TrailActionsCard from "../../components/TrailActionsCard";
+import TrailExplore from "../../components/TrailExplore";
+import TrailReview from "../../components/TrailReview";
 
-import styles from '../css/TrailShow.module.css';
+import styles from "../css/TrailShow.module.css";
 
 //svg+png import
-import backup_trail_image from '../../src/assets/backup_trail_image.png';
-import trail_certification_img from '../../src/assets/trail_certification_img.png';
-import trail_apply from '../../src/assets/trail_apply.svg';
-import trail_length from '../../src/assets/trail_length.svg';
-import trail_location from '../../src/assets/trail_location.svg';
-import trail_certification from '../../src/assets/trail_certification.svg';
-import trail_difficulty from '../../src/assets/trail_difficulty.svg';
-import trail_language from '../../src/assets/trail_language.svg';
-import trail_lock from '../../src/assets/trail_lock.svg';
-import trail_points from '../../src/assets/trail_points.svg';
-import trail_practice from '../../src/assets/trail_practice.svg';
-import trail_prepare_certification from '../../src/assets/my_journey_certification.svg';
-import trail_qr_code from '../../src/assets/trail_qr_code.svg';
-import trail_rating from '../../src/assets/trail_rating.svg';
-import trail_time from '../../src/assets/trail_time.svg';
-import trail_type from '../../src/assets/trail_type.svg';
+import backup_trail_image from "../../src/assets/backup_trail_image.png";
+import trail_certification_img from "../../src/assets/trail_certification_img.png";
+import trail_apply from "../../src/assets/trail_apply.svg";
+import trail_length from "../../src/assets/trail_length.svg";
+import trail_location from "../../src/assets/trail_location.svg";
+import trail_certification from "../../src/assets/trail_certification.svg";
+import trail_difficulty from "../../src/assets/trail_difficulty.svg";
+import trail_language from "../../src/assets/trail_language.svg";
+import trail_lock from "../../src/assets/trail_lock.svg";
+import trail_points from "../../src/assets/trail_points.svg";
+import trail_practice from "../../src/assets/trail_practice.svg";
+import trail_prepare_certification from "../../src/assets/my_journey_certification.svg";
+import trail_qr_code from "../../src/assets/trail_qr_code.svg";
+import trail_time from "../../src/assets/trail_time.svg";
+import trail_type from "../../src/assets/trail_type.svg";
 
 const cookies = new Cookies();
 const token = cookies.get("SESSION_TOKEN");
@@ -46,9 +48,8 @@ const ShowTrailUser = () => {
   const [cardFlipped, setCardFlipped] = useState(false);
   const { t } = useTranslation(); // Hook to access translations
   const [reviews, setReviews] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 3;
-  const [inProgressCertifications, setInProgressCertifications] = useState(null);
+  const [inProgressCertifications, setInProgressCertifications] =
+    useState(null);
 
   const getUserRole = () => {
     try {
@@ -68,14 +69,21 @@ const ShowTrailUser = () => {
   };
 
   const storedLang = localStorage.getItem("language") || "en";
-  const [userLanguage, setUserLanguage] = useState(languageMap[storedLang] || "English")
+  const [userLanguage, setUserLanguage] = useState(
+    languageMap[storedLang] || "English",
+  );
 
   useEffect(() => {
     setUserLanguage(languageMap[storedLang] || "English");
   }, [localStorage.getItem("language")]);
 
   const userRole = getUserRole();
-  const basePath = userRole === "manager" ? "/manager" : userRole === "trail creator" ? "/creator" : "/explorer";
+  const basePath =
+    userRole === "manager"
+      ? "/manager"
+      : userRole === "trail creator"
+        ? "/creator"
+        : "/explorer";
   const originURL = window.location.hostname;
 
   useEffect(() => {
@@ -125,8 +133,12 @@ const ShowTrailUser = () => {
     api(configurationCert)
       .then((response) => {
         const allCertifications = response.data.data;
-        const filteredCerts = allCertifications.filter(cert => cert.trail).filter(cert => cert.status === null);
-        const trailCerts = filteredCerts.filter(item => item.trail._id === id);
+        const filteredCerts = allCertifications
+          .filter((cert) => cert.trail)
+          .filter((cert) => cert.status === null);
+        const trailCerts = filteredCerts.filter(
+          (item) => item.trail._id === id,
+        );
         setInProgressCertifications(trailCerts || null);
       })
       .catch((error) => {
@@ -135,282 +147,62 @@ const ShowTrailUser = () => {
       });
   }, [id, userLanguage]);
 
-  const addDefaultImg = event => {
+  const addDefaultImg = (event) => {
     event.target.src = backup_trail_image;
   };
 
-  const handleCardFlip = e => {
+  const handleCardFlip = (e) => {
     e.preventDefault();
     setCardFlipped(!cardFlipped);
-  }
-
-  const offset = currentPage * itemsPerPage;
-  const reviewsPageData = reviews.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(reviews.length / itemsPerPage);
-
-  const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
-    //window.scrollTo(0, 0);
   };
 
   return (
     <>
       {/* Navbar */}
       <NavbarExplorer />
-      <div className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}>
-        <div className={`offset-lg-2 col-lg-8 px-0 mx-lg-auto m-3 mt-lg-5`}>
-          <div className={`${styles.white_bg} p-0`}>
-            <div className='mx-lg-0'>
+      <div
+        className={`${styles.show_trail_bg} d-flex container-fluid mx-0 px-0`}
+      >
+        <div className={`offset-lg-1 col-lg-10 px-0 mx-lg-auto m-3 mt-lg-5`}>
+          <div className={`p-0`}>
+            <div className="mx-lg-0">
               <ReactCardFlip isFlipped={cardFlipped} flipDirection="horizontal">
-                <div /* FRONT CARD */ onClick={e => handleCardFlip(e)} className={`${styles.show_trail_div_border} ${styles.trail_card_div} py-lg-3`}>
-                  <div className='d-flex flex-column flex-lg-row p-4'>
-                    <div className='col-lg-8 col-12 d-flex flex-column pe-4'>
-                      <div>
-                        <img src={trail_prepare_certification} alt="trail_prepare_certification" className='pe-2' />
-                      </div>
-                      <div className='d-flex mt-3'>
-                        <img src={trail?.thumbnail ? `${backendUrl}${trail?.thumbnail}` : backup_trail_image} alt="trail_img" style={{ width: '5rem', height: '5rem', borderRadius: '0.5rem' }} className='me-2' onError={addDefaultImg} />
-                        <h1 className={`${styles.trail_heading} ms-2`}>{trail?.name}</h1>
-                      </div>
-                      <p className={`${styles.trail_description} mt-3`} dangerouslySetInnerHTML={{ __html: trail?.description }}></p>
-                      <div className='mt-auto'>
-                        <h2 className={`${styles.trail_content_heading} mb-1`}>{t('overall_progress')}</h2>
-                        {inProgressCertifications?.length > 0 ? (
-                          (inProgressCertifications).map((certificate) => {
-                            const totalQuest = certificate?.trail?.points?.length || 1;
-                            const answeredQuest = certificate?.answers?.length;
-                            const progress = Math.round((answeredQuest / totalQuest) * 100);
-                            return (
-                              <div className='d-flex'>
-                                <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
-                                  <ProgressBar now={progress || 10} label={`${progress || 10}%`} className="col-12 col-lg-8 mb-3 m-lg-0" />
-                                </div>
-                                <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>{`${progress}%`}</p>
-                              </div>
-                            );
-                          })) : (
-                          <div className='d-flex'>
-                            <div className="progress col-11 col-lg-9 mb-4 mb-lg-0" style={{ height: '0.8rem', marginTop: '0.33rem' }}>
-                              <ProgressBar now={0} label='0%' className="col-12 col-lg-8 mb-3 m-lg-0" />
-                            </div>
-                            <p className={`${styles.trail_card_description} mb-0 col-1 col-lg-3 ms-2`}>0%</p>
-                          </div>
-                        )}
-
-                      </div>
-                    </div>
-                    <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} col-lg-4 col-12 px-4 pt-4 pb-3`}>
-                      <h2 className={styles.trail_content_heading}>{t('trail_content')}:</h2>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_type} alt="trail_type" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('trail_type')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{t(trail?.season.toLowerCase())}</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_language} alt="trail_language" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('language')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{t(trail?.language.toLowerCase())}</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_difficulty} alt="trail_difficulty" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('trail_difficulty_title')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{t(`trail_difficulty.${trail?.difficulty.toLowerCase()}`)}</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_location} alt="trail_location" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('location')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{t(trail?.locality.toLowerCase())}</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_length} alt="trail_length" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('trail_length')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{trail?.length.toFixed(2)} km</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_time} alt="trail_time" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('estimated_time')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{trail?.estimatedTime} min.</p>
-                      </div>
-                      <div className='d-flex justify-content-between mb-2'>
-                        <div className='d-flex flex-row'>
-                          <img src={trail_points} alt="trail_points" className='pe-2' />
-                          <p className={`${styles.trail_card_description} mb-0`}>{t('total_points')}:</p>
-                        </div>
-                        <p className={`${styles.trail_card_value} mb-0`}>{trail?.points?.length}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={`${styles.show_trail_div_border_top} d-lg-flex d-none p-4 pb-2`}>
-                    <div className={`${styles.show_trail_div_border_right} col-4 d-flex flex-column align-items-center`}>
-                      <div className='d-flex'>
-                        <button className={`${styles.rating_practice_apply_button} px-4 py-1`}>{t('rating')}</button>
-                        <img src={trail_rating} alt="trail_rating" className='ps-2' />
-                      </div>
-                      <p className={`${styles.rating_practice_apply_text} pt-2 mb-0`}>{t('review_trail_highlights')}</p>
-                    </div>
-                    <div className={`${styles.show_trail_div_border_right} col-4 d-flex flex-column align-items-center`}>
-                      <div className='d-flex'>
-                        <button className={`${styles.rating_practice_apply_button} px-4 py-1`}>{t('practice')}</button>
-                        <img src={trail_practice} alt="trail_practice" className='ps-2' />
-                      </div>
-                      <p className={`${styles.rating_practice_apply_text} pt-2 mb-0`}>{t('practice_text')}</p>
-                    </div>
-                    <div className={`col-4 d-flex flex-column align-items-center`}>
-                      <div className='d-flex'>
-                        <button className={`${styles.rating_practice_apply_button} px-4 py-1`}>{t('apply')}</button>
-                        <img src={trail_apply} alt="trail_apply" className='ps-2' />
-                      </div>
-                      <p className={`${styles.rating_practice_apply_text} pt-2 mb-0`}>{t('apply_text')}</p>
-                    </div>
-                  </div>
-                </div>
-                <div /* BACK CARD */ onClick={e => handleCardFlip(e)} className={ cardFlipped ? "d-flex" : "d-none" }> {/* <-- fix for Safari */}
+                <TrailInfoCard
+                  trail={trail}
+                  backendUrl={backendUrl}
+                  inProgressCertifications={inProgressCertifications}
+                />
+                <div
+                  /* BACK CARD */ onClick={(e) => handleCardFlip(e)}
+                  className={cardFlipped ? "d-flex" : "d-none"}
+                >
+                  {/* <-- fix for Safari */}
                   <TrailMap
                     points={trail?.points}
-                    height='15rem'
+                    height="15rem"
                     editable={false}
                     useGPT={false}
                   />
                 </div>
               </ReactCardFlip>
-              <div className={`${styles.show_trail_bg} d-flex`}>
-                <img src={trail_certification} alt="trail_certification" className='pe-2 pb-1' />
-                <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('certification')}</p>
-              </div>
-              <div className={`${styles.show_trail_div_border} d-flex flex-lg-row flex-column px-4 py-3`}>
-                <div className='col-12 col-lg-4 d-flex align-items-center'>
-                  <img src={trail_certification_img} alt="trail_certification_img" className={styles.certification_image} />
-                </div>
-                <div className='col-12 col-lg-8'>
-                  <h1 className={`${styles.trail_heading} d-none d-lg-block`}>{t('certification_text1')}</h1>
-                  <h1 className={`${styles.trail_heading} d-block d-lg-none fs-4 mt-3`}>{t('certification_text1')}</h1>
-                  <p className={`${styles.trail_description} mt-3`}>{t('certification_text2')}</p>
-                  <div className='d-flex flex-column flex-lg-row'>
-                    <div className='col-lg-6 col-12 pe-lg-2 mb-2'>
-                      <button className={`${styles.rating_practice_apply_button} d-flex w-100 align-items-center py-2 px-3`}>
-                        <img src={trail_lock} alt="trail_lock" className='pe-3' />{t('environment_guardian')}
-                      </button>
-                    </div>
-                    <div className='col-lg-6 col-12 ps-lg-2'>
-                      <button className={`${styles.rating_practice_apply_button} d-flex w-100 align-items-center py-2 px-3`}>
-                        <img src={trail_lock} alt="trail_lock" className='pe-3' />{t('trail_master')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles.show_trail_bg} d-flex`}>
-                <img src={trail_qr_code} alt="trail_qr_code" className='pe-2 pb-1' />
-                <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('qr_code')}</p>
-              </div>
-              <div className={`${styles.show_trail_div_border} ${styles.show_trail_bg} d-flex flex-column flex-lg-row px-4 py-3`}>
-                <div className='col-lg-4 col-12 d-flex align-items-center justify-content-center pe-5'>
-                  <div style={{ height: "auto", margin: "0 auto", maxWidth: 150, width: "100%" }}>
-                    <QRCode
-                      style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                      value={`${originURL}/explorer/trails/details/${trail?._id}`}
-                    />
-                  </div>
-                </div>
-                <div className='d-none d-lg-block col-lg-8'>
-                  <h1 className={`${styles.trail_heading}`}>{t('qr_code_text1')}</h1>
-                  <p className={`${styles.trail_description} mt-3`}>{t('qr_code_text2')}</p>
-                </div>
-              </div>
-              <div className={`${styles.show_trail_bg} d-flex`}>
-                <img src={trail_rating} alt="trail_rating" className='pe-2 pb-1' />
-                <p className={`${styles.lower_card_heading} py-3 m-0`}>{t('rating')}</p>
-              </div>
-              <div className={`${styles.show_trail_bg} d-flex flex-column flex-lg-row pe-4 ps-0 py-0`}>
-                <div className={`col-12`}>
-                  {!reviews || reviews.length === 0 ? (
-                    <p className={`${styles.trail_description} mt-3`}>{t('no_reviews')}</p>
-                  ) : (
-                    <>
-                      {reviewsPageData.map((review) => (
-                        <div key={review._id} className="mb-4 d-flex flex-row">
-                          <div className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{ width: "50px", height: "50px", backgroundColor: "#D9D9D9" }}>
-                          </div>
-                          <div>
-                            <p className='m-0'>{review.userId.name} </p>
-                            <div className='mb-2'>
-                              {Array.from({ length: 5 }, (_, i) => (
-                                <span key={i} style={{ color: i < review.rating ? "gold" : "gray" }}>★</span>
-                              ))}
-                            </div>
-                            {review.comment ? (
-                              <p className={`mb-0`}>
-                                {review.comment}
-                              </p>
-                            ) : (
-                              <></>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                      {/* Pagination */}
-                      {reviews.length > itemsPerPage && (
-                        <ReactPaginate
-                          previousLabel={"←"}
-                          nextLabel={"→"}
-                          breakLabel={"..."}
-                          pageCount={pageCount}
-                          onPageChange={handlePageClick}
-                          containerClassName={"pagination justify-content-center mt-4"}
-                          pageClassName={"page-item"}
-                          pageLinkClassName={"page-link"}
-                          previousClassName={"page-item"}
-                          previousLinkClassName={"page-link"}
-                          nextClassName={"page-item"}
-                          nextLinkClassName={"page-link"}
-                          breakClassName={"page-item"}
-                          breakLinkClassName={"page-link"}
-                          activeClassName={"active"}
-                        />
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-              {/* DESKTOP */}
-              <div className={`${styles.show_trail_bg} d-none d-lg-flex justify-content-end pt-4 gap-3`}>
-                <Button className={`${styles.show_all_button} btn px-5 py-2`} href={`${basePath}`}>
-                  {t('show_all')}
-                </Button>
-                <Button className={`${styles.start_button} btn px-5 py-2`} href={`${basePath}/trails/certification/${trail?._id}`}>
-                  {t('start')}
-                </Button>
-              </div>
-              {/* MOBILE */}
-              <div className={`${styles.show_trail_bg} d-flex d-lg-none justify-content-end pt-4 gap-3`}>
-                <Button className={`${styles.show_all_button} flex-fill btn py-2`} href={`${basePath}`}>
-                  {t('show_all')}
-                </Button>
-                <Button className={`${styles.start_button} flex-fill btn py-2`} href={`${basePath}/trails/certification/${trail?._id}`}>
-                  {t('start')}
-                </Button>
-              </div>
+
+              <TrailActionsCard basePath={basePath} trailId={trail?._id} />
+
+              <TrailExplore trail={trail} originURL={originURL} />
+
+              <TrailReview reviews={reviews} />
             </div>
           </div>
         </div>
       </div>
       {/* Footer */}
-      <Footer />
+      <div className="bg-[#f0f8f4]">
+        <div className=" text-black d-lg-flex offset-lg-1 col-lg-10 pt-5">
+          <Footer />
+        </div>
+      </div>
     </>
-  )
+  );
 };
 
 export default ShowTrailUser;
