@@ -13,6 +13,8 @@ import difficultyMediumIcon from "../src/assets/difficulty_medium.svg";
 import difficultyHardIcon from "../src/assets/difficulty_hard.svg";
 import arrowRightIcon from "../src/assets/trail_card_arrow_right.svg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const difficultyConfig = {
   easy: { label: "Easy", icon: difficultyEasyIcon },
   moderate: { label: "Medium", icon: difficultyMediumIcon },
@@ -34,10 +36,10 @@ const TrailCard = ({
 }) => {
   const getImageSrc = (image) => {
     if (!image) return backup_trail_image;
-    if (image.startsWith("http")) return image;
-    if (image.startsWith("/")) return image;
+    //if (image.startsWith("http")) return image;
+    //if (image.startsWith("/")) return image;
 
-    return `/${image}`;
+    return `${backendUrl}${image}`;
   };
   const imageSrc = getImageSrc(trail.image || trail.thumbnail);
   const difficultyKey = trail.difficulty?.toLowerCase();
