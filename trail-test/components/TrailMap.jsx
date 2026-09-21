@@ -229,8 +229,8 @@ const TrailMap = ({ points, onPointAdd, onPointEdit, getEditMode = () => { }, ed
         const pointStyle = new Style({
           image: new CircleStyle({
             radius: 6,
-            fill: new Fill({ color: isAnswered ? 'green' : 'blue' }),
-            stroke: new Stroke({ color: 'white', width: 2 }),
+            fill: new Fill({ color: isAnswered ? 'green' : 'yellow' }),
+            stroke: new Stroke({ color: 'black', width: 2 }),
           }),
           text: !editable ? new TextStyle({
             text: point.title, // Display point title when not editable
