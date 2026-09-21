@@ -32,8 +32,6 @@ import title_page_trusted_by_logo_1 from "../../src/assets/title_page_trusted_by
 import title_page_trusted_by_logo_2 from "../../src/assets/title_page_trusted_by_logo_2.png";
 import title_page_trusted_by_logo_3 from "../../src/assets/title_page_trusted_by_logo_3.png";
 import teta from "../../src/assets/teta.png";
-import ujo from "../../src/assets/ujo.png";
-import hipster from "../../src/assets/hipster.png";
 import hamburger from "../../src/assets/hamburger.svg";
 import trail_experience_sk from "../../src/assets/trail_experience_sk.svg";
 import trail_experience_en from "../../src/assets/trail_experience_en.svg";
@@ -85,35 +83,35 @@ const TitlePage = () => {
   const testimonials = [
     {
       photo: teta,
-      photoAlt: "teta",
+      photoAlt: "jarmila",
       color: "#D4CCE2",
       text: t("testimonial_1"),
       author: t("testimonial_author_1"),
       description: t("testimonial_desc_1"),
     },
     {
-      photo: ujo,
-      photoAlt: "ujo",
+      photo: teta,
+      photoAlt: "denisa",
       color: "#C9CFE3",
       text: t("testimonial_2"),
       author: t("testimonial_author_2"),
       description: t("testimonial_desc_2"),
     },
     {
-      photo: hipster,
-      photoAlt: "hipster",
+      photo: teta,
+      photoAlt: "eva",
       color: "#C3DCE4",
       text: t("testimonial_3"),
       author: t("testimonial_author_3"),
       description: t("testimonial_desc_3"),
     },
     {
-      photo: hipster,
-      photoAlt: "hipster",
+      photo: teta,
+      photoAlt: "sara",
       color: "#C9E8E0",
-      text: t("testimonial_3"),
-      author: "John Doe",
-      description: t("testimonial_desc_3"),
+      text: t("testimonial_4"),
+      author: t("testimonial_author_4"),
+      description: t("testimonial_desc_4"),
     },
   ];
 
